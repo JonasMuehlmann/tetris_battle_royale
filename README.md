@@ -1,1 +1,1 @@
-# tetris_royale
+# tetris_battle_royale
