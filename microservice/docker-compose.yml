@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  db:
+    container_name: microservice-db
+    image: postgres
+    hostname: db
+    environment:
+      GET_HOST_FROM: dns
+      POSTGRES_DB: dev
+      POSTGRES_USER: foo
+      POSTGRES_PASSWORD: bar
+    ports:
+      - 5432:5432
+    networks:
+      - microservice-net
+    
+  microservice:
+    container_name: microservice
+    image: alpine
+    hostname: microservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      GET_HOST_FROM: dns
+    networks:
+      - microservice-net
+    volumes:
+      - .:/go/src/microservice
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    links:
+      - db
+    labels:
+      kompose.service.type: LoadBalancer
+
+networks:
+  microservice-net:
+    driver: bridge
