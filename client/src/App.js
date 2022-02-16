@@ -1,9 +1,14 @@
+import { useContext } from 'react'
+import { ScreenContext, withScreenContext } from '../contexts/screen-context'
+
 function App() {
+  const { currentScreen } = useContext(ScreenContext)
+
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center">
-      <h2 className="text-4xl font-semibold">Tetris Battle Royale</h2>
+      {<currentScreen.component />}      
     </div>
   );
 }
 
-export default App;
+export default withScreenContext(App);
