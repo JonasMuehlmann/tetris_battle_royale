@@ -3,7 +3,7 @@ import { Screen, ScreenContext } from '../contexts/screen-context'
 import Request from '../helpers/http'
 
 const styles = {
-  container: 'w-full h-full flex flex-col items-center justify-center',
+  container: 'w-full h-full flex flex-col items-center justify-center z-20 text-white',
   stack: 'flex flex-col gap-2',
 }
 
@@ -38,10 +38,16 @@ const LogIn = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.stack}>
-        <h2>
-          Tetris Battle Royale
+      <div className='flex flex-col items-center mb-28'>
+        <h2 className='text-9xl font-semibold tetris-text'>
+          Tetris
         </h2>
+        <h2 className='text-8xl green-grad-text pb-5'>
+          Battle Royale
+        </h2>
+        <p className='text-2xl opacity-30'>
+          Massively Multiplayer Classic Tetris
+        </p>
       </div>
       <form
         onSubmit={onSubmit}
@@ -71,7 +77,8 @@ const LogIn = () => {
           placeholder='Password'
         />
         <button
-          type='submit'>
+          type='submit'
+          className='border py-4 rounded mt-10 transition-all hover:bg-[#19a186] hover:text-black'>
           Authenticate
         </button>
       </form>

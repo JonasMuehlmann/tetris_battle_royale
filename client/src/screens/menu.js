@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Screen, ScreenContext } from "../contexts/screen-context";
 
 const styles = {
-  menuItem: 'text-2xl font-semibold text-left w-1/2 pl-14',
+  menuItem: 'text-2xl font-semibold text-left w-1/2 pl-10 bangers',
   logOutButton: 'text-md opacity-50 text-left'
 }
 
@@ -10,9 +10,9 @@ const Menu = () => {
   const { navigate } = useContext(ScreenContext)
 
   const items = [
-    { text: 'Matchfinder', onClick: e => navigate(Screen.Queue) },
-    { text: 'Profile', onClick: e => navigate(Screen.Profile) },
-    { text: 'Settings', onClick: e => navigate(Screen.Settings) },
+    { text: 'Matchfinder', onClick: e => navigate(Screen.LogIn) },
+    { text: 'Profile', onClick: e => navigate(Screen.LogIn) },
+    { text: 'Settings', onClick: e => navigate(Screen.LogIn) },
   ]
 
   return (
