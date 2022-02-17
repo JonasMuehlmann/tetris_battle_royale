@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Screen, ScreenContext } from "../contexts/screen-context";
+import { Screen, ScreenContext } from "../../contexts/screen-context";
 
 const styles = {
   menuItem: 'text-2xl font-semibold text-left w-1/2 pl-10 bangers',

@@ -1,16 +1,13 @@
-import { useContext } from 'react'
 import { BackgroundCanvas } from './components/background_canvas';
-import { ScreenContext, withScreenContext } from './contexts/screen-context'
+import MainScreen from './screens/main_screen';
 
 function App() {
-  const { currentScreen } = useContext(ScreenContext)
-
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center">
       <BackgroundCanvas />
-      {<currentScreen.component />}
+      <MainScreen />
     </div>
   );
 }
 
-export default withScreenContext(App);
+export default App;
