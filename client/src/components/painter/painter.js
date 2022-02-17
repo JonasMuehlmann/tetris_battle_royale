@@ -47,6 +47,7 @@ export class Painter {
 
     this.stars.forEach(star => star.spawn())
     this.blocks.forEach(block => block.spawn())
+
     this.setSpeed(4.25);
   }
 

@@ -31,11 +31,11 @@ const LogIn = () => {
         <h2 className='text-9xl font-bold tetris-text tetris-shadow'>
           Tetris
         </h2>
-        <h2 className='text-7xl green-grad-text
+        <h2 className='text-5xl green-grad-text
         rounded pt-2 pb-5'>
           Battle Royale
         </h2>
-        <p className='text-xl font-bold josefin'>
+        <p className='text-sm josefin'>
           Massively Multiplayer Classic Tetris
         </p>
       </div>
