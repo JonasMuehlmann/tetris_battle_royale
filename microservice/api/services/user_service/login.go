@@ -116,13 +116,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	usernameParam, okUsername := r.URL.Query()["username"]
 
 	if !okUsername {
-		common.TryWriteResponse(w, "Missing username or password")
+		common.TryWriteResponse(w, "Missing username")
 		return
 	}
 
 	username := usernameParam[0]
 
 	passwordParam, okPassword := r.URL.Query()["password"]
+	if !okPassword {
+		common.TryWriteResponse(w, "Missing password")
+		return
+	}
+
+	password := passwordParam[0]
 
 	var wantsToRegister bool
 
@@ -154,27 +160,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if okUsername && !okPassword && !wantsToRegister {
-		log.Println("Received login check request")
-
-		isLoggedIn(db, w, r, username)
-	} else if okUsername && okPassword && !wantsToRegister {
+	if !wantsToRegister {
 		log.Println("Received login request")
-
-		password := passwordParam[0]
 		login(db, w, r, username, password)
-	} else if okUsername && okPassword && wantsToRegister {
-		log.Println("Received registration request")
-
-		password := passwordParam[0]
-		register(db, w, r, username, password)
 	} else {
-		log.Println("Received invalid request")
-
-		_, err := w.Write([]byte("Invalid request"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
+		log.Println("Received registration request")
+		register(db, w, r, username, password)
 	}
 }

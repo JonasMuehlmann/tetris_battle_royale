@@ -33,4 +33,25 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 }
 
 func IsLoginHandler(w http.ResponseWriter, r *http.Request) {
+	usernameParam, okUsername := r.URL.Query()["username"]
+
+	if !okUsername {
+		common.TryWriteResponse(w, "Missing username")
+		return
+	}
+
+	username := usernameParam[0]
+
+	db, err := sqlx.Open("postgres", connectionString)
+
+	defer db.Close()
+
+	err = db.Ping()
+
+	if err != nil {
+		log.Printf("Failed to open db: %v", err)
+		return
+	}
+
+	isLoggedIn(db, w, r, username)
 }
