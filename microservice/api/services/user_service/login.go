@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"log"
+	"microservice/api/common"
 	"net/http"
 	"strconv"
 
@@ -29,12 +30,8 @@ func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username stri
 	_, err := getUserFromName(db, username)
 
 	if err == nil {
-		_, err = w.Write([]byte("Username is already in use"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
-
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "Username is already in use")
 		return
 	}
 
@@ -45,13 +42,7 @@ func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username stri
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-
-		_, err = w.Write([]byte("Failed create account"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
-
+		common.TryWriteResponse(w, "Failed to create account")
 		return
 	}
 
@@ -59,13 +50,7 @@ func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username stri
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-
-		_, err = w.Write([]byte("Failed create account"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
-
+		common.TryWriteResponse(w, "Failed to create account")
 		return
 	}
 
@@ -73,27 +58,14 @@ func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username stri
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-
-		_, err = w.Write([]byte("Failed to create account"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
-
+		common.TryWriteResponse(w, "Failed to create account")
 		return
 	}
 
 	// Not needed, but better be explicit!
 	w.Header().Set("Content-Type", "text/plain; charset")
 
-	sessionIDEnc := strconv.Itoa(session.ID)
-
-	_, err = w.Write([]byte(sessionIDEnc))
-
-	if err != nil {
-		log.Printf("Failed to send message: %v", err)
-	}
-
+	common.TryWriteResponse(w, strconv.Itoa(session.ID))
 }
 
 func login(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string, password string) {
@@ -107,12 +79,8 @@ func login(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string,
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-
-		_, err = w.Write([]byte("Unknown username"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
+		common.TryWriteResponse(w, "Unknown username")
+		return
 	}
 
 	salt = []byte(user.Salt)
@@ -121,25 +89,16 @@ func login(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string,
 	inputHash := hashPw([]byte(password), salt)
 
 	if bytes.Compare(inputHash, passwordHash) != 0 {
-		log.Printf("Error: %v", err)
-
-		_, err = w.Write([]byte("Invalid username or password"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
+		common.TryWriteResponse(w, "Invalid username or password")
+		return
 	}
 
 	session, err := createSession(db, user.ID)
 
 	if err != nil {
-		_, err = w.Write([]byte("Failed to login"))
-
 		log.Printf("Error: %v", err)
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
+		common.TryWriteResponse(w, "Failed to login")
+		return
 	}
 
 	// Not needed, but better be explicit!
@@ -149,11 +108,7 @@ func login(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string,
 
 	binary.LittleEndian.PutUint32(sessionIDEnc, uint32(session.ID))
 
-	_, err = w.Write(sessionIDEnc)
-
-	if err != nil {
-		log.Printf("Failed to send message: %v", err)
-	}
+	common.TryWriteResponse(w, string(sessionIDEnc))
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -161,12 +116,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	usernameParam, okUsername := r.URL.Query()["username"]
 
 	if !okUsername {
-		_, err := w.Write([]byte("Missing username or password"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
-
+		common.TryWriteResponse(w, "Missing username or password")
 		return
 	}
 
@@ -187,24 +137,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			log.Printf("Error: %v", err)
-
-			_, err = w.Write([]byte("Invalid value for parameter 'wantsToRegister', needs to be 'true' or 'false'"))
-
-			if err != nil {
-				log.Printf("Failed to send message: %v", err)
-
-				return
-			}
+			common.TryWriteResponse(w, "Invalid value for parameter 'wantsToRegister', needs to be 'true' or 'false'")
+			return
 		}
 	}
 
 	db, err := sqlx.Open("postgres", connectionString)
-
-	if err != nil {
-		log.Printf("Failed to open db: %v", err)
-
-		return
-	}
 
 	defer db.Close()
 
@@ -215,8 +153,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	log.Printf("DB connection looking good!")
 
 	if okUsername && !okPassword && !wantsToRegister {
 		log.Println("Received login check request")

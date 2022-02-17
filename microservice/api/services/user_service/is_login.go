@@ -2,6 +2,7 @@ package userService
 
 import (
 	"log"
+	"microservice/api/common"
 	"net/http"
 	"strconv"
 
@@ -13,12 +14,8 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-
-		_, err = w.Write([]byte("Failed to retrieve login status"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
+		common.TryWriteResponse(w, "Failed to retrieve login stauts")
+		return
 	}
 
 	session, err := getSession(db, user.ID)
@@ -28,20 +25,10 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 	if err != nil {
 		log.Printf("Error: %v", err)
 
-		_, err = w.Write([]byte("User not logged in"))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
+		common.TryWriteResponse(w, "User not logged in")
 	} else {
 		log.Printf("Error: %v", err)
-
-		_, err = w.Write([]byte("User logged in with id " + strconv.FormatInt(int64(session.ID), 10)))
-
-		if err != nil {
-			log.Printf("Failed to send message: %v", err)
-		}
-
+		common.TryWriteResponse(w, "User logged in with id "+strconv.FormatInt(int64(session.ID), 10))
 	}
 }
 

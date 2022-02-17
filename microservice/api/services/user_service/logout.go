@@ -13,7 +13,7 @@ func logout(db *sqlx.DB, sessionId int) (Session, error) {
 	err := db.Get(&session, "DELETE FROM sessions WHERE id = $1", sessionId)
 
 	if err != nil {
-		return Session{}, errors.New("Failed to end")
+		return Session{}, errors.New("Failed to end session")
 	}
 
 	return session, nil
