@@ -55,7 +55,12 @@ export default class Block {
     }
 
     this.x = this.drawWidth;
-    this.y = random(-this.drawHeight, this.drawHeight);
+    this.y = random(-this.drawHeight, this.drawHeight)
+    this.velocity.x = this.velocity.x * random(0.85, 1.25)
+
+    if (this.velocity.x > 10) {
+      this.velocity.x = 10
+    }
   }
 
   _draw() {

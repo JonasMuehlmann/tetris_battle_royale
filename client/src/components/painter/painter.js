@@ -37,7 +37,12 @@ export class Painter {
     }
 
     for (let i = 0; i < 30; i++) {
-      this.blocks.push(new Block(this.drawWidth, this.drawHeight, this.context, 'assets/blocks.png', random(30, 80)))
+      this.blocks.push(new Block(
+        this.drawWidth,
+        this.drawHeight,
+        this.context,
+        `assets/block_${random(1, 3)}.png`,
+        random(30, 80)))
     }
 
     this.stars.forEach(star => star.spawn())
@@ -116,7 +121,7 @@ export class Painter {
 
   setSpeed(speed) {
     this.speed = speed;
-    this.stars.forEach(star => star.velocity.x = this.speed);
-    this.blocks.forEach(block => block.velocity.x = this.speed);
+    this.stars.forEach(star => star.velocity.x = this.speed * random(1.0, 1.45));
+    this.blocks.forEach(block => block.velocity.x = this.speed * random(1.0, 1.45));
   }
 }

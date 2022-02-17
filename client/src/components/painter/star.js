@@ -46,6 +46,7 @@ export default class Star {
 
     this.x = this.drawWidth;
     this.y = random(-this.drawHeight, this.drawHeight);
+    this.velocity.x = this.velocity.x * random(0.85, 1.25);
     this._getRandomStyle();
   }
 

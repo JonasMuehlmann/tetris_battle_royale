@@ -28,7 +28,7 @@ const LogIn = () => {
         IN-DEVELOPMENT
       </p>
       <div className='flex flex-col items-center mb-16'>
-        <h2 className='text-9xl font-semibold tetris-text'>
+        <h2 className='text-9xl font-bold tetris-text tetris-shadow'>
           Tetris
         </h2>
         <h2 className='text-7xl green-grad-text
