@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"microservice/api/handlers"
+	handlers "microservice/api/services/user_service"
 	"net/http"
 )
 
@@ -13,8 +13,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/login", handlers.LoginHandler)
+	mux.HandleFunc("/isLogin", handlers.IsLoginHandler)
+	mux.HandleFunc("/logut", handlers.LogoutHandler)
 
-	log.Println("Starting server on Port 8008")
+	log.Println("Starting server on Port 8080")
 
 	err := http.ListenAndServe(":8080", mux)
 
