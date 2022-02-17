@@ -16,17 +16,24 @@ func logout(db *sqlx.DB, w http.ResponseWriter, sessionId int) (Session, error) 
 	res, err := db.Exec("DELETE FROM sessions WHERE id = $1", sessionId)
 
 	if err != nil {
+		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, "Failed to end session")
 		return Session{}, errors.New("Failed to end session")
 	}
 
-	numDeletedSessions, _ := res.RowsAffected()
+	numDeletedSessions, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "The given session does not exist")
+		return Session{}, errors.New("The given session does not exist")
+	}
 
 	if numDeletedSessions == 0 {
-		common.TryWriteResponse(w, "Failed to end session")
-		return Session{}, errors.New("Failed to end session")
+		common.TryWriteResponse(w, "The given session does not exist")
+		return Session{}, errors.New("The given session does not exist")
 	}
 
+	common.TryWriteResponse(w, "Successfully ended session")
 	return session, nil
 }
 

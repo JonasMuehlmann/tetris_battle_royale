@@ -24,10 +24,8 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-
 		common.TryWriteResponse(w, "User not logged in")
 	} else {
-		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, "User logged in with id "+strconv.FormatInt(int64(session.ID), 10))
 	}
 }
