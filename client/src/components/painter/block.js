@@ -1,23 +1,34 @@
 import { random } from "../../helpers/utils";
 
-export default class Star {
+export default class Block {
   velocity = { x: 0, y: 0 };
   y = 0;
   x = 0;
-  radius = 0;
+  size = 36;
   color = 'rgba(0, 0, 0, 0)';
   shadow = 'rgba(0, 0, 0, 0)';
 
+  isLoaded = false;
   isSpawned = false;
 
   constructor(
     drawWidth,
     drawHeight,
-    context
+    context,
+    source,
+    size
   ) {
     this.drawHeight = drawHeight
     this.drawWidth = drawWidth
     this.context = context
+    this.source = source
+    this.size = size
+
+    this.image = new Image()
+    this.image.onload = () => {
+      this.isLoaded = true
+    }
+    this.image.src = source
   }
 
   update() {
@@ -35,7 +46,6 @@ export default class Star {
     this.isSpawned = true;
     this.x = random(-this.drawWidth, this.drawWidth);
     this.y = random(-this.drawHeight, this.drawHeight);
-    this._getRandomStyle();
   }
 
   respawn() {
@@ -46,25 +56,13 @@ export default class Star {
 
     this.x = this.drawWidth;
     this.y = random(-this.drawHeight, this.drawHeight);
-    this._getRandomStyle();
   }
 
   _draw() {
-    this.context.beginPath();
-    this.context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    this.context.shadowBlur = 10;
-    this.context.shadowColor = this.shadow;
-    this.context.fillStyle = this.shadow;
-    this.context.fill();
-    this.context.closePath();
+    if (!this.isLoaded) return;
+    this.context.drawImage(this.image, this.x, this.y, this.size, this.size);
   }
 
   _getRandomStyle() {
-    const hue = random(70, 270);
-    const opacity = random(0.01, 0.8);
-
-    this.radius = random(0.25, 1.85);
-    this.color = `rgba(${hue}, 171, 255, ${opacity})`;
-    this.shadow = `rgba(${hue}, 171 , 255, 1)`;
   }
 }

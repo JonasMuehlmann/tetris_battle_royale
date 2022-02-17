@@ -16,7 +16,7 @@ export const BackgroundCanvas = () => {
       canvasRef.current.height = window.innerHeight;
 
       const context = canvasRef.current.getContext('2d');
-      const starsCount = 300;
+      const starsCount = 400;
 
       setPainter(
         new Painter(

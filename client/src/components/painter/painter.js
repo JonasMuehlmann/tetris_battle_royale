@@ -1,7 +1,9 @@
+import { random } from "../../helpers/utils";
+import Block from "./block";
 import Star from "./star";
 
 const BG_RADIANS = 0.0001;
-const BG_ALPHA = 0.98;
+const BG_ALPHA = 0.75;
 const BG_ROTATE_RADIANS = 0.0005;
 
 export class Painter {
@@ -9,7 +11,7 @@ export class Painter {
   backgroundAlpha = BG_ALPHA;
   rotateValue = BG_ROTATE_RADIANS;
   speed = 0;
-  rotating = true;
+  rotating = false;
   resetting = false;
   stars = [];
   drawWidth = 0;
@@ -21,25 +23,33 @@ export class Painter {
     canvasHeight,
     starsCount = 100
   ) {
-    this.stars = [];
-    this.context = context;
+    this.stars = []
+    this.blocks = []
+    this.context = context
     this.starsCount = starsCount
     this.canvasWidth = canvasWidth
     this.canvasHeight = canvasHeight
-    this.drawWidth = (canvasWidth + 600) / 2;
-    this.drawHeight = (canvasHeight + 1000) / 2;
+    this.drawWidth = canvasWidth + 200;
+    this.drawHeight = canvasHeight + 200;
 
     for (let i = 0; i < this.starsCount; i++) {
-      this.stars.push(new Star(this.drawWidth, this.drawHeight, this.context));
+      this.stars.push(new Star(this.drawWidth, this.drawHeight, this.context))
     }
 
-    this.stars.forEach(star => star.spawn());
+    for (let i = 0; i < 30; i++) {
+      this.blocks.push(new Block(this.drawWidth, this.drawHeight, this.context, 'assets/blocks.png', random(30, 80)))
+    }
+
+    this.stars.forEach(star => star.spawn())
+    this.blocks.forEach(block => block.spawn())
+    this.setSpeed(4.25);
   }
 
   update() {
     // clears canvas
     this.context.fillStyle = `rgba(20, 20, 20, ${this.backgroundAlpha})`;
     this.context.fillRect(0, 0, this.canvasWidth, this.canvasWidth);
+
     // rotates canvas
     this.context.save();
     // sets the pivot point
@@ -68,12 +78,20 @@ export class Painter {
      * zeichnet Sterne
      */
     this.stars.forEach((star) => {
-      if (star.x < -this.drawWidth) {
-        star.respawn();
+      if (star.x < -this.canvasWidth) {
+        star.respawn()
       } else {
-        star.update();
+        star.update()
       }
-    });
+    })
+
+    this.blocks.forEach(block => {
+      if (block.x < -this.canvasWidth) {
+        block.respawn()
+      } else {
+        block.update()
+      }
+    })
 
     this.context.restore();
   }
@@ -99,5 +117,6 @@ export class Painter {
   setSpeed(speed) {
     this.speed = speed;
     this.stars.forEach(star => star.velocity.x = this.speed);
+    this.blocks.forEach(block => block.velocity.x = this.speed);
   }
 }

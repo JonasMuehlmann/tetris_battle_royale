@@ -10,6 +10,10 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow:hidden;
+}
+
 body {
   width: 100vw;
   height: 100vh;
@@ -17,19 +21,25 @@ body {
 }
 
 label {
-  font-size: 1.15rem;
+  font-size: 1rem;
   opacity: 0.75;
+  font-family: 'Josefin Sans', sans-serif !important;
 }
 
 input {
   min-width: 24rem;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.75rem;
   font-size: 1.25rem;
   border-radius: 0.75rem;
+  color: black;
 }
 
 .bangers {
   font-family: 'Bangers', cursive !important;
+}
+
+.josefin {
+  font-family: 'Josefin Sans', sans-serif !important;
 }
 
 .yellow {

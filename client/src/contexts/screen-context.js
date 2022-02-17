@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import LogIn from '../screens/login'
+import LogIn from '../screens/login/login'
 import Menu from "../screens/menu";
 
 export class Screen {
