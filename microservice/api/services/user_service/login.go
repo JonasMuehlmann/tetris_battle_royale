@@ -97,7 +97,7 @@ func login(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string,
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-		common.TryWriteResponse(w, "Failed to login")
+		common.TryWriteResponse(w, "User already logged in")
 		return
 	}
 
