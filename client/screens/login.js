@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { Screen, ScreenContext } from '../contexts/screen-context'
 import Request from '../helpers/http'
 
 const styles = {
@@ -7,11 +8,16 @@ const styles = {
 }
 
 const LogIn = () => {
+  const { navigate } = useContext(ScreenContext)
+
+  /* LOG-IN STATES */
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({})
 
-  const onSubmit = () => {
+  const onSubmit = e => {
+    e.preventDefault()
+
     const no_username = !username || username.trim().length <= 0
     const no_password = !password || password.trim().length <= 0
     const short_username = username.trim().length < 4
@@ -19,6 +25,7 @@ const LogIn = () => {
 
     if (!no_username && !no_password && !short_username && !short_password) {
       /* TODO: LOGIN API WITH REQUEST CLASS */
+      navigate(Screen.Menu)
     } else {
       setErrors({
         username: no_username ? 'You have not entered your username.' :
@@ -36,29 +43,37 @@ const LogIn = () => {
           Tetris Battle Royale
         </h2>
       </div>
-      <form className={styles.stack}>
+      <form
+        onSubmit={onSubmit}
+        className={styles.stack}>
         <label>
           Username
           <span className='text-sm text-red-800'>
-            {errors.username}
+            {errors?.username}
           </span>
         </label>
         <input
           type='text'
           value={username}
           onChange={e => setUsername(e.target.value)}
+          placeholder='Username'
         />
         <label>
           Password
           <span className='text-sm text-red-800'>
-            {errors.password}
+            {errors?.password}
           </span>
         </label>
         <input
           type='password'
           value={password}
-          onChange={e => setUsername(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
+          placeholder='Password'
         />
+        <button
+          type='submit'>
+          Authenticate
+        </button>
       </form>
     </div>
   )
