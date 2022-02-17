@@ -14,7 +14,7 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 
 	if err != nil {
 		log.Printf("Error: %v", err)
-		common.TryWriteResponse(w, "Failed to retrieve login stauts")
+		common.TryWriteResponse(w, "User does not exist")
 		return
 	}
 
