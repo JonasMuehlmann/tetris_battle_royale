@@ -10,12 +10,20 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func logout(db *sqlx.DB, sessionId int) (Session, error) {
+func logout(db *sqlx.DB, w http.ResponseWriter, sessionId int) (Session, error) {
 	session := Session{}
 
-	err := db.Get(&session, "DELETE FROM sessions WHERE id = $1", sessionId)
+	res, err := db.Exec("DELETE FROM sessions WHERE id = $1", sessionId)
 
 	if err != nil {
+		common.TryWriteResponse(w, "Failed to end session")
+		return Session{}, errors.New("Failed to end session")
+	}
+
+	numDeletedSessions, _ := res.RowsAffected()
+
+	if numDeletedSessions == 0 {
+		common.TryWriteResponse(w, "Failed to end session")
 		return Session{}, errors.New("Failed to end session")
 	}
 
@@ -49,5 +57,5 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logout(db, sessionId)
+	logout(db, w, sessionId)
 }

@@ -14,7 +14,7 @@ func main() {
 
 	mux.HandleFunc("/login", handlers.LoginHandler)
 	mux.HandleFunc("/isLogin", handlers.IsLoginHandler)
-	mux.HandleFunc("/logut", handlers.LogoutHandler)
+	mux.HandleFunc("/logout", handlers.LogoutHandler)
 
 	log.Println("Starting server on Port 8080")
 
