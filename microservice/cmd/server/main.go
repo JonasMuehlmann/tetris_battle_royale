@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	handlers "microservice/api/services/user_service"
+	userService "microservice/api/services/user_service"
 	"net/http"
 )
 
@@ -11,10 +11,9 @@ func main() {
 	// by matching the endpoint (e.g. "/") to the handler
 	// This is the gateway in the microservice diagram
 	mux := http.NewServeMux()
+	userServiceMux := userService.MakeUserServiceMux()
 
-	mux.HandleFunc("/login", handlers.LoginHandler)
-	mux.HandleFunc("/isLogin", handlers.IsLoginHandler)
-	mux.HandleFunc("/logout", handlers.LogoutHandler)
+	mux.Handle("/user/", http.StripPrefix("/user", userServiceMux))
 
 	log.Println("Starting server on Port 8080")
 
