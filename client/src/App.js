@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { BackgroundCanvas } from './components/background_canvas';
 import { ScreenContext, withScreenContext } from './contexts/screen-context'
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen flex flex-col justify-center items-center">
+      <BackgroundCanvas />
       {<currentScreen.component />}
     </div>
   );
