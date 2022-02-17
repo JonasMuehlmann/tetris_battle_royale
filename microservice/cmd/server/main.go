@@ -14,6 +14,7 @@ func main() {
 	userServiceMux := userService.MakeUserServiceMux()
 
 	mux.Handle("/user/", http.StripPrefix("/user", userServiceMux))
+	mux.Handle("/", http.FileServer(http.Dir("../client/build/")))
 
 	log.Println("Starting server on Port 8080")
 
