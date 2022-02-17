@@ -8,21 +8,21 @@ const Menu = () => {
         <h3 className="text-xl opacity-50">
           Main Menu
         </h3>
+        <ul className="flex flex-col">
+          <li>
+            Matchfinder
+          </li>
+          <li>
+            Profile
+          </li>
+          <li>
+            Settings
+          </li>
+        </ul>
+        <button className="text-md opacity-50 text-left">
+          Log out
+        </button>
       </div>
-      <ul className="flex flex-col">
-        <li>
-          Matchfinder
-        </li>
-        <li>
-          Profile
-        </li>
-        <li>
-          Settings
-        </li>
-      </ul>
-      <button className="text-md opacity-50">
-        Log out
-      </button>
     </div>
   )
 }
