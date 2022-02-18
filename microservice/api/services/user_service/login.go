@@ -22,6 +22,7 @@ const (
 
 var connectionString = fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable", host, port, username, dbname)
 
+// TODO: This should be a separate endpoint
 func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string, password string) {
 	salt := generateSalt(saltLength)
 

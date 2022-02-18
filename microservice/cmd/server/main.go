@@ -13,6 +13,7 @@ func main() {
 	mux := http.NewServeMux()
 	userServiceMux := userService.MakeUserServiceMux()
 
+	// TODO: The routers can be simplified with gorilla/mux
 	mux.Handle("/user/", http.StripPrefix("/user", userServiceMux))
 	mux.Handle("/", http.FileServer(http.Dir("../client/build/")))
 
