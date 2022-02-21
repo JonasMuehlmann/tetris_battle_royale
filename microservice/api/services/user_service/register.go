@@ -57,22 +57,19 @@ func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username stri
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusBadRequest)
-	usernameParam, okUsername := r.URL.Query()["username"]
+	requestBody, err := common.UnmarshalRequestBody(r)
 
+	username, okUsername := requestBody["username"]
 	if !okUsername {
 		common.TryWriteResponse(w, "Missing username")
 		return
 	}
 
-	username := usernameParam[0]
-
-	passwordParam, okPassword := r.URL.Query()["password"]
+	password, okPassword := requestBody["password"]
 	if !okPassword {
 		common.TryWriteResponse(w, "Missing password")
 		return
 	}
-
-	password := passwordParam[0]
 
 	db, err := sqlx.Open("postgres", connectionString)
 
@@ -87,5 +84,5 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Received registration request")
-	register(db, w, r, username, password)
+	register(db, w, r, username.(string), password.(string))
 }
