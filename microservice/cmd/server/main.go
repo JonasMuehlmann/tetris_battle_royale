@@ -16,7 +16,9 @@ func main() {
 
 	// TODO: The routers can be simplified with gorilla/mux
 	mux.Handle("/", http.FileServer(http.Dir("../client/build/")))
+
 	mux.HandleFunc("/login", userService.LoginHandler)
+	mux.HandleFunc("/register", userService.RegisterHandler)
 	mux.HandleFunc("/isLogin", userService.IsLoginHandler)
 	mux.HandleFunc("/logout", userService.LogoutHandler)
 
