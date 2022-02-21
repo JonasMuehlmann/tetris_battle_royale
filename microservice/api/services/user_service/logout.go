@@ -41,23 +41,6 @@ func logout(db *sqlx.DB, w http.ResponseWriter, sessionId int) (Session, error) 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	db, err := sqlx.Open("postgres", connectionString)
-
-	if err != nil {
-		common.TryWriteResponse(w, "Invalid sessionId")
-		return
-	}
-
-	defer db.Close()
-
-	err = db.Ping()
-
-	if err != nil {
-		log.Printf("Failed to open db: %v", err)
-
-		return
-	}
-
 	userId, _ := strconv.ParseInt(vars["userId"], 10, 32)
-	logout(db, w, int(userId))
+	logout(w, int(userId))
 }

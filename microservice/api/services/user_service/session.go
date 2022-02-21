@@ -3,23 +3,17 @@ package userService
 import (
 	"errors"
 	"log"
+	"microservice/api/common"
+	"microservice/api/model"
 	"time"
-
-	"github.com/jmoiron/sqlx"
 )
 
-type Session struct {
-	ID           int       `db:"id"`
-	UserID       int       `db:"user_id"`
-	CreationTime time.Time `db:"creation_time"`
-}
-
-func createSession(db *sqlx.DB, userid int) (Session, error) {
-	user, err := getUserFromId(db, userid)
+func createSession(userid int) (model.Session, error) {
+	user, err := common.GetUserFromId(userid)
 	if err != nil {
 		log.Printf("Failed to open db: %v", err)
 
-		return Session{}, errors.New("Failed to create session")
+		return model.Session{}, errors.New("Failed to create session")
 	}
 
 	session := Session{-1, user.ID, time.Now()}
@@ -35,13 +29,13 @@ func createSession(db *sqlx.DB, userid int) (Session, error) {
 	return session, nil
 }
 
-func getSession(db *sqlx.DB, userId int) (Session, error) {
-	session := Session{}
+func getSession(userId int) (model.Session, error) {
+	session := model.Session{}
 
 	err := db.Get(&session, "SELECT * FROM sessions WHERE user_id = $1", userId)
 
 	if err != nil {
-		return Session{}, errors.New("Failed to retrieve session")
+		return model.Session{}, errors.New("Failed to retrieve session")
 	}
 
 	return session, nil

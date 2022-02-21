@@ -7,11 +7,10 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/jmoiron/sqlx"
 )
 
-func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string) {
-	user, err := getUserFromName(db, username)
+func isLoggedIn(w http.ResponseWriter, r *http.Request, username string) {
+	user, err := common.GetUserFromName(username)
 
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -19,7 +18,7 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 		return
 	}
 
-	session, err := getSession(db, user.ID)
+	session, err := common.GetSession(user.ID)
 
 	// TODO: Check if session expired
 
@@ -34,17 +33,5 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 func IsLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-
-	db, err := sqlx.Open("postgres", connectionString)
-
-	defer db.Close()
-
-	err = db.Ping()
-
-	if err != nil {
-		log.Printf("Failed to open db: %v", err)
-		return
-	}
-
-	isLoggedIn(db, w, r, vars["userId"])
+	isLoggedIn(w, r, vars["userId"])
 }

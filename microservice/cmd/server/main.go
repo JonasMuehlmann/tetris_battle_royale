@@ -14,7 +14,6 @@ func main() {
 	// This is the gateway in the microservice diagram
 	mux := mux.NewRouter()
 
-	// TODO: The routers can be simplified with gorilla/mux
 	mux.Handle("/", http.FileServer(http.Dir("../client/build/")))
 
 	// NOTE: The api gateay should contain a prefix user/, which is stripped before forwarding

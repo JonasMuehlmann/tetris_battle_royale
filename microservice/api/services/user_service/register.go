@@ -5,16 +5,14 @@ import (
 	"microservice/api/common"
 	"net/http"
 	"strconv"
-
-	"github.com/jmoiron/sqlx"
 )
 
-func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username string, password string) {
+func register(w http.ResponseWriter, r *http.Request, username string, password string) {
 	salt := generateSalt(saltLength)
 
 	passwordHash := hashPw([]byte(password), salt)
 
-	_, err := getUserFromName(db, username)
+	_, err := common.GetUserFromName(username)
 
 	if err == nil {
 		log.Printf("Error: %v", err)
@@ -41,7 +39,7 @@ func register(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username stri
 		return
 	}
 
-	session, err := createSession(db, userId)
+	session, err := common.CreateSession(userId)
 
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -71,18 +69,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := sqlx.Open("postgres", connectionString)
-
-	defer db.Close()
-
-	err = db.Ping()
-
-	if err != nil {
-		log.Printf("Failed to open db: %v", err)
-
-		return
-	}
-
 	log.Println("Received registration request")
-	register(db, w, r, username.(string), password.(string))
+	register(w, r, username.(string), password.(string))
 }
