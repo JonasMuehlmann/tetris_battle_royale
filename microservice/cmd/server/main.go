@@ -17,10 +17,11 @@ func main() {
 	// TODO: The routers can be simplified with gorilla/mux
 	mux.Handle("/", http.FileServer(http.Dir("../client/build/")))
 
+	// NOTE: The api gateay should contain a prefix user/, which is stripped before forwarding
 	mux.HandleFunc("/login", userService.LoginHandler).Methods("POST")
 	mux.HandleFunc("/register", userService.RegisterHandler).Methods("POST")
-	mux.HandleFunc("/isLogin{userId:[0-9]+}", userService.IsLoginHandler).Methods("GET")
-	mux.HandleFunc("/logout{userId:[0-9]+}", userService.LogoutHandler).Methods("DELETE")
+	mux.HandleFunc("/isLogin/{userId:[0-9]+}", userService.IsLoginHandler).Methods("GET")
+	mux.HandleFunc("/logout/{userId:[0-9]+}", userService.LogoutHandler).Methods("DELETE")
 
 	log.Println("Starting server on Port 8080")
 	log.Fatalf("server failed to start: %v", http.ListenAndServe(":8080", mux))

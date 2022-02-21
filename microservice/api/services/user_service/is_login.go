@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -31,14 +32,8 @@ func isLoggedIn(db *sqlx.DB, w http.ResponseWriter, r *http.Request, username st
 }
 
 func IsLoginHandler(w http.ResponseWriter, r *http.Request) {
-	usernameParam, okUsername := r.URL.Query()["username"]
 
-	if !okUsername {
-		common.TryWriteResponse(w, "Missing username")
-		return
-	}
-
-	username := usernameParam[0]
+	vars := mux.Vars(r)
 
 	db, err := sqlx.Open("postgres", connectionString)
 
@@ -51,5 +46,5 @@ func IsLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isLoggedIn(db, w, r, username)
+	isLoggedIn(db, w, r, vars["userId"])
 }

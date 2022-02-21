@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -38,14 +39,7 @@ func logout(db *sqlx.DB, w http.ResponseWriter, sessionId int) (Session, error) 
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	sessionIdParam, okSessionId := r.URL.Query()["sessionId"]
-
-	if !okSessionId {
-		common.TryWriteResponse(w, "Missing sessionId")
-		return
-	}
-
-	sessionId, err := strconv.Atoi(sessionIdParam[0])
+	vars := mux.Vars(r)
 
 	db, err := sqlx.Open("postgres", connectionString)
 
@@ -64,5 +58,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logout(db, w, sessionId)
+	userId, _ := strconv.ParseInt(vars["userId"], 10, 32)
+	logout(db, w, int(userId))
 }
