@@ -11,13 +11,13 @@ import (
 )
 
 type UserServiceRestAdapter struct {
-	service drivingPorts.UserServicePort
+	Service drivingPorts.UserServicePort
 }
 
-func (adapter *UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	sessionId, err := adapter.service.IsLoggedIn(vars["userID"])
+	sessionId, err := adapter.Service.IsLoggedIn(vars["userID"])
 	if err != nil {
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, err.Error())
@@ -26,7 +26,7 @@ func (adapter *UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *
 	}
 }
 
-func (adapter *UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusBadRequest)
 	requestBody, _ := common.UnmarshalRequestBody(r)
 
@@ -44,7 +44,7 @@ func (adapter *UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	sessionID, err := adapter.service.Login(username.(string), password.(string))
+	sessionID, err := adapter.Service.Login(username.(string), password.(string))
 	if err != nil {
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, err.Error())
@@ -53,12 +53,12 @@ func (adapter *UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *ht
 	common.TryWriteResponse(w, "User logged in with session ID "+strconv.FormatInt(int64(sessionID), 10))
 }
 
-func (adapter *UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	userID, _ := strconv.ParseInt(vars["userID"], 10, 32)
 
-	err := adapter.service.Logout(int(userID))
+	err := adapter.Service.Logout(int(userID))
 	if err != nil {
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, err.Error())
@@ -67,7 +67,7 @@ func (adapter *UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *h
 	common.TryWriteResponse(w, "User logged out")
 }
 
-func (adapter *UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusBadRequest)
 	requestBody, _ := common.UnmarshalRequestBody(r)
 
@@ -86,10 +86,10 @@ func (adapter *UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r 
 	}
 
 	log.Println("Received registration request")
-	adapter.service.Register(username.(string), password.(string))
+	adapter.Service.Register(username.(string), password.(string))
 }
 
-func (adapter *UserServiceRestAdapter) Run() {
+func (adapter UserServiceRestAdapter) Run() {
 	mux := mux.NewRouter()
 
 	mux.Handle("/", http.FileServer(http.Dir("../client/build/")))
