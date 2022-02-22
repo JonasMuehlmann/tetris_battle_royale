@@ -1,6 +1,7 @@
 package main
 
 import (
+	drivingAdapters "microservice/internal/driving_adapters/rest"
 	repository "microservice/internal/repository/postgres"
 	userService "microservice/internal/services/user_service"
 )
