@@ -1,1 +1,1 @@
-We could use sqlite for temporary, client-side storage.
+We could use SQLite for (temporary) client-side storage for example to save bandwidth or save settings.
