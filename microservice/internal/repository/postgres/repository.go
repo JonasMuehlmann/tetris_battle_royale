@@ -14,16 +14,16 @@ type PostgresDatabase struct {
 	DBName   string
 }
 
-func MakePostgresDB(host string, port int, username string, dbName string) PostgresDatabase {
-	return PostgresDatabase{
+func MakePostgresDB(host string, port int, username string, dbName string) *PostgresDatabase {
+	return &PostgresDatabase{
 		Host:     host,
 		Port:     port,
 		Username: username,
 		DBName:   dbName}
 }
 
-func MakeDefaultPostgresDB() PostgresDatabase {
-	return PostgresDatabase{
+func MakeDefaultPostgresDB() *PostgresDatabase {
+	return &PostgresDatabase{
 		Host:     "localhost",
 		Port:     5432,
 		Username: "postgres",
