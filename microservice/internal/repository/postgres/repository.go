@@ -15,15 +15,27 @@ type PostgresDatabase struct {
 }
 
 func MakePostgresDB(host string, port int, username string, dbName string) PostgresDatabase {
-	return PostgresDatabase{Host: host, Port: port, Username: username, DBName: dbName}
+	return PostgresDatabase{
+		Host:     host,
+		Port:     port,
+		Username: username,
+		DBName:   dbName}
 }
 
 func MakeDefaultPostgresDB() PostgresDatabase {
-	return PostgresDatabase{Host: "localhost", Port: 5432, Username: "postgres", DBName: "prod"}
+	return PostgresDatabase{
+		Host:     "localhost",
+		Port:     5432,
+		Username: "postgres",
+		DBName:   "prod"}
 }
 
 func (dbImpl *PostgresDatabase) MakeConnectionString() string {
-	return fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable", dbImpl.Host, dbImpl.Port, dbImpl.Username, dbImpl.DBName)
+	return fmt.Sprintf("host=%s port=%d user=%s dbname=%s sslmode=disable",
+		dbImpl.Host,
+		dbImpl.Port,
+		dbImpl.Username,
+		dbImpl.DBName)
 }
 
 func (dbImpl *PostgresDatabase) GetConnection() (*sqlx.DB, error) {
