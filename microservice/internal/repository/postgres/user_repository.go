@@ -16,6 +16,8 @@ func (repo PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.Use
 		return domain.User{}, nil
 	}
 
+	defer db.Close()
+
 	err = db.Get(&user, "SELECT * FROM users WHERE ID = $1", userID)
 	if err != nil {
 		return user, err
@@ -32,6 +34,8 @@ func (repo PostgresDatabaseUserRepository) GetUserFromName(username string) (dom
 		return user, err
 	}
 
+	defer db.Close()
+
 	err = db.Get(&user, "SELECT * FROM users WHERE username = $1", username)
 	if err != nil {
 		return user, err
@@ -47,6 +51,9 @@ func (repo PostgresDatabaseUserRepository) Register(username, password, salt str
 	if err != nil {
 		return 0, err
 	}
+
+	defer db.Close()
+
 	err = db.QueryRow("INSERT INTO users(username, pw_hash, salt) VALUES($1, $2, $3) RETURNING ID", username, string(password), string(salt)).Scan(&userID)
 	if err != nil {
 		return 0, err

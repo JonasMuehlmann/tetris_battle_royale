@@ -40,9 +40,11 @@ func (dbImpl *PostgresDatabase) MakeConnectionString() string {
 
 func (dbImpl *PostgresDatabase) GetConnection() (*sqlx.DB, error) {
 	db, err := sqlx.Open(dbImpl.DBName, dbImpl.MakeConnectionString())
+	if err != nil {
+		return nil, errors.New("Failed to open db: " + err.Error())
+	}
 
 	err = db.Ping()
-
 	if err != nil {
 		return nil, errors.New("Failed to open db: " + err.Error())
 	}
