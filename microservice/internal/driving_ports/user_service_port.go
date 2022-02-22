@@ -1,8 +1,8 @@
 package drivingPorts
 
-type UserServicePorts interface {
-	Register(username string, password string)
-	Login(username string, password string)
-	Logout(sessionID int)
-	IsLoggedIn(username string)
+type UserServicePort interface {
+	IsLoggedIn(username string) (int, error)
+	Login(username string, password string) (int, error)
+	Logout(sessionID int) error
+	Register(username string, password string) (int, error)
 }
