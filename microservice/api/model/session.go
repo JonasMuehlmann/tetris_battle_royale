@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Session struct {
-	ID           int       `db:"id"`
-	UserID       int       `db:"user_id"`
+	ID           int       `db:"ID"`
+	UserID       int       `db:"user_ID"`
 	CreationTime time.Time `db:"creation_time"`
 }

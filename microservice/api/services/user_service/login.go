@@ -6,8 +6,6 @@ import (
 	"log"
 	"microservice/api/common"
 	"net/http"
-
-	_ "github.com/lib/pq"
 )
 
 func login(w http.ResponseWriter, r *http.Request, username string, password string) {
@@ -29,11 +27,11 @@ func login(w http.ResponseWriter, r *http.Request, username string, password str
 	inputHash := hashPw([]byte(password), salt)
 
 	if bytes.Compare(inputHash, passwordHash) != 0 {
-		common.TryWriteResponse(w, "Invalid username or password")
+		common.TryWriteResponse(w, "InvalID username or password")
 		return
 	}
 
-	session, err := common.CreateSession(user.ID)
+	sessionID, err := common.CreateSession(user.ID)
 
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -46,7 +44,7 @@ func login(w http.ResponseWriter, r *http.Request, username string, password str
 
 	var sessionIDEnc []byte
 
-	binary.LittleEndian.PutUint32(sessionIDEnc, uint32(session.ID))
+	binary.LittleEndian.PutUint32(sessionIDEnc, uint32(sessionID))
 
 	common.TryWriteResponse(w, string(sessionIDEnc))
 }

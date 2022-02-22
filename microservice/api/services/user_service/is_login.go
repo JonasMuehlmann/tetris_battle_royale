@@ -26,12 +26,12 @@ func isLoggedIn(w http.ResponseWriter, r *http.Request, username string) {
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, "User not logged in")
 	} else {
-		common.TryWriteResponse(w, "User logged in with id "+strconv.FormatInt(int64(session.ID), 10))
+		common.TryWriteResponse(w, "User logged in with ID "+strconv.FormatInt(int64(session.ID), 10))
 	}
 }
 
 func IsLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	isLoggedIn(w, r, vars["userId"])
+	isLoggedIn(w, r, vars["userID"])
 }

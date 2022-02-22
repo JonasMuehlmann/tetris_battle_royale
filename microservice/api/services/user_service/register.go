@@ -22,8 +22,7 @@ func register(w http.ResponseWriter, r *http.Request, username string, password 
 
 	log.Println("Created new password salt")
 
-	var userId int
-	err = db.QueryRow("INSERT INTO users(username, pw_hash, salt) VALUES($1, $2, $3) RETURNING id", username, string(passwordHash), string(salt)).Scan(&userId)
+	userID, err := common.Register(username, string(passwordHash), string(salt))
 
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -33,13 +32,7 @@ func register(w http.ResponseWriter, r *http.Request, username string, password 
 
 	log.Printf("Created new user")
 
-	if err != nil {
-		log.Printf("Error: %v", err)
-		common.TryWriteResponse(w, "Failed to create account")
-		return
-	}
-
-	session, err := common.CreateSession(userId)
+	sessionID, err := common.CreateSession(userID)
 
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -50,7 +43,7 @@ func register(w http.ResponseWriter, r *http.Request, username string, password 
 	// Not needed, but better be explicit!
 	w.Header().Set("Content-Type", "text/plain; charset")
 
-	common.TryWriteResponse(w, strconv.Itoa(session.ID))
+	common.TryWriteResponse(w, strconv.Itoa(sessionID))
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {

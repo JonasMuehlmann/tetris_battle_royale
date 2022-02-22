@@ -1,46 +1,28 @@
 package userService
 
 import (
-	"errors"
 	"log"
 	"microservice/api/common"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/jmoiron/sqlx"
 )
 
-func logout(db *sqlx.DB, w http.ResponseWriter, sessionId int) (Session, error) {
-	session := Session{}
+func logout(w http.ResponseWriter, sessionID int) {
 
-	res, err := db.Exec("DELETE FROM sessions WHERE id = $1", sessionId)
-
+	err := common.DeleteSession(sessionID)
 	if err != nil {
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, "Failed to end session")
-		return Session{}, errors.New("Failed to end session")
-	}
-
-	numDeletedSessions, err := res.RowsAffected()
-	if err != nil {
-		log.Printf("Error: %v", err)
-		common.TryWriteResponse(w, "The given session does not exist")
-		return Session{}, errors.New("The given session does not exist")
-	}
-
-	if numDeletedSessions == 0 {
-		common.TryWriteResponse(w, "The given session does not exist")
-		return Session{}, errors.New("The given session does not exist")
 	}
 
 	common.TryWriteResponse(w, "Successfully ended session")
-	return session, nil
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	userId, _ := strconv.ParseInt(vars["userId"], 10, 32)
-	logout(w, int(userId))
+	userID, _ := strconv.ParseInt(vars["userID"], 10, 32)
+	logout(w, int(userID))
 }
