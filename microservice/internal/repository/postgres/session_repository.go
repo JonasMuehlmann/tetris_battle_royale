@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"log"
-	"microservice/api/model"
+	"microservice/internal/domain"
 	"time"
 )
 
@@ -13,10 +13,10 @@ type PostgresDatabaseSessionRepository struct {
 
 func (repo *PostgresDatabaseUserRepository) CreateSession(userID int) (int, error) {
 
-	user, err := GetUserFromID(userID)
+	user, err := repo.GetUserFromID(userID)
 	session := domain.Session{ID: -1, UserID: user.ID, CreationTime: time.Now()}
 
-	db, err := repo.GetDBConnection()
+	db, err := repo.GetConnection()
 	if err != nil {
 		return 0, err
 	}
@@ -34,7 +34,7 @@ func (repo *PostgresDatabaseUserRepository) CreateSession(userID int) (int, erro
 func (repo *PostgresDatabaseUserRepository) GetSession(userID int) (domain.Session, error) {
 	session := domain.Session{}
 
-	db, err := repo.GetDBConnection()
+	db, err := repo.GetConnection()
 	if err != nil {
 		return session, err
 	}
@@ -48,7 +48,7 @@ func (repo *PostgresDatabaseUserRepository) GetSession(userID int) (domain.Sessi
 }
 
 func (repo *PostgresDatabaseUserRepository) DeleteSession(sessionID int) error {
-	db, err := repo.GetDBConnection()
+	db, err := repo.GetConnection()
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,7 @@ type PostgresDatabaseUserRepository struct {
 func (repo *PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.User, error) {
 	user := domain.User{}
 
-	db, err := repo.GetDBConnection()
+	db, err := repo.GetConnection()
 	if err != nil {
 		return domain.User{}, nil
 	}
@@ -27,7 +27,7 @@ func (repo *PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.Us
 func (repo *PostgresDatabaseUserRepository) GetUserFromName(username string) (domain.User, error) {
 	user := domain.User{}
 
-	db, err := repo.GetDBConnection()
+	db, err := repo.GetConnection()
 	if err != nil {
 		return user, err
 	}
@@ -43,7 +43,7 @@ func (repo *PostgresDatabaseUserRepository) GetUserFromName(username string) (do
 func (repo *PostgresDatabaseUserRepository) Register(username, password, salt string) (int, error) {
 	var userID int
 
-	db, err := repo.GetDBConnection()
+	db, err := repo.GetConnection()
 	if err != nil {
 		return 0, err
 	}
