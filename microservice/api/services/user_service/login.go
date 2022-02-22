@@ -51,7 +51,7 @@ func login(w http.ResponseWriter, r *http.Request, username string, password str
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// w.WriteHeader(http.StatusBadRequest)
-	requestBody, err := common.UnmarshalRequestBody(r)
+	requestBody, _ := common.UnmarshalRequestBody(r)
 
 	username, okUsername := requestBody["username"]
 	if !okUsername {
