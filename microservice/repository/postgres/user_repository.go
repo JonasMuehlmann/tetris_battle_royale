@@ -1,5 +1,7 @@
-package repository
+package adapters
 
-type UserRepository interface {
-	RegisterUser(username, password, salt string) error
+type PostgresDatabaseRepository struct {
+}
+
+func (db *PostgresDatabaseRepository) RegisterUser(username, password, salt string) error {
 }
