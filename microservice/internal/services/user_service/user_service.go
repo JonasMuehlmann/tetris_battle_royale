@@ -14,7 +14,7 @@ type UserService struct {
 	SessionRepo drivenPorts.SessionPort
 }
 
-func (service *UserService) IsLoggedIn(username string) (int, error) {
+func (service UserService) IsLoggedIn(username string) (int, error) {
 	user, err := service.UserRepo.GetUserFromName(username)
 	if err != nil {
 		return 0, errors.New("User does not exist")
@@ -29,7 +29,7 @@ func (service *UserService) IsLoggedIn(username string) (int, error) {
 	return session.ID, nil
 }
 
-func (service *UserService) Login(username string, password string) (int, error) {
+func (service UserService) Login(username string, password string) (int, error) {
 	var passwordHash []byte
 	var salt []byte
 
@@ -56,7 +56,7 @@ func (service *UserService) Login(username string, password string) (int, error)
 	return sessionID, nil
 }
 
-func (service *UserService) Logout(sessionID int) error {
+func (service UserService) Logout(sessionID int) error {
 
 	err := service.SessionRepo.DeleteSession(sessionID)
 	if err != nil {
@@ -67,7 +67,7 @@ func (service *UserService) Logout(sessionID int) error {
 	return nil
 }
 
-func (service *UserService) Register(username string, password string) (int, error) {
+func (service UserService) Register(username string, password string) (int, error) {
 	salt := generateSalt(saltLength)
 
 	passwordHash := hashPw([]byte(password), salt)
@@ -97,7 +97,7 @@ func (service *UserService) Register(username string, password string) (int, err
 	return 0, errors.New(strconv.Itoa(sessionID))
 }
 
-func (service *UserService) CreateSession(userID int) (domain.Session, error) {
+func (service UserService) CreateSession(userID int) (domain.Session, error) {
 
 	session, err := service.SessionRepo.GetSession(userID)
 	if err != nil {
