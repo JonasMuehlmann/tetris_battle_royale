@@ -8,7 +8,7 @@ type PostgresDatabaseUserRepository struct {
 	PostgresDatabase
 }
 
-func (repo *PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.User, error) {
+func (repo PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.User, error) {
 	user := domain.User{}
 
 	db, err := repo.GetConnection()
@@ -24,7 +24,7 @@ func (repo *PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.Us
 	return user, nil
 }
 
-func (repo *PostgresDatabaseUserRepository) GetUserFromName(username string) (domain.User, error) {
+func (repo PostgresDatabaseUserRepository) GetUserFromName(username string) (domain.User, error) {
 	user := domain.User{}
 
 	db, err := repo.GetConnection()
@@ -40,7 +40,7 @@ func (repo *PostgresDatabaseUserRepository) GetUserFromName(username string) (do
 	return user, nil
 }
 
-func (repo *PostgresDatabaseUserRepository) Register(username, password, salt string) (int, error) {
+func (repo PostgresDatabaseUserRepository) Register(username, password, salt string) (int, error) {
 	var userID int
 
 	db, err := repo.GetConnection()
