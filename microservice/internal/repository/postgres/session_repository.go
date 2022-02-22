@@ -14,7 +14,7 @@ type PostgresDatabaseSessionRepository struct {
 func (repo *PostgresDatabaseUserRepository) CreateSession(userID int) (int, error) {
 
 	user, err := GetUserFromID(userID)
-	session := model.Session{ID: -1, UserID: user.ID, CreationTime: time.Now()}
+	session := domain.Session{ID: -1, UserID: user.ID, CreationTime: time.Now()}
 
 	db, err := repo.GetDBConnection()
 	if err != nil {
@@ -31,8 +31,8 @@ func (repo *PostgresDatabaseUserRepository) CreateSession(userID int) (int, erro
 	return session.ID, nil
 }
 
-func (repo *PostgresDatabaseUserRepository) GetSession(userID int) (model.Session, error) {
-	session := model.Session{}
+func (repo *PostgresDatabaseUserRepository) GetSession(userID int) (domain.Session, error) {
+	session := domain.Session{}
 
 	db, err := repo.GetDBConnection()
 	if err != nil {
@@ -41,7 +41,7 @@ func (repo *PostgresDatabaseUserRepository) GetSession(userID int) (model.Sessio
 
 	err = db.Get(&session, "SELECT * FROM sessions WHERE user_ID = $1", userID)
 	if err != nil {
-		return model.Session{}, errors.New("Failed to retrieve session")
+		return domain.Session{}, errors.New("Failed to retrieve session")
 	}
 
 	return session, nil

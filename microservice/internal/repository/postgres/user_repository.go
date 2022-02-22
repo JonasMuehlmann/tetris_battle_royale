@@ -1,19 +1,19 @@
 package repository
 
 import (
-	"microservice/api/model"
+	"microservice/internal/domain"
 )
 
 type PostgresDatabaseUserRepository struct {
 	PostgresDatabase
 }
 
-func (repo *PostgresDatabaseUserRepository) GetUserFromID(userID int) (model.User, error) {
-	user := model.User{}
+func (repo *PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.User, error) {
+	user := domain.User{}
 
 	db, err := repo.GetDBConnection()
 	if err != nil {
-		return model.User{}, nil
+		return domain.User{}, nil
 	}
 
 	err = db.Get(&user, "SELECT * FROM users WHERE ID = $1", userID)
@@ -24,8 +24,8 @@ func (repo *PostgresDatabaseUserRepository) GetUserFromID(userID int) (model.Use
 	return user, nil
 }
 
-func (repo *PostgresDatabaseUserRepository) GetUserFromName(username string) (model.User, error) {
-	user := model.User{}
+func (repo *PostgresDatabaseUserRepository) GetUserFromName(username string) (domain.User, error) {
+	user := domain.User{}
 
 	db, err := repo.GetDBConnection()
 	if err != nil {
