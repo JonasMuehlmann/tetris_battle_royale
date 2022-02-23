@@ -18,12 +18,12 @@ type UserServiceRestAdapter struct {
 func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	sessionId, err := adapter.Service.IsLoggedIn(vars["userID"])
+	sessionId, err := adapter.Service.IsLoggedIn(vars["username"])
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		common.TryWriteResponse(w, err.Error())
 	} else {
-		common.TryWriteResponse(w, "User logged in with ID "+strconv.FormatInt(int64(sessionId), 10))
+		common.TryWriteResponse(w, "User logged in with session ID "+strconv.FormatInt(int64(sessionId), 10))
 	}
 }
 
@@ -55,9 +55,16 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 }
 
 func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+	requestBody, _ := common.UnmarshalRequestBody(r)
 
-	userID, _ := strconv.ParseInt(vars["userID"], 10, 32)
+	sessionID, okSessionID := requestBody["sessionId"]
+	if !okSessionID {
+		common.TryWriteResponse(w, "Missing username")
+
+		return
+	}
+
+	userID, _ := strconv.ParseInt(sessionID.(string), 10, 32)
 
 	err := adapter.Service.Logout(int(userID))
 	if err != nil {
@@ -87,12 +94,14 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 	}
 
 	adapter.Logger.Println("Received registration request")
-	_, err := adapter.Service.Register(username.(string), password.(string))
+	userID, err := adapter.Service.Register(username.(string), password.(string))
 
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		common.TryWriteResponse(w, "Failed to register")
 	}
+
+	common.TryWriteResponse(w, strconv.Itoa(userID))
 }
 
 func (adapter UserServiceRestAdapter) Run() {
@@ -103,8 +112,8 @@ func (adapter UserServiceRestAdapter) Run() {
 	// NOTE: The api gateay should contain a prefix user/, which is stripped before forwarding
 	mux.HandleFunc("/login", adapter.LoginHandler).Methods("POST")
 	mux.HandleFunc("/register", adapter.RegisterHandler).Methods("POST")
-	mux.HandleFunc("/isLogin/{userId:[0-9]+}", adapter.IsLoginHandler).Methods("GET")
-	mux.HandleFunc("/logout/{userId:[0-9]+}", adapter.LogoutHandler).Methods("DELETE")
+	mux.HandleFunc("/isLogin/{username:[a-zA-Z0-9]+}", adapter.IsLoginHandler).Methods("GET")
+	mux.HandleFunc("/logout", adapter.LogoutHandler).Methods("DELETE")
 
 	adapter.Logger.Println("Starting server on Port 8080")
 	log.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))

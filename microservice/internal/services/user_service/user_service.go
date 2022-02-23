@@ -7,7 +7,6 @@ import (
 	"log"
 	"microservice/internal/domain"
 	drivenPorts "microservice/internal/driven_ports"
-	"strconv"
 )
 
 type UserService struct {
@@ -72,6 +71,7 @@ func (service UserService) Login(username string, password string) (int, error) 
 	if err != nil {
 		session, _ := service.SessionRepo.GetSession(user.ID)
 		sessionID = session.ID
+		service.Logger.Printf("Found existing session with id %v, it will be reused", sessionID)
 	}
 
 	service.Logger.Printf("Successfully logged in user %v\n", username)
@@ -80,7 +80,6 @@ func (service UserService) Login(username string, password string) (int, error) 
 }
 
 func (service UserService) Logout(sessionID int) error {
-
 	err := service.SessionRepo.DeleteSession(sessionID)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: Failed to end session with id %v", sessionID)
@@ -129,7 +128,7 @@ func (service UserService) Register(username string, password string) (int, erro
 		return 0, errors.New(errorMessage)
 	}
 
-	return 0, errors.New(strconv.Itoa(sessionID))
+	return sessionID, nil
 }
 
 func (service UserService) CreateSession(userID int) (domain.Session, error) {
