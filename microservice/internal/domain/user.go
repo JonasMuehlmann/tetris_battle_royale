@@ -1,7 +1,7 @@
 package domain
 
 type User struct {
-	ID       int    `db:"ID"`
+	ID       int    `db:"id"`
 	Username string `db:"username"`
 	PwHash   string `db:"pw_hash"`
 	Salt     string `db:"salt"`
