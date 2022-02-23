@@ -9,6 +9,7 @@ import (
 
 type PostgresDatabaseSessionRepository struct {
 	PostgresDatabase
+	Logger *log.Logger
 }
 
 func (repo PostgresDatabaseSessionRepository) CreateSession(userID int) (int, error) {

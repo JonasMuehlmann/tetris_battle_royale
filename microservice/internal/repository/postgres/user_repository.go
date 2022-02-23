@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"log"
 	"microservice/internal/domain"
 )
 
 type PostgresDatabaseUserRepository struct {
 	PostgresDatabase
+	Logger *log.Logger
 }
 
 func (repo PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.User, error) {

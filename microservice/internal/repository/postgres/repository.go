@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -13,22 +14,26 @@ type PostgresDatabase struct {
 	Port     int
 	Username string
 	DBName   string
+	Logger   *log.Logger
 }
 
-func MakePostgresDB(host string, port int, username string, dbName string) *PostgresDatabase {
+func MakePostgresDB(host string, port int, username string, dbName string, logger *log.Logger) *PostgresDatabase {
 	return &PostgresDatabase{
 		Host:     host,
 		Port:     port,
 		Username: username,
-		DBName:   dbName}
+		DBName:   dbName,
+		Logger:   logger}
 }
 
-func MakeDefaultPostgresDB() *PostgresDatabase {
+func MakeDefaultPostgresDB(logger *log.Logger) *PostgresDatabase {
 	return &PostgresDatabase{
 		Host:     "localhost",
 		Port:     5432,
 		Username: "postgres",
-		DBName:   "prod"}
+		DBName:   "prod",
+		Logger:   logger,
+	}
 }
 
 func (dbImpl *PostgresDatabase) MakeConnectionString() string {
@@ -42,13 +47,21 @@ func (dbImpl *PostgresDatabase) MakeConnectionString() string {
 func (dbImpl *PostgresDatabase) GetConnection() (*sqlx.DB, error) {
 	db, err := sqlx.Open("postgres", dbImpl.MakeConnectionString())
 	if err != nil {
-		return nil, errors.New("Failed to open db: " + err.Error())
+		errorMessage := fmt.Sprintf("Failed to open db: %v", err)
+		dbImpl.Logger.Println(errorMessage)
+
+		return nil, errors.New(errorMessage)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		return nil, errors.New("Failed to open db: " + err.Error())
+		errorMessage := fmt.Sprintf("Failed to open db: %v", err)
+		dbImpl.Logger.Println(errorMessage)
+
+		return nil, errors.New(errorMessage)
 	}
+
+	dbImpl.Logger.Println("Successfully opened db connection")
 
 	return db, nil
 }

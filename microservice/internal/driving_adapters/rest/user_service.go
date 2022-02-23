@@ -12,6 +12,7 @@ import (
 
 type UserServiceRestAdapter struct {
 	Service drivingPorts.UserServicePort
+	Logger  *log.Logger
 }
 
 func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +20,7 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 
 	sessionId, err := adapter.Service.IsLoggedIn(vars["userID"])
 	if err != nil {
-		log.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v", err)
 		common.TryWriteResponse(w, err.Error())
 	} else {
 		common.TryWriteResponse(w, "User logged in with ID "+strconv.FormatInt(int64(sessionId), 10))
@@ -46,7 +47,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 
 	sessionID, err := adapter.Service.Login(username.(string), password.(string))
 	if err != nil {
-		log.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v", err)
 		common.TryWriteResponse(w, err.Error())
 	}
 
@@ -60,7 +61,7 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 
 	err := adapter.Service.Logout(int(userID))
 	if err != nil {
-		log.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v", err)
 		common.TryWriteResponse(w, err.Error())
 	}
 
@@ -85,8 +86,13 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	log.Println("Received registration request")
-	adapter.Service.Register(username.(string), password.(string))
+	adapter.Logger.Println("Received registration request")
+	_, err := adapter.Service.Register(username.(string), password.(string))
+
+	if err != nil {
+		adapter.Logger.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "Failed to register")
+	}
 }
 
 func (adapter UserServiceRestAdapter) Run() {
@@ -100,6 +106,6 @@ func (adapter UserServiceRestAdapter) Run() {
 	mux.HandleFunc("/isLogin/{userId:[0-9]+}", adapter.IsLoginHandler).Methods("GET")
 	mux.HandleFunc("/logout/{userId:[0-9]+}", adapter.LogoutHandler).Methods("DELETE")
 
-	log.Println("Starting server on Port 8080")
-	log.Fatalf("server failed to start: %v", http.ListenAndServe(":8080", mux))
+	adapter.Logger.Println("Starting server on Port 8080")
+	log.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
 }
