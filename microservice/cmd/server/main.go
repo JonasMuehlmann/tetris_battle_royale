@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
+	repository2 "microservice/internal/core/repository/postgres"
+	userService2 "microservice/internal/core/services/user_service"
 	drivingAdapters "microservice/internal/driving_adapters/rest"
-	repository "microservice/internal/repository/postgres"
-	userService "microservice/internal/services/user_service"
 	"os"
 )
 
@@ -16,10 +16,10 @@ func main() {
 	logger := log.New(os.Stdout, "TBR - ", log.Ltime|log.Lshortfile)
 
 	// TODO: Set correct response codes
-	db := repository.MakeDefaultPostgresDB(logger)
-	userRepository := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
-	sessionRepository := repository.PostgresDatabaseSessionRepository{Logger: logger, PostgresDatabase: *db}
-	userService := userService.UserService{Logger: logger, UserRepo: userRepository, SessionRepo: sessionRepository}
+	db := repository2.MakeDefaultPostgresDB(logger)
+	userRepository := repository2.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
+	sessionRepository := repository2.PostgresDatabaseSessionRepository{Logger: logger, PostgresDatabase: *db}
+	userService := userService2.UserService{Logger: logger, UserRepo: userRepository, SessionRepo: sessionRepository}
 	userServiceAdapter := drivingAdapters.UserServiceRestAdapter{Logger: logger, Service: userService}
 	userServiceAdapter.Run()
 }

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"microservice/internal/domain"
-	drivenPorts "microservice/internal/driven_ports"
+	drivenPorts "microservice/internal/core/driven_ports"
+	types "microservice/internal/core/types"
 )
 
 type UserService struct {
@@ -131,11 +131,11 @@ func (service UserService) Register(username string, password string) (int, erro
 	return sessionID, nil
 }
 
-func (service UserService) CreateSession(userID int) (domain.Session, error) {
+func (service UserService) CreateSession(userID int) (types.Session, error) {
 
 	session, err := service.SessionRepo.GetSession(userID)
 	if err != nil {
-		return domain.Session{}, nil
+		return types.Session{}, nil
 	}
 
 	service.Logger.Printf("Successfully created new session for user with id %v\n", userID)
@@ -143,6 +143,6 @@ func (service UserService) CreateSession(userID int) (domain.Session, error) {
 	return session, nil
 }
 
-func (service *UserService) GetSession(userID int) (domain.Session, error) {
+func (service *UserService) GetSession(userID int) (types.Session, error) {
 	return service.SessionRepo.GetSession(userID)
 }

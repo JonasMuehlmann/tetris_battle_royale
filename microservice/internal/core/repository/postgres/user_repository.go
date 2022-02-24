@@ -2,7 +2,7 @@ package repository
 
 import (
 	"log"
-	"microservice/internal/domain"
+	types "microservice/internal/core/types"
 )
 
 type PostgresDatabaseUserRepository struct {
@@ -10,12 +10,12 @@ type PostgresDatabaseUserRepository struct {
 	Logger *log.Logger
 }
 
-func (repo PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.User, error) {
-	user := domain.User{}
+func (repo PostgresDatabaseUserRepository) GetUserFromID(userID int) (types.User, error) {
+	user := types.User{}
 
 	db, err := repo.GetConnection()
 	if err != nil {
-		return domain.User{}, nil
+		return types.User{}, nil
 	}
 
 	defer db.Close()
@@ -28,8 +28,8 @@ func (repo PostgresDatabaseUserRepository) GetUserFromID(userID int) (domain.Use
 	return user, nil
 }
 
-func (repo PostgresDatabaseUserRepository) GetUserFromName(username string) (domain.User, error) {
-	user := domain.User{}
+func (repo PostgresDatabaseUserRepository) GetUserFromName(username string) (types.User, error) {
+	user := types.User{}
 
 	db, err := repo.GetConnection()
 	if err != nil {

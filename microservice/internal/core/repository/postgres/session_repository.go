@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"log"
-	"microservice/internal/domain"
+	types "microservice/internal/core/types"
 	"time"
 )
 
@@ -14,7 +14,7 @@ type PostgresDatabaseSessionRepository struct {
 
 func (repo PostgresDatabaseSessionRepository) CreateSession(userID int) (int, error) {
 
-	session := domain.Session{ID: -1, UserID: userID, CreationTime: time.Now()}
+	session := types.Session{ID: -1, UserID: userID, CreationTime: time.Now()}
 
 	db, err := repo.GetConnection()
 
@@ -34,8 +34,8 @@ func (repo PostgresDatabaseSessionRepository) CreateSession(userID int) (int, er
 	return session.ID, nil
 }
 
-func (repo PostgresDatabaseSessionRepository) GetSession(userID int) (domain.Session, error) {
-	session := domain.Session{}
+func (repo PostgresDatabaseSessionRepository) GetSession(userID int) (types.Session, error) {
+	session := types.Session{}
 
 	db, err := repo.GetConnection()
 
@@ -47,7 +47,7 @@ func (repo PostgresDatabaseSessionRepository) GetSession(userID int) (domain.Ses
 
 	err = db.Get(&session, "SELECT * FROM sessions WHERE user_ID = $1", userID)
 	if err != nil {
-		return domain.Session{}, errors.New("Failed to retrieve session")
+		return types.Session{}, errors.New("Failed to retrieve session")
 	}
 
 	return session, nil

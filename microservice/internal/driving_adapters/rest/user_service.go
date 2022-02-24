@@ -3,7 +3,7 @@ package drivingAdapters
 import (
 	"log"
 	common "microservice/internal"
-	drivingPorts "microservice/internal/driving_ports"
+	drivingPorts "microservice/internal/core/driving_ports"
 	"net/http"
 	"strconv"
 
