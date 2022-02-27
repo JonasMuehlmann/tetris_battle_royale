@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
 
-	services := []string{"user", "statistics"}
+	services := []string{"user"}
 
 	for _, service := range services {
 		// NOTE: The names are determined by the kubernetes services
@@ -21,8 +23,7 @@ func main() {
 		}
 
 		// Forwards the requests made to the specified endpoint to the respective backend service
-		mux.Handle("/"+service, httputil.NewSingleHostReverseProxy(serviceURL))
-
+		mux.PathPrefix("/" + service + "/").Handler(http.StripPrefix("/"+service, httputil.NewSingleHostReverseProxy(serviceURL)))
 		log.Printf("Registered backend service at endpoint /%v\n", service)
 	}
 
