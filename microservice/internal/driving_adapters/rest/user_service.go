@@ -18,12 +18,13 @@ type UserServiceRestAdapter struct {
 func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	sessionId, err := adapter.Service.IsLoggedIn(vars["username"])
+	sessionID, err := adapter.Service.IsLoggedIn(vars["username"])
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, err.Error())
 	} else {
-		common.TryWriteResponse(w, "User logged in with session ID "+strconv.FormatInt(int64(sessionId), 10))
+		common.TryWriteResponse(w, "User logged in with session ID "+strconv.FormatInt(int64(sessionID), 10))
 	}
 }
 
@@ -33,6 +34,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 
 	username, okUsername := requestBody["username"]
 	if !okUsername {
+		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, "Missing username")
 
 		return
@@ -40,6 +42,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 
 	password, okPassword := requestBody["password"]
 	if !okPassword {
+		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, "Missing password")
 
 		return
@@ -48,6 +51,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 	sessionID, err := adapter.Service.Login(username.(string), password.(string))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, err.Error())
 	}
 
@@ -59,6 +63,7 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 
 	sessionID, okSessionID := requestBody["sessionId"]
 	if !okSessionID {
+		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, "Missing username")
 
 		return
@@ -69,6 +74,7 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 	err := adapter.Service.Logout(int(userID))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, err.Error())
 	}
 
@@ -81,6 +87,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 
 	username, okUsername := requestBody["username"]
 	if !okUsername {
+		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, "Missing username")
 
 		return
@@ -88,6 +95,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 
 	password, okPassword := requestBody["password"]
 	if !okPassword {
+		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, "Missing password")
 
 		return
@@ -98,6 +106,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, "Failed to register")
 	}
 
