@@ -33,6 +33,38 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: matchmaking-service
+  labels:
+    app: matchmaking-service
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matchmaking-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: matchmaking-service
+        tier: service
+    spec:
+      containers:
+        - name: matchmaking-service
+          # has to match the call to docker build -t in deploy_cluster.sh
+          image: matchmaking_service:latest
+          # We are using local images
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: gateway
   labels:
     app: gateway
@@ -80,6 +112,25 @@ spec:
       port: 8081
   selector:
     app: user-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matchmaking-service
+  labels:
+    app: matchmaking-service
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+    - name: grpc
+      protocol: TCP
+      port: 8081
+  selector:
+    app: matchmaking-service
 ---
 apiVersion: v1
 kind: Service

@@ -15,7 +15,6 @@ func main() {
 
 	logger := log.New(os.Stdout, "TBR - ", log.Ltime|log.Lshortfile)
 
-	// TODO: Set correct response codes
 	db := repository.MakeDefaultPostgresDB(logger)
 	userRepository := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	sessionRepository := repository.PostgresDatabaseSessionRepository{Logger: logger, PostgresDatabase: *db}
