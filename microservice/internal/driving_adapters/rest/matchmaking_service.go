@@ -2,6 +2,7 @@ package drivingAdapters
 
 import (
 	"log"
+	common "microservice/internal"
 	drivingPorts "microservice/internal/core/driving_ports"
 	"net/http"
 
@@ -14,9 +15,31 @@ type MatchmakingServiceRestAdapter struct {
 }
 
 func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := common.UnmarshalRequestBody(r)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "Could not unmarshal request body")
+	}
+
+	err = adapter.Service.Join(body["userId"].(int))
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "Could not join matchmaking")
+	}
 }
 
 func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := common.UnmarshalRequestBody(r)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "Could not unmarshal request body")
+	}
+
+	err = adapter.Service.Leave(body["userId"].(int))
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "Could not join matchmaking")
+	}
 }
 
 func (adapter MatchmakingServiceRestAdapter) Run() {
