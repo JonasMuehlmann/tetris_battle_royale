@@ -2,7 +2,7 @@
 
 # This is meant to be executed on the machine holding the kubernetes cluster!
 
-SERVICES=("user_service" "statistics_service" "gateway")
+SERVICES=("user_service" "gateway")
 
 minikube kubectl -- delete -f microservice-deployment.yaml
 minikube stop
@@ -11,7 +11,7 @@ eval $(minikube docker-env)
 
 # Build all service's docker images
 for service in ${SERVICES[@]}; do
-    docker build -t ${service} -f ./api/$service/Dockerfile .
+    docker build -t ${service} -f ./cmd/$service/Dockerfile .
 done
 
 minikube kubectl -- apply -f microservice-deployment.yaml
