@@ -26,7 +26,7 @@ func (repo PostgresDatabaseSessionRepository) CreateSession(userID int) (int, er
 
 	err = db.QueryRow("INSERT INTO sessions(user_ID, creation_time) VALUES($1, $2) RETURNING ID", session.UserID, session.CreationTime).Scan(&session.ID)
 	if err != nil {
-		log.Printf("Error: %v", err)
+		repo.Logger.Printf("Error: %v", err)
 
 		return 0, err
 	}

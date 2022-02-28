@@ -125,5 +125,5 @@ func (adapter UserServiceRestAdapter) Run() {
 	mux.HandleFunc("/logout", adapter.LogoutHandler).Methods("DELETE")
 
 	adapter.Logger.Println("Starting server on Port 8080")
-	log.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
+	adapter.Logger.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
 }
