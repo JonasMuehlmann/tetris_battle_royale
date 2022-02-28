@@ -11,6 +11,6 @@ message UserIDList {
     repeated int64 Id = 1;
 }
 
-message GameID {
+message MatchID {
     int64 Id = 1;
 }

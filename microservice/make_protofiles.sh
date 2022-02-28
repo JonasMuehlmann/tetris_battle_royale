@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-SERVICES=("user_service" "statistics_service")
+SERVICES=("user_service" "game_service")
 
 # Build all protofiles
 for service in ${SERVICES[@]}; do
