@@ -1,2 +1,2 @@
 vendor/
-postgres_credentials.env
+.postgres_credentials.env
