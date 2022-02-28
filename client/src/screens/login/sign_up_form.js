@@ -1,3 +1,4 @@
+import { motion } from "framer-motion"
 import { useState } from "react"
 
 const SignUpForm = (
@@ -46,7 +47,10 @@ const SignUpForm = (
   }
 
   return (
-    <form
+    <motion.form
+      initial={{ opacity: 0, x: 120 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ type: 'spring' }}
       autoComplete="off"
       onSubmit={e => {
         e.preventDefault()
@@ -120,7 +124,7 @@ const SignUpForm = (
           Sign in
         </span>
       </button>
-    </form>
+    </motion.form>
   )
 }
 

@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { motion } from 'framer-motion'
 
 const SignInForm = (
   {
@@ -36,7 +37,10 @@ const SignInForm = (
   }
 
   return (
-    <form
+    <motion.form
+      initial={{ opacity: 0, x: -120 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ type: 'spring' }}
       onSubmit={e => {
         e.preventDefault()
         if (isModelValid()) {
@@ -86,13 +90,13 @@ const SignInForm = (
       <button
         type="button"
         onClick={() => onSignUp()}
-        className='opacity-60 hover:opacity-100 josefin text-md mt-1'>
+        className='opacity-60 hover:opacity-100 josefin text-md mt-2'>
         Don't have an account?
         <span className='text-[#19a186] px-1'>
           Sign up here
         </span>
       </button>
-    </form>
+    </motion.form>
   )
 }
 

@@ -17,9 +17,13 @@ const LogIn = () => {
   const { navigate } = useContext(ScreenContext)
   const [mode, setMode] = useState(MODE.SIGN_IN)
 
-  const onSignIn = model => {
+  const onSignIn = async model => {
     /* TODO: LOGIN API WITH REQUEST CLASS */
-    navigate(Screen.Menu)
+    try {
+      // const result = await fetch(`isLogin/jaykim`)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -31,8 +35,7 @@ const LogIn = () => {
         <h2 className='text-9xl font-bold tetris-text tetris-shadow'>
           Tetris
         </h2>
-        <h2 className='text-5xl green-grad-text
-        rounded pt-2 pb-5'>
+        <h2 className='text-5xl green-grad-text rounded pt-2 pb-5'>
           Battle Royale
         </h2>
         <p className='text-sm josefin'>
