@@ -1,0 +1,14 @@
+syntax = "proto3";
+package statisticsServiceProto;
+option go_package="github.com/JonasMuehlmann/tetris_battle_royale;statisticsServiceProto";
+
+service statistics_service {
+    rpc GetStatistics(EmptyRequest) returns (StatisticsResponse);
+}
+
+message StatisticsResponse {
+    int64 Score = 1;
+    int64 NumPlayedMatches = 2;
+}
+
+message EmptyRequest {}

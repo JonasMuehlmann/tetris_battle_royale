@@ -1,0 +1,24 @@
+syntax = "proto3";
+package userServiceProto;
+option go_package="github.com/JonasMuehlmann/tetris_battle_royale;userServiceProto";
+
+service user_service {
+    rpc GetUsers(EmptyRequest) returns (UserResponse);
+    rpc GetNameOfUser(UserIdRequest) returns (SingleUserResponse);
+}
+
+message UserIdRequest {
+    // 1 is the index of the field in the serialized structure
+    int64 Id = 1;
+}
+
+message SingleUserResponse {
+    string Name = 1;
+}
+
+message UserResponse {
+    // List of strings
+    repeated string Name = 1;
+}
+
+message EmptyRequest {}
