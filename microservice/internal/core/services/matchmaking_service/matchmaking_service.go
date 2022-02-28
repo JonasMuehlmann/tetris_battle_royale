@@ -40,6 +40,8 @@ func MakeMatchmakingService(userRepo drivenPorts.UserPort, logger *log.Logger) (
 func (service MatchmakingService) Join(userID int) error {
 	service.Queue[userID] = true
 
+	service.Logger.Printf("Player %v joined the queue", userID)
+
 	if len(service.Queue) == MatchSize {
 		err := service.startGame()
 		if err != nil {
@@ -52,6 +54,8 @@ func (service MatchmakingService) Join(userID int) error {
 
 func (service MatchmakingService) Leave(userID int) error {
 	delete(service.Queue, userID)
+
+	service.Logger.Printf("Player %v left the queue", userID)
 
 	return nil
 }
@@ -72,6 +76,8 @@ func (service MatchmakingService) startGame() error {
 	if err != nil {
 		return err
 	}
+
+	service.Logger.Println("Started a game")
 
 	return nil
 }

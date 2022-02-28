@@ -21,6 +21,8 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 		common.TryWriteResponse(w, "Could not unmarshal request body")
 	}
 
+	// TODO: Validate if user exists
+
 	err = adapter.Service.Join(body["userId"].(int))
 	if err != nil {
 		log.Printf("Error: %v", err)
@@ -34,6 +36,8 @@ func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter,
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, "Could not unmarshal request body")
 	}
+
+	// TODO: Validate if user exists
 
 	err = adapter.Service.Leave(body["userId"].(int))
 	if err != nil {
