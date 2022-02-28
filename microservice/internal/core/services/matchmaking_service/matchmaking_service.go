@@ -37,7 +37,7 @@ func MakeMatchmakingService(userRepo drivenPorts.UserPort, logger *log.Logger) (
 	return matchmakingService, nil
 }
 
-func (service MatchmakingService) Join(userID int) error {
+func (service MatchmakingService) Join(userID int, matchStartCallback func(int) error) error {
 	service.Queue[userID] = true
 
 	service.Logger.Printf("Player %v joined the queue", userID)

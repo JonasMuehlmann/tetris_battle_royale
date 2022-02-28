@@ -1,9 +1,12 @@
 package drivingAdapters
 
 import (
+	"bytes"
+	"errors"
 	"log"
 	common "microservice/internal"
 	drivingPorts "microservice/internal/core/driving_ports"
+	"net"
 	"net/http"
 	"strconv"
 
@@ -13,6 +16,34 @@ import (
 type MatchmakingServiceRestAdapter struct {
 	Service drivingPorts.MatchmakingServicePort
 	Logger  *log.Logger
+}
+
+// TODO: This callback mechanic is not really the way to go.
+// Instead, we should open a websocket connection where the server can send a message
+func (adapter MatchmakingServiceRestAdapter) buildMatchStartCallBack(w http.ResponseWriter, clientAddress string) func(int) error {
+	clientHost, clientPort, err := net.SplitHostPort(clientAddress)
+	clientPort = "8082"
+
+	if err != nil {
+		adapter.Logger.Printf("Error: %v", err)
+		common.TryWriteResponse(w, "Could not register callback for match start")
+	}
+	return func(matchID int) error {
+
+		matchIDStr := strconv.FormatInt(int64(matchID), 10)
+		responseBuffer := bytes.NewBuffer([]byte("{matchID: " + matchIDStr + "}"))
+
+		callbackResponse, err := http.Post(clientHost+":"+clientPort, "application/json", responseBuffer)
+
+		if err != nil {
+			return err
+		}
+		if callbackResponse.StatusCode != http.StatusOK {
+			return errors.New("Failed to send callback to client")
+		}
+
+		return nil
+	}
 }
 
 func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +63,7 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 		common.TryWriteResponse(w, "Could not unmarshal request body")
 	}
 
-	err = adapter.Service.Join(int(userId))
+	err = adapter.Service.Join(int(userId), adapter.buildMatchStartCallBack(w, r.RemoteAddr))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -50,14 +81,14 @@ func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter,
 
 	// TODO: Validate if user exists
 
-	userId, err := strconv.ParseInt(body["userId"].(string), 10, 32)
+	userID, err := strconv.ParseInt(body["userId"].(string), 10, 32)
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, "Could not unmarshal request body")
 	}
 
-	err = adapter.Service.Leave(int(userId))
+	err = adapter.Service.Leave(int(userID))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
