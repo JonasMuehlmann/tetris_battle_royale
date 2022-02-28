@@ -22,9 +22,9 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		common.TryWriteResponse(w, err.Error())
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 	} else {
-		common.TryWriteResponse(w, "User logged in with session ID "+strconv.FormatInt(int64(sessionID), 10))
+		common.TryWriteResponse(w, "{sessionID: "+strconv.FormatInt(int64(sessionID), 10)+"}")
 	}
 }
 
@@ -35,7 +35,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 	username, okUsername := requestBody["username"]
 	if !okUsername {
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Missing username")
+		common.TryWriteResponse(w, common.MakeJsonError("Missing username"))
 
 		return
 	}
@@ -43,7 +43,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 	password, okPassword := requestBody["password"]
 	if !okPassword {
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Missing password")
+		common.TryWriteResponse(w, common.MakeJsonError("Missing password"))
 
 		return
 	}
@@ -52,10 +52,10 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		common.TryWriteResponse(w, err.Error())
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 	}
 
-	common.TryWriteResponse(w, "User logged in with session ID "+strconv.FormatInt(int64(sessionID), 10))
+	common.TryWriteResponse(w, "{sessionID: "+strconv.FormatInt(int64(sessionID), 10)+"}")
 }
 
 func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +64,7 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 	sessionID, okSessionID := requestBody["sessionId"]
 	if !okSessionID {
 		w.WriteHeader(http.StatusInternalServerError)
-		common.TryWriteResponse(w, "Missing username")
+		common.TryWriteResponse(w, common.MakeJsonError("Missing username"))
 
 		return
 	}
@@ -75,10 +75,10 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		common.TryWriteResponse(w, err.Error())
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 	}
 
-	common.TryWriteResponse(w, "User logged out")
+	common.TryWriteResponse(w, common.MakeJsonError("{message: \"User logged out\"}"))
 }
 
 func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 	username, okUsername := requestBody["username"]
 	if !okUsername {
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Missing username")
+		common.TryWriteResponse(w, common.MakeJsonError("Missing username"))
 
 		return
 	}
@@ -96,7 +96,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 	password, okPassword := requestBody["password"]
 	if !okPassword {
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Missing password")
+		common.TryWriteResponse(w, common.MakeJsonError("Missing username"))
 
 		return
 	}
@@ -107,10 +107,10 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		common.TryWriteResponse(w, "Failed to register")
+		common.TryWriteResponse(w, common.MakeJsonError("Failed to register"))
 	}
 
-	common.TryWriteResponse(w, strconv.Itoa(userID))
+	common.TryWriteResponse(w, common.MakeJsonError("{message: \""+strconv.Itoa(userID)+"\"}"))
 }
 
 func (adapter UserServiceRestAdapter) Run() {
