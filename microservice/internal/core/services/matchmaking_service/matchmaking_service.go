@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-const MatchSize = 10
+const MatchSize = 3
 
 type MatchmakingService struct {
 	UserRepo              drivenPorts.UserPort
