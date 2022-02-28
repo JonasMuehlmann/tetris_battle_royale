@@ -8,11 +8,12 @@ import (
 	"net/http"
 )
 
-func MakeJsonError(err error) string {
-	return "{error: \"" + err.Error() + "\"}"
+func MakeJsonError(err string) string {
+	return "{error: \"" + err + "\"}"
 }
 
 func TryWriteResponse(w http.ResponseWriter, response string) {
+	w.Header().Set("Content-Type", "application/json")
 
 	_, err := w.Write([]byte(response))
 
