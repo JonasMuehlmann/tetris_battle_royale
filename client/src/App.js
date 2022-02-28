@@ -1,4 +1,5 @@
 import { BackgroundCanvas } from './components/background_canvas';
+import { withScreenContext } from './contexts/screen-context';
 import MainScreen from './screens/main_screen';
 
 function App() {
@@ -10,4 +11,4 @@ function App() {
   );
 }
 
-export default App;
+export default withScreenContext(App);

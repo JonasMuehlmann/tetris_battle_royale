@@ -1,5 +1,6 @@
 import { useContext } from "react"
-import { Screen, ScreenContext, withScreenContext } from "../contexts/screen-context"
+import { withDialogContext } from "../contexts/dialog-context";
+import { Screen, ScreenContext } from "../contexts/screen-context"
 import ErrorScreen from "./404";
 
 const MainScreen = (props) => {
@@ -18,4 +19,4 @@ const MainScreen = (props) => {
   );
 }
 
-export default withScreenContext(MainScreen)
+export default withDialogContext(MainScreen)
