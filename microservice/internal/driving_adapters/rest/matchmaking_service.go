@@ -26,7 +26,7 @@ func (adapter MatchmakingServiceRestAdapter) buildMatchStartCallBack(w http.Resp
 
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
-		common.TryWriteResponse(w, "Could not register callback for match start")
+		common.TryWriteResponse(w, common.MakeJsonError("Could not register callback for match start"))
 	}
 	return func(matchID int) error {
 
@@ -51,7 +51,7 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Could not unmarshal request body")
+		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
 
 	// TODO: Validate if user exists
@@ -60,14 +60,14 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Could not unmarshal request body")
+		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
 
-	err = adapter.Service.Join(int(userId), adapter.buildMatchStartCallBack(w, r.RemoteAddr))
+	err = adapter.Service.Join(int(userId))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		common.TryWriteResponse(w, "Could not join matchmaking")
+		common.TryWriteResponse(w, common.MakeJsonError("Could not join matchmaking"))
 	}
 }
 
@@ -76,7 +76,7 @@ func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter,
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Could not unmarshal request body")
+		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
 
 	// TODO: Validate if user exists
@@ -85,14 +85,14 @@ func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter,
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusBadRequest)
-		common.TryWriteResponse(w, "Could not unmarshal request body")
+		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
 
 	err = adapter.Service.Leave(int(userID))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		common.TryWriteResponse(w, "Could not join matchmaking")
+		common.TryWriteResponse(w, common.MakeJsonError("Could not join matchmaking"))
 	}
 }
 
