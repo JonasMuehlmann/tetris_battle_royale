@@ -1,48 +1,181 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.service.type: LoadBalancer
-    kompose.version: 1.26.0 (40646f47)
-  creationTimestamp: null
+  name: user-service
   labels:
-    io.kompose.service: microservice
-  name: microservice
+    app: user-service
+
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: microservice
+      app: user-service
   strategy:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose convert
-        kompose.service.type: LoadBalancer
-        kompose.version: 1.26.0 (40646f47)
-      creationTimestamp: null
       labels:
-        io.kompose.network/microservice-net: "true"
-        io.kompose.service: microservice
+        app: user-service
+        tier: service
     spec:
       containers:
-        - env:
-            - name: GET_HOST_FROM
-              value: dns
-          image: alpine
-          name: microservice
+        - name: user-service
+          # has to match the call to docker build -t in deploy_cluster.sh
+          image: user_service:latest
+          # We are using local images
+          imagePullPolicy: Never
           ports:
-            - containerPort: 8080
-          resources: {}
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: gateway
+        tier: service
+    spec:
+      containers:
+        - name: gateway
+          # has to match the call to docker build -t in deploy_cluster.sh
+          image: gateway:latest
+          # We are using local images
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  labels:
+    app: user-service
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+    - name: grpc
+      protocol: TCP
+      port: 8081
+  selector:
+    app: user-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+  selector:
+    app: gateway
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: db-pv-volume
+  labels:
+    type: local
+    app: db
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-pv-claim
+  labels:
+    app: db
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  labels:
+    app: db
+data:
+  POSTGRES_DB: postgresdb
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: test123
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: postgres:10.4
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: db-config
           volumeMounts:
-            - mountPath: /go/src/microservice
-              name: microservice-claim0
-      hostname: microservice
-      restartPolicy: Always
+            - mountPath: /var/lib/postgresql/data
+              name: postgredb
       volumes:
-        - name: microservice-claim0
+        - name: postgredb
           persistentVolumeClaim:
-            claimName: microservice-claim0
-status: {}
+            claimName: db-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  type: NodePort
+  ports:
+   - port: 5432
+  selector:
+   app: db
