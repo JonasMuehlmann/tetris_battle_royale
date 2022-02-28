@@ -6,6 +6,7 @@ import (
 	drivenPorts "microservice/internal/core/driven_ports"
 	gameServiceProto "microservice/internal/core/protofiles/game_service"
 	types "microservice/internal/core/types"
+	"net"
 
 	"google.golang.org/grpc"
 )
@@ -22,7 +23,7 @@ type GameServiceServer struct {
 	GameService GameService
 }
 
-func (service *GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.MatchID, error) {
+func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.MatchID, error) {
 	matchID, err := service.GameService.StartGame(userIDList.GetId())
 
 	if err != nil {
@@ -47,6 +48,10 @@ func MakeGameService(userRepo drivenPorts.UserPort, logger *log.Logger) GameServ
 	return gameService
 }
 
-func (service *GameService) StartGame(userIDList []int64) (int, error) {
+func (service GameService) StartGame(userIDList []int64) (int, error) {
 	return 0, nil
+}
+
+func (service GameService) StartGrpcServer(listener net.Listener) error {
+	return service.GrpcServer.Serve(listener)
 }
