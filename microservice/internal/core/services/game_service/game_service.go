@@ -13,6 +13,7 @@ import (
 
 type GameService struct {
 	UserRepo   drivenPorts.UserPort
+	GamePort   drivenPorts.GamePort
 	Logger     *log.Logger
 	Matches    map[int]types.Match
 	GrpcServer *grpc.Server
@@ -54,4 +55,8 @@ func (service GameService) StartGame(userIDList []int64) (int, error) {
 
 func (service GameService) StartGrpcServer(listener net.Listener) error {
 	return service.GrpcServer.Serve(listener)
+}
+
+func (service GameService) ConnectPlayer(userID int, connection interface{}) error {
+	return service.GamePort.ConnectPlayer(userID, connection)
 }
