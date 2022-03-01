@@ -2,23 +2,42 @@ package drivingAdapters
 
 import (
 	"log"
+	common "microservice/internal"
 	drivingPorts "microservice/internal/core/driving_ports"
 	"net"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 )
 
-type GameServiceRestAdapter struct {
+type GameServiceWebsocketAdapter struct {
 	Service drivingPorts.GameServicePort
 	Logger  *log.Logger
 }
 
-func (adapter GameServiceRestAdapter) Run() {
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
+
+func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter, r *http.Request) {
+	incomingConn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
+	}
+
+	// TODO: Read userID from request
+	userID := 0
+
+	// TODO: Handler error
+	err = adapter.Service.ConnectPlayer(userID, incomingConn)
+}
+func (adapter GameServiceWebsocketAdapter) Run() {
 	mux := mux.NewRouter()
 
-	// mux.HandleFunc("/join", adapter.JoinHandler).Methods("POST")
-	// mux.HandleFunc("/leave", adapter.LeaveHandler).Methods("POST")
+	mux.HandleFunc("/ws", adapter.UpgradeHandler)
 
 	adapter.Logger.Println("Starting server on Port 8080")
 
