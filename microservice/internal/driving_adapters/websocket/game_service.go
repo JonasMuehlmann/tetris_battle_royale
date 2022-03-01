@@ -6,6 +6,7 @@ import (
 	drivingPorts "microservice/internal/core/driving_ports"
 	"net"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -22,22 +23,36 @@ var upgrader = websocket.Upgrader{
 }
 
 func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := common.UnmarshalRequestBody(r)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
+	}
+
+	userID, err := strconv.ParseInt(body["userID"].(string), 10, 32)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
+	}
+
 	incomingConn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
 	}
 
-	// TODO: Read userID from request
-	userID := 0
-
-	// TODO: Handler error
-	err = adapter.Service.ConnectPlayer(userID, incomingConn)
+	// TODO: Check if user exists
+	err = adapter.Service.ConnectPlayer(int(userID), incomingConn)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
+	}
 }
+
 func (adapter GameServiceWebsocketAdapter) Run() {
 	mux := mux.NewRouter()
 
-	mux.HandleFunc("/ws", adapter.UpgradeHandler)
+	mux.HandleFunc("/ws", adapter.UpgradeHandler).Methods("POST")
 
 	adapter.Logger.Println("Starting server on Port 8080")
 
