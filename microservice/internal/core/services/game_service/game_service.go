@@ -24,6 +24,7 @@ type GameServiceServer struct {
 	GameService GameService
 }
 
+// TODO: This can probably be remove
 func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.MatchID, error) {
 	matchID, err := service.GameService.StartGame(userIDList.GetId())
 
@@ -60,4 +61,8 @@ func (service GameService) StartGrpcServer(listener net.Listener) error {
 
 func (service GameService) ConnectPlayer(userID int, connection interface{}) error {
 	return service.GamePort.ConnectPlayer(userID, connection)
+}
+
+func (service GameService) SendMatchStartNotice(userID int, matchID int) error {
+	return service.SendMatchStartNotice(userID, matchID)
 }

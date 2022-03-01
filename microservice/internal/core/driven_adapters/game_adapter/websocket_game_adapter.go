@@ -1,6 +1,7 @@
 package drivenAdapters
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -24,6 +25,16 @@ func (adapter WebsocketGameAdapter) ConnectPlayer(userID int, connection interfa
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID int) error {
+func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID int, matchID int) error {
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"matchID": %v}`, matchID)))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
