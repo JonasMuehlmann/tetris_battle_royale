@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	repository "microservice/internal/core/repository/postgres"
+	repository "microservice/internal/core/driven_adapters/repository/postgres"
 	userService "microservice/internal/core/services/user_service"
 	drivingAdapters "microservice/internal/driving_adapters/rest"
 	"os"
