@@ -34,11 +34,12 @@ func (service GameServiceServer) StartGame(context context.Context, userIDList *
 	return &gameServiceProto.MatchID{Id: int64(matchID)}, nil
 }
 
-func MakeGameService(userRepo drivenPorts.UserPort, logger *log.Logger) GameService {
+func MakeGameService(userRepo drivenPorts.UserPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
 	grpcServer := grpc.NewServer()
 
 	gameService := GameService{
 		UserRepo:   userRepo,
+		GamePort:   gameAdapter,
 		Logger:     logger,
 		Matches:    make(map[int]types.Match),
 		GrpcServer: grpcServer,
