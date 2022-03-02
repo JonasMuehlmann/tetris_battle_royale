@@ -78,7 +78,7 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 	}
 
-	common.TryWriteResponse(w, common.MakeJsonError("{message: \"User logged out\"}"))
+	common.TryWriteResponse(w, "{message: \"User logged out\"}")
 }
 
 func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -110,7 +110,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 		common.TryWriteResponse(w, common.MakeJsonError("Failed to register"))
 	}
 
-	common.TryWriteResponse(w, common.MakeJsonError("{message: \""+strconv.Itoa(userID)+"\"}"))
+	common.TryWriteResponse(w, "{message: \""+strconv.Itoa(userID)+"\"}")
 }
 
 func (adapter UserServiceRestAdapter) Run() {
