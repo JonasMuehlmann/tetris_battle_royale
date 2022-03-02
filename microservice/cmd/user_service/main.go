@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	postgresRepository "microservice/internal/core/driven_adapters/repository/postgres"
 	repository "microservice/internal/core/driven_adapters/repository/postgres"
 	userService "microservice/internal/core/services/user_service"
 	drivingAdapters "microservice/internal/driving_adapters/rest"
@@ -17,8 +18,9 @@ func main() {
 
 	// TODO: Set correct response codes
 	db := repository.MakeDefaultPostgresDB(logger)
-	userRepository := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
+	userRepository := postgresRepository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	sessionRepository := repository.PostgresDatabaseSessionRepository{Logger: logger, PostgresDatabase: *db}
+	// sessionRepository := redisRepository.RedisSessionRepo{Logger: logger, RedisStore: redisRepository.MakeDefaultRedisStore(logger)}
 	userService := userService.UserService{Logger: logger, UserRepo: userRepository, SessionRepo: sessionRepository}
 	userServiceAdapter := drivingAdapters.UserServiceRestAdapter{Logger: logger, Service: userService}
 	userServiceAdapter.Run()

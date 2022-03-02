@@ -193,16 +193,6 @@ spec:
   selector:
    app: redis
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: redis-config
-  labels:
-    app: redis
-data:
-  redis-config: |
-    requirepass cjm739y50qpo8
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -223,6 +213,3 @@ spec:
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 6379
-          envFrom:
-            - configMapRef:
-                name: redis-config

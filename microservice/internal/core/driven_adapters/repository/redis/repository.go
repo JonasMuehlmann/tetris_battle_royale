@@ -21,7 +21,6 @@ func MakeDefaultRedisStore(logger *log.Logger) RedisStore {
 	}
 
 	address := os.Getenv("TBR_REDIS_ADDR")
-	password := os.Getenv("TBR_REDIS_PASSWORD")
 	dbRaw := os.Getenv("TBR_REDIS_DB")
 
 	db, err := strconv.ParseInt(dbRaw, 10, 32)
@@ -31,6 +30,6 @@ func MakeDefaultRedisStore(logger *log.Logger) RedisStore {
 
 	return RedisStore{
 		Logger: logger,
-		Client: redis.NewClient(&redis.Options{Addr: address, Password: password, DB: int(db)}),
+		Client: redis.NewClient(&redis.Options{Addr: address, Password: "", DB: int(db)}),
 	}
 }
