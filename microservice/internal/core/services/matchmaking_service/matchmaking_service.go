@@ -20,7 +20,6 @@ type MatchmakingService struct {
 
 func MakeMatchmakingService(userRepo drivenPorts.UserPort, logger *log.Logger) (MatchmakingService, error) {
 	grpcConn, err := grpc.Dial("game-service:8081", grpc.WithInsecure())
-
 	if err != nil {
 		return MatchmakingService{}, err
 	}
@@ -70,12 +69,11 @@ func (service MatchmakingService) startGame() error {
 	}
 
 	_, err := service.GameServiceGrpcClient.StartGame(context.Background(), &gameServiceProto.UserIDList{Id: userIDList})
-
-	// TODO: Notify clients
-
 	if err != nil {
 		return err
 	}
+
+	// TODO: Notify clients
 
 	service.Logger.Println("Started a game")
 

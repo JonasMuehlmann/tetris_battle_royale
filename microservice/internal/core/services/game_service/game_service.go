@@ -12,9 +12,10 @@ import (
 )
 
 type GameService struct {
-	UserRepo   drivenPorts.UserPort
-	GamePort   drivenPorts.GamePort
-	Logger     *log.Logger
+	UserRepo drivenPorts.UserPort
+	GamePort drivenPorts.GamePort
+	Logger   *log.Logger
+	// TODO: A UUID is a better key
 	Matches    map[int]types.Match
 	GrpcServer *grpc.Server
 }
@@ -24,7 +25,6 @@ type GameServiceServer struct {
 	GameService GameService
 }
 
-// TODO: This can probably be remove
 func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.MatchID, error) {
 	matchID, err := service.GameService.StartGame(userIDList.GetId())
 
@@ -52,6 +52,7 @@ func MakeGameService(userRepo drivenPorts.UserPort, gameAdapter drivenPorts.Game
 }
 
 func (service GameService) StartGame(userIDList []int64) (int, error) {
+	// TODO: Generate UUID and add players to match map
 	return 0, nil
 }
 
