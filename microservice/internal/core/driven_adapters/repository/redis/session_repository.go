@@ -16,14 +16,25 @@ type RedisSessionRepo struct {
 
 func (repo RedisSessionRepo) CreateSession(userID int) (int, error) {
 	session := types.Session{UserID: userID, CreationTime: time.Now()}
-	session.ID = int(repo.Client.Incr(context.Background(), "sessionCount").Val())
+
+	result := repo.Client.Incr(context.Background(), "sessionCount")
+
+	err := result.Err()
+	if err != nil {
+		return 0, err
+	}
+
+	session.ID = int(result.Val())
 
 	marshalledSession, err := json.Marshal(session)
 	if err != nil {
 		return 0, err
 	}
 
-	repo.Client.Set(context.Background(), strconv.FormatInt(int64(userID), 10), marshalledSession, 0)
+	err = repo.Client.Set(context.Background(), strconv.FormatInt(int64(userID), 10), marshalledSession, 0).Err()
+	if err != nil {
+		return 0, err
+	}
 
 	return session.ID, nil
 }
