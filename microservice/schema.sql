@@ -8,7 +8,7 @@ CREATE TABLE users(
 
 CREATE TABLE sessions(
 id UUID PRIMARY KEY,
-user_id INTEGER, 
+user_id UUID, 
 creation_time TIMESTAMP WITHOUT TIME ZONE,
 CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
 CONSTRAINT uniq_userid UNIQUE(user_id)
