@@ -20,6 +20,7 @@ CREATE TABLE player_profiles(
     playtime          INTEGER,
     player_rating     INTEGER,
     player_statistics INTEGER,
+    last_update       TIMESTAMP,
     CONSTRAINT        fk_player_rating        FOREIGN KEY (player_rating)     REFERENCES player_ratings(id)
     CONSTRAINT        fk_player_statistics    FOREIGN KEY (player_statistics) REFERENCES player_statistics(id)
     CONSTRAINT        fk_user_player_profiles FOREIGN KEY (user_id)           REFERENCES users(id),
