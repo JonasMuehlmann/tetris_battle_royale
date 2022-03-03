@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"log"
 	"microservice/internal/core/types"
-	"strconv"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type RedisSessionRepo struct {
@@ -14,35 +15,29 @@ type RedisSessionRepo struct {
 	Logger *log.Logger
 }
 
-func (repo RedisSessionRepo) CreateSession(userID int) (int, error) {
+func (repo RedisSessionRepo) CreateSession(userID string) (string, error) {
 	session := types.Session{UserID: userID, CreationTime: time.Now()}
 
-	result := repo.Client.Incr(context.Background(), "sessionCount")
-
-	err := result.Err()
-	if err != nil {
-		return 0, err
-	}
-
-	session.ID = int(result.Val())
+	uuid.EnableRandPool()
+	session.ID = uuid.NewString()
 
 	marshalledSession, err := json.Marshal(session)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
-	err = repo.Client.Set(context.Background(), strconv.FormatInt(int64(userID), 10), marshalledSession, 0).Err()
+	err = repo.Client.Set(context.Background(), userID, marshalledSession, 0).Err()
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	return session.ID, nil
 }
 
-func (repo RedisSessionRepo) GetSession(userID int) (types.Session, error) {
+func (repo RedisSessionRepo) GetSession(userID string) (types.Session, error) {
 	var session types.Session
 
-	sessionMarshalled, err := repo.Client.Get(context.Background(), strconv.FormatInt(int64(userID), 10)).Bytes()
+	sessionMarshalled, err := repo.Client.Get(context.Background(), userID).Bytes()
 	if err != nil {
 		return types.Session{}, err
 	}
@@ -55,6 +50,6 @@ func (repo RedisSessionRepo) GetSession(userID int) (types.Session, error) {
 	return session, nil
 }
 
-func (repo RedisSessionRepo) DeleteSession(sessionID int) error {
-	return repo.Client.Del(context.Background(), strconv.FormatInt(int64(sessionID), 10)).Err()
+func (repo RedisSessionRepo) DeleteSession(sessionID string) error {
+	return repo.Client.Del(context.Background(), sessionID).Err()
 }

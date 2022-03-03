@@ -5,7 +5,7 @@ import (
 )
 
 type SessionPort interface {
-	CreateSession(userID int) (int, error)
-	GetSession(userID int) (types.Session, error)
-	DeleteSession(sessionID int) error
+	CreateSession(userID string) (string, error)
+	GetSession(userID string) (types.Session, error)
+	DeleteSession(sessionID string) error
 }

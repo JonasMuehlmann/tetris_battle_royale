@@ -5,7 +5,6 @@ import (
 	common "microservice/internal"
 	drivingPorts "microservice/internal/core/driving_ports"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -24,7 +23,7 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 	} else {
-		common.TryWriteResponse(w, "{sessionID: "+strconv.FormatInt(int64(sessionID), 10)+"}")
+		common.TryWriteResponse(w, "{sessionID: "+sessionID+"}")
 	}
 }
 
@@ -55,7 +54,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 	}
 
-	common.TryWriteResponse(w, "{sessionID: "+strconv.FormatInt(int64(sessionID), 10)+"}")
+	common.TryWriteResponse(w, "{sessionID: "+sessionID+"}")
 }
 
 func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,9 +68,7 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	userID, _ := strconv.ParseInt(sessionID.(string), 10, 32)
-
-	err := adapter.Service.Logout(int(userID))
+	err := adapter.Service.Logout(sessionID.(string))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -110,7 +107,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 		common.TryWriteResponse(w, common.MakeJsonError("Failed to register"))
 	}
 
-	common.TryWriteResponse(w, "{message: \""+strconv.Itoa(userID)+"\"}")
+	common.TryWriteResponse(w, "{message: \""+userID+"\"}")
 }
 
 func (adapter UserServiceRestAdapter) Run() {
