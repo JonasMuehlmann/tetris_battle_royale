@@ -12,29 +12,29 @@ type PostgresDatabaseSessionRepository struct {
 	Logger *log.Logger
 }
 
-func (repo PostgresDatabaseSessionRepository) CreateSession(userID int) (int, error) {
+func (repo PostgresDatabaseSessionRepository) CreateSession(userID string) (string, error) {
 
-	session := types.Session{ID: -1, UserID: userID, CreationTime: time.Now()}
+	session := types.Session{ID: "", UserID: userID, CreationTime: time.Now()}
 
 	db, err := repo.GetConnection()
 
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	defer db.Close()
 
-	err = db.QueryRow("INSERT INTO sessions(user_ID, creation_time) VALUES($1, $2) RETURNING ID", session.UserID, session.CreationTime).Scan(&session.ID)
+	err = db.QueryRow("INSERT INTO sessions(id, user_ID, creation_time) VALUES(uuid_generate_v4(), $1, $2) RETURNING ID", session.UserID, session.CreationTime).Scan(&session.ID)
 	if err != nil {
 		log.Printf("Error: %v", err)
 
-		return 0, err
+		return "", err
 	}
 
 	return session.ID, nil
 }
 
-func (repo PostgresDatabaseSessionRepository) GetSession(userID int) (types.Session, error) {
+func (repo PostgresDatabaseSessionRepository) GetSession(userID string) (types.Session, error) {
 	session := types.Session{}
 
 	db, err := repo.GetConnection()
@@ -53,7 +53,7 @@ func (repo PostgresDatabaseSessionRepository) GetSession(userID int) (types.Sess
 	return session, nil
 }
 
-func (repo PostgresDatabaseSessionRepository) DeleteSession(sessionID int) error {
+func (repo PostgresDatabaseSessionRepository) DeleteSession(sessionID string) error {
 	db, err := repo.GetConnection()
 
 	if err != nil {

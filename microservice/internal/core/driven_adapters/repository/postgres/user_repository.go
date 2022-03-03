@@ -10,7 +10,7 @@ type PostgresDatabaseUserRepository struct {
 	Logger *log.Logger
 }
 
-func (repo PostgresDatabaseUserRepository) GetUserFromID(userID int) (types.User, error) {
+func (repo PostgresDatabaseUserRepository) GetUserFromID(userID string) (types.User, error) {
 	user := types.User{}
 
 	db, err := repo.GetConnection()
@@ -46,19 +46,19 @@ func (repo PostgresDatabaseUserRepository) GetUserFromName(username string) (typ
 	return user, nil
 }
 
-func (repo PostgresDatabaseUserRepository) Register(username, password, salt string) (int, error) {
-	var userID int
+func (repo PostgresDatabaseUserRepository) Register(username, password, salt string) (string, error) {
+	var userID string
 
 	db, err := repo.GetConnection()
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	defer db.Close()
 
-	err = db.QueryRow("INSERT INTO users(username, pw_hash, salt) VALUES($1, $2, $3) RETURNING ID", username, string(password), string(salt)).Scan(&userID)
+	err = db.QueryRow("INSERT INTO users(id, username, pw_hash, salt) VALUES(uuid_generate_v4(), $1, $2, $3) RETURNING ID", username, string(password), string(salt)).Scan(&userID)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	return userID, nil

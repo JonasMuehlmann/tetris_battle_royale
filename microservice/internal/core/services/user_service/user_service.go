@@ -15,14 +15,14 @@ type UserService struct {
 	Logger      *log.Logger
 }
 
-func (service UserService) IsLoggedIn(username string) (int, error) {
+func (service UserService) IsLoggedIn(username string) (string, error) {
 	user, err := service.UserRepo.GetUserFromName(username)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: User %v does not exist", username)
 		service.Logger.Println(errorMessage)
 		service.Logger.Println(err)
 
-		return 0, errors.New(errorMessage)
+		return "", errors.New(errorMessage)
 	}
 
 	session, err := service.SessionRepo.GetSession(user.ID)
@@ -32,7 +32,7 @@ func (service UserService) IsLoggedIn(username string) (int, error) {
 		service.Logger.Println(errorMessage)
 		service.Logger.Println(err)
 
-		return 0, errors.New(errorMessage)
+		return "", errors.New(errorMessage)
 	}
 
 	// TODO: Check if session expired
@@ -42,7 +42,7 @@ func (service UserService) IsLoggedIn(username string) (int, error) {
 	return session.ID, nil
 }
 
-func (service UserService) Login(username string, password string) (int, error) {
+func (service UserService) Login(username string, password string) (string, error) {
 	var passwordHash []byte
 	var salt []byte
 
@@ -52,7 +52,7 @@ func (service UserService) Login(username string, password string) (int, error) 
 		service.Logger.Println(errorMessage)
 		service.Logger.Println(err)
 
-		return 0, errors.New(errorMessage)
+		return "", errors.New(errorMessage)
 	}
 
 	salt = []byte(user.Salt)
@@ -64,7 +64,7 @@ func (service UserService) Login(username string, password string) (int, error) 
 		service.Logger.Println(errorMessage)
 		service.Logger.Println(err)
 
-		return 0, errors.New(errorMessage)
+		return "", errors.New(errorMessage)
 	}
 
 	sessionID, err := service.SessionRepo.CreateSession(user.ID)
@@ -79,7 +79,7 @@ func (service UserService) Login(username string, password string) (int, error) 
 	return sessionID, nil
 }
 
-func (service UserService) Logout(sessionID int) error {
+func (service UserService) Logout(sessionID string) error {
 	err := service.SessionRepo.DeleteSession(sessionID)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: Failed to end session with id %v", sessionID)
@@ -94,7 +94,7 @@ func (service UserService) Logout(sessionID int) error {
 	return nil
 }
 
-func (service UserService) Register(username string, password string) (int, error) {
+func (service UserService) Register(username string, password string) (string, error) {
 	salt := generateSalt(saltLength)
 
 	passwordHash := hashPw([]byte(password), salt)
@@ -105,7 +105,7 @@ func (service UserService) Register(username string, password string) (int, erro
 		service.Logger.Println(errorMessage)
 		service.Logger.Println(err)
 
-		return 0, errors.New(errorMessage)
+		return "", errors.New(errorMessage)
 	}
 
 	userID, err := service.UserRepo.Register(username, string(passwordHash), string(salt))
@@ -114,7 +114,7 @@ func (service UserService) Register(username string, password string) (int, erro
 		service.Logger.Println(errorMessage)
 		service.Logger.Println(err)
 
-		return 0, errors.New(errorMessage)
+		return "", errors.New(errorMessage)
 	}
 
 	service.Logger.Printf("Successfully registered user %v\n", username)
@@ -125,13 +125,13 @@ func (service UserService) Register(username string, password string) (int, erro
 		service.Logger.Println(errorMessage)
 		service.Logger.Println(err)
 
-		return 0, errors.New(errorMessage)
+		return "", errors.New(errorMessage)
 	}
 
 	return sessionID, nil
 }
 
-func (service UserService) CreateSession(userID int) (types.Session, error) {
+func (service UserService) CreateSession(userID string) (types.Session, error) {
 
 	session, err := service.SessionRepo.GetSession(userID)
 	if err != nil {
@@ -143,6 +143,6 @@ func (service UserService) CreateSession(userID int) (types.Session, error) {
 	return session, nil
 }
 
-func (service *UserService) GetSession(userID int) (types.Session, error) {
+func (service *UserService) GetSession(userID string) (types.Session, error) {
 	return service.SessionRepo.GetSession(userID)
 }
