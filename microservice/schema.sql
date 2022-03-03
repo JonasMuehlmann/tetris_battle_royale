@@ -1,5 +1,5 @@
 CREATE TABLE users(
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY,
     username TEXT,
     pw_hash BYTEA,
     salt BYTEA,
@@ -7,7 +7,7 @@ CREATE TABLE users(
 );
 
 CREATE TABLE sessions(
-id SERIAL PRIMARY KEY,
+id UUID PRIMARY KEY,
 user_id INTEGER, 
 creation_time TIMESTAMP WITHOUT TIME ZONE,
 CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
