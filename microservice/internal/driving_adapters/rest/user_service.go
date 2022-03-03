@@ -22,6 +22,8 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
 	} else {
 		common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
 	}
@@ -52,6 +54,8 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
 	}
 
 	common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
@@ -73,6 +77,8 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
 	}
 
 	common.TryWriteResponse(w, `{"message": "User logged out"}`)
@@ -105,6 +111,8 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError("Failed to register"))
+
+		return
 	}
 
 	common.TryWriteResponse(w, `{"message": "`+userID+`"}`)
