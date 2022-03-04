@@ -4,16 +4,11 @@ import { DialogType, useDialog } from '../../contexts/dialog-context'
 import { Screen, ScreenContext } from '../../contexts/screen-context'
 import SignInForm from './sign_in_form'
 import SignUpForm from './sign_up_form'
+import axios from 'axios'
 
 const MODE = {
   SIGN_IN: 1,
   SIGN_UP: 2,
-}
-
-const styles = {
-  container: `w-full h-full flex flex-col items-center justify-center z-20 
-    text-white relative`,
-  stack: 'flex flex-col gap-2',
 }
 
 const LogIn = () => {
@@ -25,18 +20,59 @@ const LogIn = () => {
   } = useDialog()
 
   const onSignIn = async model => {
-    /* TODO: LOGIN API WITH REQUEST CLASS */
     try {
-      // const result = await fetch(`isLogin/jaykim`)
       showDialog(DialogType.Authenticate)
+      /**
+       * IN ORDER TO TEST THIS API
+       * YOU MUST START THE GATEWAY FIRST (SERVER)
+       * OTHERWISE IT WILL AUTOMATICALLY NAVIGATE TO LOBBY
+       * 
+       * const response = await axios.post(`/user/login`, {
+       *    username: model.username,
+       *    password: model.password,
+       * })
+       * hideDialog()
+       * 
+       */
+
+      /**
+       * FOR UI TEST PURPOSE
+       * COMMENT OUT IF SERVER IS ON
+       */
       setTimeout(() => { hideDialog() }, 2500)
     } catch (error) {
-      console.error(error)
+      console.info(error)
+    }
+  }
+
+  const onSignUp = async model => {
+    try {
+      showDialog(DialogType.Authenticate)
+      /**
+       * IN ORDER TO TEST THIS API
+       * YOU MUST START THE GATEWAY FIRST (SERVER)
+       * OTHERWISE IT WILL AUTOMATICALLY NAVIGATE TO LOBBY
+       * 
+       * const result = await axios.post(`/user`, {
+       *    username: model.username,
+       *    password: model.password,
+       * })
+       * hideDialog()
+       */
+
+      /**
+       * FOR UI TEST PURPOSE
+       * COMMENT OUT IF SERVER IS ON
+       */
+      setTimeout(() => { hideDialog() }, 2500)
+    } catch (error) {
+      console.info(error)
     }
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`flex flex-col items-center justify-center z-20 
+      w-full h-full text-white relative`}>
       <p className='absolute top-10 right-10'>
         IN-DEVELOPMENT
       </p>
@@ -63,7 +99,7 @@ const LogIn = () => {
           ) : (
             <SignUpForm
               key={mode}
-              onSubmit={onSignIn}
+              onSubmit={onSignUp}
               onSignIn={() => setMode(MODE.SIGN_IN)}
             />
           )
