@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
@@ -31,7 +32,12 @@ func MakePostgresDB(host string, port int, username string, dbName string, logge
 }
 
 func MakeDefaultPostgresDB(logger *log.Logger) *PostgresDatabase {
-	err := godotenv.Load(".postgres_credentials.env")
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = godotenv.Load(filepath.Join(configDir, "tbr", ".postgres_credentials.env"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,7 +67,12 @@ func MakeDefaultPostgresDB(logger *log.Logger) *PostgresDatabase {
 	}
 }
 func MakeDefaultPostgresTestDB(logger *log.Logger) *PostgresDatabase {
-	err := godotenv.Load(".postgres_credentials_test.env")
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = godotenv.Load(filepath.Join(configDir, "tbr", ".postgres_credentials_test.env"))
 	if err != nil {
 		log.Fatal(err)
 	}
