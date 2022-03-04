@@ -2,25 +2,24 @@ package drivingPorts
 
 import (
 	"microservice/internal/core/types"
-	"time"
 )
 
 type StatisticsServicePort interface {
-	GetPlayerProfile(userID int) (types.PlayerProfile, error)
-	GetPlayerPlaytime(userID int) (int, error)
-	GetPlayerRating(userID int) (int, error)
-	GetPlayerProfileLastUpdateTime(userID int) (time.Time, error)
+	GetPlayerProfile(userID string) (types.PlayerProfile, error)
+	// GetPlayerPlaytime(userID string) (int, error)
+	// GetPlayerRating(userID string) (int, error)
+	// GetPlayerProfileLastUpdateTime(userID string) (time.Time, error)
 
-	GetPlayerStatistics(userID int) (types.PlayerStatistics, error)
-	GetPlayerScore(userID int) (int, error)
-	GetPlayerScorePerMinute(userID int) (float32, error)
-	GetPlayerWinrate(userID int) (float32, error)
-	GetPlayerNumLosses(userID int) (int, error)
-	GetPlayerNumWinsAsTop10(userID int) (int, error)
-	GetPlayerNumWinsAsTop5(userID int) (int, error)
-	GetPlayerNumWinsAsTop3(userID int) (int, error)
-	GetPlayerNumWinsAsTop1(userID int) (int, error)
+	// GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
+	// GetPlayerScore(userID string) (int, error)
+	// GetPlayerScorePerMinute(userID string) (float32, error)
+	// GetPlayerWinrate(userID string) (float32, error)
+	// GetPlayerNumLosses(userID string) (int, error)
+	// GetPlayerNumWinsAsTop10(userID string) (int, error)
+	// GetPlayerNumWinsAsTop5(userID string) (int, error)
+	// GetPlayerNumWinsAsTop3(userID string) (int, error)
+	// GetPlayerNumWinsAsTop1(userID string) (int, error)
 
-	GetPlayerMatchRecords(userID int) ([]types.MatchRecord, error)
-	GetMatchRecord(matchID int) (types.MatchRecord, error)
+	// GetPlayerMatchRecords(userID string) ([]types.MatchRecord, error)
+	// GetMatchRecord(matchID int) (types.MatchRecord, error)
 }
