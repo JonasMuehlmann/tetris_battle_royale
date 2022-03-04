@@ -18,6 +18,11 @@ jobs:
       with:
         go-version: 1.17
 
-
+    - name: Add secrets
+      run: |
+        mkdir ~/.config/tbr/
+        echo  ${{ secrets.POSTGRES_DB_CREDENTIALS }} > ~/.config/tbr/.postgres_credentials_test.env
     - name: Test
-      run: cd microservice && go test ./...
+      run: |
+        cd microservice
+        go test ./...
