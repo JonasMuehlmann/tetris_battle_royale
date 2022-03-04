@@ -1,5 +1,6 @@
+import { AnimatePresence } from 'framer-motion'
 import { useContext, useState } from 'react'
-import { useDialog } from '../../contexts/dialog-context'
+import { DialogType, useDialog } from '../../contexts/dialog-context'
 import { Screen, ScreenContext } from '../../contexts/screen-context'
 import SignInForm from './sign_in_form'
 import SignUpForm from './sign_up_form'
@@ -27,13 +28,8 @@ const LogIn = () => {
     /* TODO: LOGIN API WITH REQUEST CLASS */
     try {
       // const result = await fetch(`isLogin/jaykim`)
-      showDialog({
-        title: 'Authenticating..',
-        content: 'Please wait..'
-      })
-      setTimeout(() => {
-        hideDialog()
-      }, 2500)
+      showDialog(DialogType.Authenticate)
+      setTimeout(() => { hideDialog() }, 2500)
     } catch (error) {
       console.error(error)
     }
@@ -55,19 +51,24 @@ const LogIn = () => {
           Massively Multiplayer Classic Tetris
         </p>
       </div>
-      {
-        mode === MODE.SIGN_IN ? (
-          <SignInForm
-            onSubmit={onSignIn}
-            onSignUp={() => setMode(MODE.SIGN_UP)}
-          />
-        ) : (
-          <SignUpForm
-            onSubmit={onSignIn}
-            onSignIn={() => setMode(MODE.SIGN_IN)}
-          />
-        )
-      }
+      <AnimatePresence
+        exitBeforeEnter>
+        {
+          mode === MODE.SIGN_IN ? (
+            <SignInForm
+              key={mode}
+              onSubmit={onSignIn}
+              onSignUp={() => setMode(MODE.SIGN_UP)}
+            />
+          ) : (
+            <SignUpForm
+              key={mode}
+              onSubmit={onSignIn}
+              onSignIn={() => setMode(MODE.SIGN_IN)}
+            />
+          )
+        }
+      </AnimatePresence>
     </div>
   )
 }

@@ -1,14 +1,13 @@
+import { useAnimationFrame } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react'
 import { Painter } from './painter/painter';
 
 export const BackgroundCanvas = () => {
   const canvasRef = useRef(null);
   const [painter, setPainter] = useState(null);
-
-  (function animate() {
-    requestAnimationFrame(animate);
+  useAnimationFrame(t => {
     if (painter) painter.update();
-  })()
+  })
 
   function resize() {
     if (canvasRef.current) {

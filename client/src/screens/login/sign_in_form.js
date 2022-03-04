@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion } from 'framer-motion'
 
 const SignInForm = (
@@ -6,6 +6,7 @@ const SignInForm = (
     onSubmit = model => { },
     onSignUp = () => { },
   }) => {
+  const usernameRef = useRef(null)
   const [errors, setErrors] = useState({})
   const [model, setModel] = useState({
     username: '',
@@ -36,11 +37,16 @@ const SignInForm = (
     return valid
   }
 
+  useEffect(() => {
+    usernameRef?.current?.focus()
+  }, [])
+
   return (
     <motion.form
       initial={{ opacity: 0, x: -200 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ type: 'spring' }}
+      exit={{ opacity: 0, x: -200 }}
+      transition={{ type: 'spring', duration: 1 }}
       onSubmit={e => {
         e.preventDefault()
         if (isModelValid()) {
@@ -56,6 +62,7 @@ const SignInForm = (
       </label>
       <input
         type='text'
+        ref={usernameRef}
         value={model.username}
         onChange={e => {
           if (e.target || e.target.value !== ' ') {

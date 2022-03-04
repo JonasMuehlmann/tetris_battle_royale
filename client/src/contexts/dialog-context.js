@@ -4,9 +4,17 @@ import Loader from "../components/loader";
 export class DialogType {
   static Warning = new DialogType("warning")
   static Info = new DialogType("info")
+  static Load = new DialogType("load")
+  static Authenticate = new DialogType(
+    "authenticate",
+    "Authenticating..",
+    "It won\'t take long.."
+  )
 
-  constructor(type) {
+  constructor(type, title, content) {
     this.type = type
+    this.title = title
+    this.content = content
   }
 }
 
@@ -14,19 +22,15 @@ export const DialogContext = React.createContext()
 
 export const DialogProvider = ({ children }) => {
   const [isDialogVisible, setIsDialogVisible] = useState(false)
-  const [model, setModel] = useState({})
+  const [currentType, setCurrentType] = useState(null)
 
-  const showDialog = ({
-    title = 'Dialog Title',
-    content = 'dialog content',
-  }) => {
-    setModel({ title, content })
+  const showDialog = (type) => {
+    setCurrentType(type)
     setIsDialogVisible(true)
   }
 
   const hideDialog = () => {
     setIsDialogVisible(false)
-    setModel({})
   }
 
   return (
@@ -35,7 +39,7 @@ export const DialogProvider = ({ children }) => {
       hideDialog,
       component: {
         isDialogVisible,
-        model,
+        currentType,
       },
     }}>
       <Loader />

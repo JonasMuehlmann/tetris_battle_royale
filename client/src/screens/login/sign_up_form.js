@@ -50,7 +50,8 @@ const SignUpForm = (
     <motion.form
       initial={{ opacity: 0, x: 200 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ type: 'spring' }}
+      exit={{ opacity: 0, x: 200 }}
+      transition={{ type: 'spring', duration: 1 }}
       autoComplete="off"
       onSubmit={e => {
         e.preventDefault()
@@ -75,6 +76,7 @@ const SignUpForm = (
           }
         }}
         placeholder='Username'
+        autoComplete="off"
         className='border-4 border-[#19a186]'
       />
       <label>
@@ -86,6 +88,7 @@ const SignUpForm = (
       <input
         type='password'
         value={model.password}
+        autoComplete="off"
         onChange={e => {
           if (e.target || e.target.value !== ' ')
             setModel({ ...model, password: e.target.value })
@@ -101,6 +104,7 @@ const SignUpForm = (
       </label>
       <input
         type='password'
+        autoComplete="off"
         value={model.passwordReenter}
         onChange={e => {
           if (e.target || e.target.value !== ' ')
