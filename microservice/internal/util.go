@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/jmoiron/sqlx"
 )
 
 func MakeJsonError(err string) string {
@@ -38,4 +40,10 @@ func UnmarshalRequestBody(req *http.Request) (map[string]interface{}, error) {
 	}
 
 	return bodyMap, nil
+}
+func ResetDB(db *sqlx.DB) {
+	_, err := db.Exec("TRUNCATE users, sessions, player_profiles, player_statistics,player_ratings, match_records CASCADE")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
