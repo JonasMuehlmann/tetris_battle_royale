@@ -12,7 +12,7 @@ import (
 func main() {
 	mux := mux.NewRouter()
 
-	services := []string{"user"}
+	services := []string{"user", "statistics"}
 
 	for _, service := range services {
 		// NOTE: The names are determined by the kubernetes services
