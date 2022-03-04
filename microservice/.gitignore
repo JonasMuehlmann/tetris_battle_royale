@@ -1,6 +1,3 @@
 vendor/
-.postgres_credentials.env
-.postgres_credentials_test.env
-.redis_credentials.env
 .lvimrc
 .code_runner.json
