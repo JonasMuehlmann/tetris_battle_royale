@@ -10,21 +10,32 @@ export const BackgroundCanvas = () => {
     if (painter) painter.update();
   })()
 
-  useEffect(() => {
+  function resize() {
     if (canvasRef.current) {
       canvasRef.current.width = window.innerWidth;
       canvasRef.current.height = window.innerHeight;
 
       const context = canvasRef.current.getContext('2d');
-      const starsCount = 100;
+      const starsCount = 180;
+      const blocksCount = 7;
 
       setPainter(
         new Painter(
           context,
           window.innerWidth,
           window.innerHeight,
-          starsCount
+          starsCount,
+          blocksCount
         ));
+    }
+  }
+
+
+  useEffect(() => {
+    window.addEventListener('resize', resize)
+    resize()
+    return () => {
+      window.removeEventListener('resize', resize)
     }
   }, []);
 

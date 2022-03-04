@@ -38,7 +38,7 @@ const SignInForm = (
 
   return (
     <motion.form
-      initial={{ opacity: 0, x: -120 }}
+      initial={{ opacity: 0, x: -200 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ type: 'spring' }}
       onSubmit={e => {

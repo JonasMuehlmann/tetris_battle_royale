@@ -3,7 +3,7 @@ import Block from "./block";
 import Star from "./star";
 
 const BG_RADIANS = 0.0001;
-const BG_ALPHA = 0.75;
+const BG_ALPHA = 0.80;
 const BG_ROTATE_RADIANS = 0.0005;
 
 export class Painter {
@@ -21,28 +21,34 @@ export class Painter {
     context,
     canvasWidth,
     canvasHeight,
-    starsCount = 100
+    starsCount = 100,
+    blocksCount = 5,
   ) {
     this.stars = []
     this.blocks = []
     this.context = context
     this.starsCount = starsCount
+    this.blocksCount = blocksCount
     this.canvasWidth = canvasWidth
     this.canvasHeight = canvasHeight
     this.drawWidth = canvasWidth + 200;
-    this.drawHeight = canvasHeight + 200;
+    this.drawHeight = canvasHeight;
 
+    this.init()
+  }
+
+  init() {
     for (let i = 0; i < this.starsCount; i++) {
       this.stars.push(new Star(this.drawWidth, this.drawHeight, this.context))
     }
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < this.blocksCount; i++) {
       this.blocks.push(new Block(
         this.drawWidth,
         this.drawHeight,
         this.context,
         `assets/block_${random(1, 3)}.png`,
-        random(30, 80)))
+        random(20, 70)))
     }
 
     this.stars.forEach(star => star.spawn())
@@ -122,7 +128,10 @@ export class Painter {
 
   setSpeed(speed) {
     this.speed = speed;
-    this.stars.forEach(star => star.velocity.x = this.speed * random(1.0, 1.45));
-    this.blocks.forEach(block => block.velocity.x = this.speed * random(1.0, 1.45));
+    this.stars.forEach(star => {
+      const newSpeed = this.speed * random(1.0, 1.25)
+      star.velocity.x = newSpeed > 15 ? 15 - newSpeed : newSpeed
+    });
+    this.blocks.forEach(block => block.velocity.x = this.speed * random(1.0, 1.25));
   }
 }

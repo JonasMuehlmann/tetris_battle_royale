@@ -10,7 +10,8 @@ const MODE = {
 }
 
 const styles = {
-  container: 'w-full h-full flex flex-col items-center justify-center z-20 text-white relative',
+  container: `w-full h-full flex flex-col items-center justify-center z-20 
+    text-white relative`,
   stack: 'flex flex-col gap-2',
 }
 

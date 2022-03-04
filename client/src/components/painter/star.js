@@ -46,7 +46,7 @@ export default class Star {
 
     this.x = this.drawWidth;
     this.y = random(-this.drawHeight, this.drawHeight);
-    this.velocity.x = this.velocity.x * random(0.85, 1.25);
+    this.velocity.x = this.velocity.x;
     this._getRandomStyle();
   }
 
@@ -64,7 +64,7 @@ export default class Star {
     const hue = random(70, 270);
     const opacity = random(0.01, 0.8);
 
-    this.radius = random(0.25, 1.85);
+    this.radius = random(0.25, 2.85);
     this.color = `rgba(${hue}, 171, 255, ${opacity})`;
     this.shadow = `rgba(${hue}, 171 , 255, 1)`;
   }
