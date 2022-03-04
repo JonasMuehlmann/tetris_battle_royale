@@ -36,7 +36,7 @@ export class Painter {
       this.stars.push(new Star(this.drawWidth, this.drawHeight, this.context))
     }
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 10; i++) {
       this.blocks.push(new Block(
         this.drawWidth,
         this.drawHeight,

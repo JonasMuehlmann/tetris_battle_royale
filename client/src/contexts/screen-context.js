@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import LogIn from '../screens/login/login'
-import Menu from "../screens/menu/menu";
+import LogIn from '../screens/login/index'
+import Menu from "../screens/menu/index";
 
 export class Screen {
   static LogIn = new Screen("login", LogIn)

@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react'
+import { useDialog } from '../../contexts/dialog-context'
 import { Screen, ScreenContext } from '../../contexts/screen-context'
 import SignInForm from './sign_in_form'
 import SignUpForm from './sign_up_form'
@@ -16,11 +17,22 @@ const styles = {
 const LogIn = () => {
   const { navigate } = useContext(ScreenContext)
   const [mode, setMode] = useState(MODE.SIGN_IN)
+  const {
+    showDialog,
+    hideDialog,
+  } = useDialog()
 
   const onSignIn = async model => {
     /* TODO: LOGIN API WITH REQUEST CLASS */
     try {
       // const result = await fetch(`isLogin/jaykim`)
+      showDialog({
+        title: 'Authenticating..',
+        content: 'Please wait..'
+      })
+      setTimeout(() => {
+        hideDialog()
+      }, 2500)
     } catch (error) {
       console.error(error)
     }

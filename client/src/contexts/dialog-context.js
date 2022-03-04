@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import Loader from "../components/loader";
 
 export class DialogType {
   static Warning = new DialogType("warning")
@@ -23,14 +24,21 @@ export const DialogProvider = ({ children }) => {
     setIsDialogVisible(true)
   }
 
+  const hideDialog = () => {
+    setIsDialogVisible(false)
+    setModel({})
+  }
+
   return (
     <DialogContext.Provider value={{
       showDialog,
+      hideDialog,
       component: {
         isDialogVisible,
         model,
       },
     }}>
+      <Loader />
       {children}
     </DialogContext.Provider>
   )
