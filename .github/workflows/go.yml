@@ -21,7 +21,7 @@ jobs:
     - name: Add secrets
       run: |
         mkdir ~/.config/tbr/
-        echo  ${{ secrets.POSTGRES_DB_CREDENTIALS }} > ~/.config/tbr/.postgres_credentials_test.env
+        echo  "${{ secrets.POSTGRES_DB_CREDENTIALS }}" > ~/.config/tbr/.postgres_credentials_test.env
     - name: Test
       run: |
         cd microservice
