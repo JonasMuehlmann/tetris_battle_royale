@@ -11,8 +11,8 @@ WORKDIR /go/src/github.com/JonasMuehlmann/tetris_battle_royale/microservice
 # COPY . /go/src/microservice
 COPY . /go/src/github.com/JonasMuehlmann/tetris_battle_royale/microservice
 
-RUN go build ./cmd/user_service
-CMD ./user_service
+RUN go build ./cmd/statistics_service
+CMD ./statistics_service
 
 EXPOSE 8080
 EXPOSE 8081
