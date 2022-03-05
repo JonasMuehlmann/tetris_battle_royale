@@ -42,7 +42,6 @@ export const DialogProvider = ({ children }) => {
         currentType,
       },
     }}>
-      <Loader />
       {children}
     </DialogContext.Provider>
   )

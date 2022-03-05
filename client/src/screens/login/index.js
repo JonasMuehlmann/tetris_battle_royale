@@ -1,23 +1,39 @@
+import axios from 'axios'
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useContext, useState } from 'react'
 import { DialogType, useDialog } from '../../contexts/dialog-context'
-import { Screen, ScreenContext } from '../../contexts/screen-context'
+import { Screen, useScreens } from '../../contexts/screen-context'
+/*
+ * COMPONENTS 
+ */
 import SignInForm from './sign_in_form'
 import SignUpForm from './sign_up_form'
-import axios from 'axios'
-
-const MODE = {
+import GlowingText from '../../components/glowing_text/glowing_text'
+/*
+ * CONSTANTS
+ */
+const MODE = Object.freeze({
   SIGN_IN: 1,
   SIGN_UP: 2,
-}
+})
 
 const LogInScreen = () => {
-  const { navigate } = useContext(ScreenContext)
-  const [mode, setMode] = useState(MODE.SIGN_IN)
+  /*
+   * DEPENDENCIES
+   */
+  const {
+    navigate,
+  } = useScreens()
   const {
     showDialog,
     hideDialog,
   } = useDialog()
+  /*
+   * STATES
+   */
+  const [mode, setMode] = useState(MODE.SIGN_IN)
+
+  // #region EVENTS
 
   const onSignIn = async model => {
     try {
@@ -70,6 +86,8 @@ const LogInScreen = () => {
     }
   }
 
+  // #endregion
+
   return (
     <div
       className={`flex flex-col items-center justify-center z-20 
@@ -79,13 +97,16 @@ const LogInScreen = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 3, type: 'spring' }}
         className='flex flex-col items-center mb-16'>
-        <h2 className='text-9xl font-bold tetris-text tetris-shadow'>
+        <GlowingText
+          className={`text-9xl font-bold`}>
           Tetris
-        </h2>
-        <h2 className='text-5xl green-grad-text rounded pt-2 pb-5'>
+        </GlowingText>
+        <h2
+          className='text-5xl green-grad-text rounded pt-2 pb-5'>
           Battle Royale
         </h2>
-        <p className='text-sm josefin'>
+        <p
+          className='text-sm josefin'>
           Massively Multiplayer Classic Tetris
         </p>
       </motion.div>

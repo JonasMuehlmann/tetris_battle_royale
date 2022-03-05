@@ -1,10 +1,9 @@
-const OPTIONS = [
+const OPTIONS = Object.freeze([
   {
     text: 'Statistics',
     description: 'In Development',
   },
-]
-
+])
 
 const Statistics = () => {
   return (

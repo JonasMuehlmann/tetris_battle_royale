@@ -3,28 +3,42 @@ import React, { Component, useContext, useEffect, useState } from "react";
 const QueueContext = React.createContext()
 
 const QueueProvider = ({ children }) => {
-  const [isInQueue, setIsInQueue] = useState()
-  const [elapsed, setElapsed] = useState(1)
+  const [isInQueue, setIsInQueue] = useState(false)
+  const [queueType, setQueueType] = useState(null)
+  const [elapsed, setElapsed] = useState(0)
+
+  const requestQueue = request => {
+    setQueueType(request)
+    setIsInQueue(true)
+  }
+
+  const cancelQueue = () => {
+    setQueueType(null)
+    setElapsed(0)
+    setIsInQueue(false)
+  }
 
   useEffect(() => {
     if (isInQueue) {
-      const unset = setInterval(() => {
+      const queueTimer = setInterval(() => {
         setElapsed(elapsed + 1)
       }, 1000)
 
       return () => {
-        clearInterval(unset)
+        clearInterval(queueTimer)
       }
     } else {
       setElapsed(0)
     }
-  }, [isInQueue, elapsed])
+  }, [isInQueue, queueType, elapsed])
 
   return (
     <QueueContext.Provider value={{
       isInQueue,
-      setIsInQueue,
       elapsed,
+      queueType,
+      requestQueue,
+      cancelQueue,
     }}>
       {children}
     </QueueContext.Provider>

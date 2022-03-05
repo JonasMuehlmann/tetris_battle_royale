@@ -1,11 +1,13 @@
-const OPTIONS = [
+const OPTIONS = Object.freeze([
   {
     text: 'Profile',
     description: 'In Development',
   },
-]
+])
 
 const PlayerProfile = () => {
+  // #region COMPONENTS
+  // #endregion
   return (
     <ul className="flex flex-col gap-8 text-white bangers">
       {

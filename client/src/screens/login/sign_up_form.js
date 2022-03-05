@@ -1,20 +1,29 @@
 import { motion } from "framer-motion"
 import { useState } from "react"
 
+/*
+ * DEFAULTS
+ */
+const MODEL = Object.freeze({
+  username: '',
+  password: '',
+  passwordReenter: '',
+})
+
 const SignUpForm = (
   {
     onSubmit = model => { },
     onSignIn = () => { },
   }) => {
+  /*
+   * STATES
+   */
+  const [model, setModel] = useState(MODEL)
   const [errors, setErrors] = useState({})
-  const [model, setModel] = useState({
-    username: '',
-    password: '',
-    passwordReenter: '',
-    isValid: false,
-  })
 
-  const isModelValid = () => {
+  // #region METHODS
+
+  const isValid = () => {
     const { username, password, passwordReenter } = model
     const no_username = !username || username.trim().length <= 0
     const no_password = !password || password.trim().length <= 0
@@ -46,26 +55,17 @@ const SignUpForm = (
     return valid
   }
 
-  return (
-    <motion.form
-      initial={{ opacity: 0, x: window.innerWidth / 2, scale: 0 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: window.innerWidth / 2, scale: 0 }}
-      transition={{ type: 'spring', duration: 1.5 }}
-      autoComplete="off"
-      onSubmit={e => {
-        e.preventDefault()
-        if (isModelValid()) {
-          onSubmit(model)
-        }
-      }}
-      className='flex flex-col gap-2'>
-      <input autoComplete="off" name="hidden" type="text" style={{ display: 'none' }} />
+  // #endregion
+
+  // #region COMPONENTS
+
+  const Username = () => (
+    <>
       <label className='flex flex-col'>
         Username
-        <span className='text-sm text-red-400'>
+        <p className='text-sm text-red-400'>
           {errors?.username}
-        </span>
+        </p>
       </label>
       <input
         type='text'
@@ -79,11 +79,16 @@ const SignUpForm = (
         autoComplete="off"
         className='border-4 border-[#19a186]'
       />
+    </>
+  )
+
+  const Password = () => (
+    <>
       <label>
         Password
-        <span className='text-sm text-red-800'>
+        <p className='text-sm text-red-400'>
           {errors?.password}
-        </span>
+        </p>
       </label>
       <input
         type='password'
@@ -96,6 +101,11 @@ const SignUpForm = (
         placeholder='Password'
         className='border-4 border-[#19a186]'
       />
+    </>
+  )
+
+  const PasswordReenter = () => (
+    <>
       <label>
         Re-enter Password
         <p className='text-sm text-red-400'>
@@ -113,6 +123,11 @@ const SignUpForm = (
         placeholder='Reenter password.'
         className='border-4 border-[#19a186]'
       />
+    </>
+  )
+
+  const Actions = () => (
+    <>
       <button
         type='submit'
         className={`border-2 py-4 rounded mt-8 transition-all
@@ -128,6 +143,29 @@ const SignUpForm = (
           Sign in
         </span>
       </button>
+    </>
+  )
+
+  // #endregion
+
+  return (
+    <motion.form
+      initial={{ opacity: 0, x: window.innerWidth / 2, scale: 0 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: window.innerWidth / 2, scale: 0 }}
+      transition={{ type: 'spring', duration: 1.5 }}
+      className='flex flex-col gap-2'
+      autoComplete="off"
+      onSubmit={e => {
+        e.preventDefault()
+        if (isValid()) {
+          onSubmit(model)
+        }
+      }}>
+      <Username />
+      <Password />
+      <PasswordReenter />
+      <Actions />
     </motion.form>
   )
 }

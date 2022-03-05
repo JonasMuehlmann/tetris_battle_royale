@@ -1,4 +1,5 @@
 import { useMenu, MenuItem } from "../contexts/menu-context"
+import GlowingText from "./glowing_text/glowing_text"
 
 const Menu = () => {
   const {
@@ -28,9 +29,10 @@ const Menu = () => {
         }
       </ul>
       <h1 className={`shadow text-center opacity-80 mx-8`}>
-        <p className="text-4xl font-bold tetris-text tetris-shadow">
+        <GlowingText
+          className={`text-4xl font-bold`}>
           Tetris Battle Royale
-        </p>
+        </GlowingText>
         <p className="text-lg text-white opacity-60 border-t border-zinc-600 pt-1 mt-3 mx-36 truncate">
           Public Lobby
         </p>

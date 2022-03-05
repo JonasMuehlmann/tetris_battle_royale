@@ -5,7 +5,7 @@ import { useQueue } from "../contexts/queue-context"
 const QueueBox = () => {
   const {
     isInQueue,
-    setIsInQueue,
+    cancelQueue,
     elapsed
   } = useQueue()
 
@@ -28,7 +28,7 @@ const QueueBox = () => {
               Waiting for other players... {elapsed}s
             </p>
             <p
-              onClick={() => setIsInQueue(false)}
+              onClick={() => cancelQueue()}
               className="text-gray-400 opacity-50 text-sm cursor-pointer hover:opacity-80">
               Cancel
             </p>
