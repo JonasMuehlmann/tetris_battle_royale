@@ -11,7 +11,7 @@ const MODE = {
   SIGN_UP: 2,
 }
 
-const LogIn = () => {
+const LogInScreen = () => {
   const { navigate } = useContext(ScreenContext)
   const [mode, setMode] = useState(MODE.SIGN_IN)
   const {
@@ -111,4 +111,4 @@ const LogIn = () => {
   )
 }
 
-export default LogIn
+export default LogInScreen

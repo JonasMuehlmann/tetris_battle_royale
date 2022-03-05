@@ -1,6 +1,4 @@
-import React, { useState } from "react";
-import LogIn from '../screens/login/index'
-import Menu from "../screens/menu/index";
+import React, { useContext, useState } from "react";
 
 export class Screen {
   static LogIn = new Screen("login")
@@ -40,3 +38,5 @@ export const withScreenContext = Component => ({ ...props }) => (
     <Component {...props} />
   </ScreenProvider>
 )
+
+export const useScreens = () => useContext(ScreenContext)
