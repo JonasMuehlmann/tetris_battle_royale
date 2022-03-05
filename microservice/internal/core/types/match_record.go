@@ -3,7 +3,7 @@ package types
 import "time"
 
 type MatchRecord struct {
-	ID           int       `db:"id" json:"id"`
+	ID           string    `db:"id" json:"id"`
 	UserID       string    `db:"user_id" json:"user_id"`
 	Win          bool      `db:"win" json:"win"`
 	Score        int       `db:"score" json:"score"`

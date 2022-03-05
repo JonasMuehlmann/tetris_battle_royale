@@ -20,3 +20,7 @@ func (service StatisticsService) GetPlayerProfile(userID string) (types.PlayerPr
 func (service StatisticsService) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
 	return service.StatisticsRepo.GetPlayerStatistics(userID)
 }
+
+func (service StatisticsService) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
+	return service.StatisticsRepo.GetMatchRecords(userID)
+}
