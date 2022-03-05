@@ -12,7 +12,7 @@ type StatisticsServicePort interface {
 	// GetPlayerProfileLastUpdateTime(userID string) (time.Time, error)
 
 	GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
-	// UpdatePlayerStatistics(userID string, newStatistics types.PlayerStatistics) error
+	UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error
 	// GetPlayerScore(userID string) (int, error)
 	// GetPlayerScorePerMinute(userID string) (float32, error)
 	// GetPlayerWinrate(userID string) (float32, error)
@@ -24,5 +24,5 @@ type StatisticsServicePort interface {
 
 	GetMatchRecords(userID string) ([]types.MatchRecord, error)
 	GetMatchRecord(matchID string) (types.MatchRecord, error)
-	// AddMatchRecord(userID string, record types.MatchRecord) error
+	// AddMatchRecord(record types.MatchRecord) error
 }

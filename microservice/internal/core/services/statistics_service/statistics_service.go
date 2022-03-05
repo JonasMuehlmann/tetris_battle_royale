@@ -36,3 +36,7 @@ func (service StatisticsService) GetMatchRecord(matchID string) (types.MatchReco
 func (service StatisticsService) UpdatePlayerProfile(newProfile types.PlayerProfile) error {
 	return service.StatisticsRepo.UpdatePlayerProfile(newProfile)
 }
+
+func (service StatisticsService) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
+	return service.StatisticsRepo.UpdatePlayerStatistics(newStatistics)
+}

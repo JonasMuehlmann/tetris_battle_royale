@@ -21,14 +21,22 @@ type statisticsServiceTestSuite struct {
 
 func (suite *statisticsServiceTestSuite) SetupTest() {
 	logger := common.NewDefaultLogger()
+	*log.Default() = *logger
+
 	db := repository.MakeDefaultPostgresTestDB(logger)
 	suite.DBConn = db.DBConn
-
-	defer db.DBConn.Close()
 
 	userRepo := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	statisticsRepo := repository.PostgresDatabaseStatisticsRepository{Logger: logger, PostgresDatabase: *db}
 	suite.service = statisticsService.StatisticsService{UserRepo: userRepo, StatisticsRepo: statisticsRepo, Logger: logger}
+}
+
+func (suite *statisticsServiceTestSuite) TearDownTest() {
+	err := suite.DBConn.Close()
+
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func TestRunStatisticsServiceTestSuite(t *testing.T) {
@@ -182,7 +190,7 @@ func (suite *statisticsServiceTestSuite) TestUpdatePlayerProfileBasic() {
 	_, err = suite.DBConn.Exec("INSERT INTO player_statistics(id) VALUES(0)")
 	suite.NoError(err)
 
-	_, err = suite.DBConn.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
+	_, err = suite.DBConn.Exec("INSERT INTO player_profiles(id) VALUES(0)")
 	suite.NoError(err)
 
 	date, err := time.Parse("2006-01-02 15:04:05", "1999-01-08 04:05:06")
@@ -197,5 +205,26 @@ func (suite *statisticsServiceTestSuite) TestUpdatePlayerProfileBasic() {
 		LastUpdate:         date.UTC(),
 	}
 	err = suite.service.UpdatePlayerProfile(newProfile)
+	suite.NoError(err)
+}
+
+func (suite *statisticsServiceTestSuite) TestUpdatePlayerStatisticsBasic() {
+	common.ResetDB(suite.DBConn)
+	_, err := suite.DBConn.Exec("INSERT INTO player_statistics(id) VALUES(0)")
+	suite.NoError(err)
+
+	newStatistics := types.PlayerStatistics{
+		ID:             0,
+		Score:          0,
+		ScorePerMinute: 0,
+		Wins:           0,
+		Losses:         0,
+		Winrate:        0,
+		WinsAsTop10:    0,
+		WinsAsTop5:     0,
+		WinsAsTop3:     0,
+		WinsAsTop1:     0,
+	}
+	err = suite.service.UpdatePlayerStatistics(newStatistics)
 	suite.NoError(err)
 }

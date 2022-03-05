@@ -74,3 +74,28 @@ WHERE
 
 	return nil
 }
+
+func (repo PostgresDatabaseStatisticsRepository) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
+	statement := `UPDATE
+    player_statistics
+SET
+    id = :id,
+    score = :score,
+    score_per_minute = :score_per_minute,
+    wins = :wins,
+    losses = :losses,
+    winrate = :winrate,
+    wins_as_top_10 = :wins_as_top_10,
+    wins_as_top_5 = :wins_as_top_5,
+    wins_as_top_3 = :wins_as_top_3,
+    wins_as_top_1 = :wins_as_top_1
+WHERE
+    id = :id`
+
+	_, err := repo.DBConn.NamedExec(statement, &newStatistics)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

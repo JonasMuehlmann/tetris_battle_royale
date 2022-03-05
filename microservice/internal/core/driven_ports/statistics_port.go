@@ -16,7 +16,7 @@ type StatisticsPort interface {
 	// SetPlayerRating(rating int) error
 
 	GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
-	// UpdatePlayerStatistics(userID string, newStatistics types.PlayerStatistics) error
+	UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error
 
 	// GetPlayerScore(userID string) (int, error)
 	// GetPlayerScorePerMinute(userID string) (float32, error)
@@ -38,5 +38,5 @@ type StatisticsPort interface {
 
 	GetMatchRecords(userID string) ([]types.MatchRecord, error)
 	GetMatchRecord(matchID string) (types.MatchRecord, error)
-	// AddMatchRecord(userID string, record types.MatchRecord) error
+	// AddMatchRecord(record types.MatchRecord) error
 }
