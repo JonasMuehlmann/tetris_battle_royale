@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { Screen, ScreenContext } from "../../contexts/screen-context";
+import { motion } from 'framer-motion'
 
 
 const Menu = () => {
@@ -26,15 +27,19 @@ const Menu = () => {
 
   return (
     <div className="w-full h-full flex flex-col z-20 relative">
-      <div className="flex w-full h-[160px] pt-5 px-20 items-center justify-center">
-        <ul className="flex text-white gap-4 bangers">
+      <div
+        className="flex w-full h-[160px] pt-5 px-20 items-center justify-center">
+        <ul className="flex items-center text-white gap-4 bangers">
           {
             leftItems.map((t, i) => (
               <li
+
                 key={i}
                 onClick={t.onClick}
-                className={`text-5xl 
-                  ${currentMenu?.text === t.text ? 'shadow green-grad-text' : 'opacity-40 hover:opacity-100'}
+                className={`
+                  ${currentMenu?.text === t.text ?
+                    'shadow green-grad-text text-5xl' :
+                    'opacity-40 hover:opacity-100 text-4xl '}
                   cursor-pointer transition-all w-[280px] text-center
                   `}>
                 {t.text}
@@ -50,14 +55,14 @@ const Menu = () => {
             Public Lobby
           </p>
         </h1>
-        <ul className="flex gap-4 text-white bangers">
+        <ul className="flex items-center gap-4 text-white bangers">
           {
             rightItems.map((t, i) => (
               <li
                 key={i}
                 onClick={t.onClick}
-                className={`text-5xl
-                ${currentMenu?.text === t.text ? 'shadow sway-animation' :
+                className={`text-4xl
+                ${currentMenu?.text === t.text ? 'shadow green-grad-text' :
                     'opacity-40 hover:opacity-100'}
                 cursor-pointer transition-all w-[280px] text-center`}>
                 {t.text}
@@ -87,7 +92,7 @@ const Menu = () => {
           }
         </ul>
       </div>
-    </div>
+    </div >
   )
 }
 

@@ -1,4 +1,4 @@
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useContext, useState } from 'react'
 import { DialogType, useDialog } from '../../contexts/dialog-context'
 import { Screen, ScreenContext } from '../../contexts/screen-context'
@@ -71,12 +71,14 @@ const LogIn = () => {
   }
 
   return (
-    <div className={`flex flex-col items-center justify-center z-20 
-      w-full h-full text-white relative`}>
-      <p className='absolute top-10 right-10'>
-        IN-DEVELOPMENT
-      </p>
-      <div className='flex flex-col items-center mb-16'>
+    <div
+      className={`flex flex-col items-center justify-center z-20 
+        w-full h-full text-white relative transition-all`}>
+      <motion.div
+        initial={{ opacity: 0, y: -window.innerHeight / 2 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 3, type: 'spring' }}
+        className='flex flex-col items-center mb-16'>
         <h2 className='text-9xl font-bold tetris-text tetris-shadow'>
           Tetris
         </h2>
@@ -86,7 +88,7 @@ const LogIn = () => {
         <p className='text-sm josefin'>
           Massively Multiplayer Classic Tetris
         </p>
-      </div>
+      </motion.div>
       <AnimatePresence
         exitBeforeEnter>
         {

@@ -3,8 +3,8 @@ import LogIn from '../screens/login/index'
 import Menu from "../screens/menu/index";
 
 export class Screen {
-  static LogIn = new Screen("login", LogIn)
-  static Menu = new Screen("menu", Menu)
+  static LogIn = new Screen("login")
+  static Menu = new Screen("menu")
   static Queue = new Screen("queue")
   static Tetris = new Screen("tetris")
   static Result = new Screen("result")

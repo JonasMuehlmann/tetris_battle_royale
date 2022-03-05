@@ -43,10 +43,10 @@ const SignInForm = (
 
   return (
     <motion.form
-      initial={{ opacity: 0, x: -200 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -200 }}
-      transition={{ type: 'spring', duration: 1 }}
+      initial={{ opacity: 0, x: -window.innerWidth / 2, scale: 0 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: -window.innerWidth / 2, scale: 0 }}
+      transition={{ type: 'spring', duration: 1.5 }}
       onSubmit={e => {
         e.preventDefault()
         if (isModelValid()) {
