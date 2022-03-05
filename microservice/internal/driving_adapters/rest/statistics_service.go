@@ -62,7 +62,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerStatisticsHandler(w http.Re
 func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	matchRecords, err := adapter.Service.GetPlayerMatchRecords(vars["userID"])
+	matchRecords, err := adapter.Service.GetMatchRecords(vars["userID"])
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
@@ -84,7 +84,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordsHandler(w http.
 func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	matchRecord, err := adapter.Service.GetPlayerMatchRecord(vars["matchID"])
+	matchRecord, err := adapter.Service.GetMatchRecord(vars["matchID"])
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
