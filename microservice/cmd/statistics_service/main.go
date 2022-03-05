@@ -13,8 +13,8 @@ func main() {
 	logger := log.New(os.Stdout, "TBR - ", log.Ltime|log.Lshortfile)
 
 	db := repository.MakeDefaultPostgresDB(logger)
-	statisticsRepository := postgresRepository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
-	statisticsService := statisticsService.StatisticsService{Logger: logger, UserRepo: statisticsRepository}
+	statisticsRepository := postgresRepository.PostgresDatabaseStatisticsRepository{Logger: logger, PostgresDatabase: *db}
+	statisticsService := statisticsService.StatisticsService{Logger: logger, StatisticsRepo: statisticsRepository}
 	statisticsServiceAdapter := drivingAdapters.StatisticsServiceRestAdapter{Logger: logger, Service: statisticsService}
 	statisticsServiceAdapter.Run()
 }
