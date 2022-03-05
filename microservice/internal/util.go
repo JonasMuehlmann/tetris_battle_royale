@@ -6,9 +6,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 )
+
+func NewDefaultLogger() *log.Logger {
+	return log.New(os.Stdout, "TBR - ", log.Ltime|log.Lshortfile)
+}
 
 func MakeJsonError(err string) string {
 	return "{error: \"" + err + "\"}"

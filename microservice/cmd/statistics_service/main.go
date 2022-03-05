@@ -1,16 +1,15 @@
 package main
 
 import (
-	"log"
+	common "microservice/internal"
 	postgresRepository "microservice/internal/core/driven_adapters/repository/postgres"
 	repository "microservice/internal/core/driven_adapters/repository/postgres"
 	statisticsService "microservice/internal/core/services/statistics_service"
 	drivingAdapters "microservice/internal/driving_adapters/rest"
-	"os"
 )
 
 func main() {
-	logger := log.New(os.Stdout, "TBR - ", log.Ltime|log.Lshortfile)
+	logger := common.NewDefaultLogger()
 
 	db := repository.MakeDefaultPostgresDB(logger)
 	statisticsRepository := postgresRepository.PostgresDatabaseStatisticsRepository{Logger: logger, PostgresDatabase: *db}
