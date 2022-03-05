@@ -40,3 +40,7 @@ func (service StatisticsService) UpdatePlayerProfile(newProfile types.PlayerProf
 func (service StatisticsService) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
 	return service.StatisticsRepo.UpdatePlayerStatistics(newStatistics)
 }
+
+func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error {
+	return service.StatisticsRepo.AddMatchRecord(record)
+}

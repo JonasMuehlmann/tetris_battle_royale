@@ -24,5 +24,5 @@ type StatisticsServicePort interface {
 
 	GetMatchRecords(userID string) ([]types.MatchRecord, error)
 	GetMatchRecord(matchID string) (types.MatchRecord, error)
-	// AddMatchRecord(record types.MatchRecord) error
+	AddMatchRecord(record types.MatchRecord) error
 }

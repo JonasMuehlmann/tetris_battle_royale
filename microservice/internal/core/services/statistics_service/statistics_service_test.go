@@ -210,6 +210,7 @@ func (suite *statisticsServiceTestSuite) TestUpdatePlayerProfileBasic() {
 
 func (suite *statisticsServiceTestSuite) TestUpdatePlayerStatisticsBasic() {
 	common.ResetDB(suite.DBConn)
+
 	_, err := suite.DBConn.Exec("INSERT INTO player_statistics(id) VALUES(0)")
 	suite.NoError(err)
 
@@ -226,5 +227,25 @@ func (suite *statisticsServiceTestSuite) TestUpdatePlayerStatisticsBasic() {
 		WinsAsTop1:     0,
 	}
 	err = suite.service.UpdatePlayerStatistics(newStatistics)
+	suite.NoError(err)
+}
+
+func (suite *statisticsServiceTestSuite) TestAddMatchRecordBasic() {
+	common.ResetDB(suite.DBConn)
+
+	_, err := suite.DBConn.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
+	suite.NoError(err)
+
+	record := types.MatchRecord{
+		ID:           "123e4567-e89b-12d3-a456-426614174000",
+		UserID:       "123e4567-e89b-12d3-a456-426614174000",
+		Win:          false,
+		Score:        0,
+		Start:        time.Time{},
+		Length:       0,
+		RatingChange: 0,
+	}
+
+	err = suite.service.AddMatchRecord(record)
 	suite.NoError(err)
 }
