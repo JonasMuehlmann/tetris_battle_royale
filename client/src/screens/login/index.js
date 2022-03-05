@@ -39,7 +39,7 @@ const LogIn = () => {
        * FOR UI TEST PURPOSE
        * COMMENT OUT IF SERVER IS ON
        */
-      setTimeout(() => { hideDialog() }, 2500)
+      setTimeout(() => { hideDialog(); navigate(Screen.Menu) }, 2500)
     } catch (error) {
       console.info(error)
     }
