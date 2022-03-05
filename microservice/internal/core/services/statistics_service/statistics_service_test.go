@@ -9,21 +9,24 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/suite"
 )
 
 type statisticsServiceTestSuite struct {
 	suite.Suite
-	db      *repository.PostgresDatabase
 	service statisticsService.StatisticsService
+	DBConn  *sqlx.DB
 }
 
 func (suite *statisticsServiceTestSuite) SetupTest() {
-	suite.db = repository.MakeDefaultPostgresTestDB(log.Default())
+	db := repository.MakeDefaultPostgresTestDB(log.Default())
 
-	userRepo := repository.PostgresDatabaseUserRepository{Logger: log.Default(), PostgresDatabase: *suite.db}
-	statisticsRepo := repository.PostgresDatabaseStatisticsRepository{Logger: log.Default(), PostgresDatabase: *suite.db}
+	userRepo := repository.PostgresDatabaseUserRepository{Logger: log.Default(), PostgresDatabase: *db}
+	statisticsRepo := repository.PostgresDatabaseStatisticsRepository{Logger: log.Default(), PostgresDatabase: *db}
 	suite.service = statisticsService.StatisticsService{UserRepo: userRepo, StatisticsRepo: statisticsRepo, Logger: log.Default()}
+
+	suite.DBConn = db.DBConn
 }
 
 func TestRunStatisticsServiceTestSuite(t *testing.T) {
@@ -31,23 +34,18 @@ func TestRunStatisticsServiceTestSuite(t *testing.T) {
 }
 
 func (suite *statisticsServiceTestSuite) TestGetPlayerProfileBasic() {
-	db, err := suite.db.GetConnection()
+	common.ResetDB(suite.DBConn)
+
+	_, err := suite.DBConn.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
 	suite.NoError(err)
 
-	defer db.Close()
-
-	common.ResetDB(db)
-
-	_, err = db.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
+	_, err = suite.DBConn.Exec("INSERT INTO player_ratings(id) VALUES(0)")
 	suite.NoError(err)
 
-	_, err = db.Exec("INSERT INTO player_ratings(id) VALUES(0)")
+	_, err = suite.DBConn.Exec("INSERT INTO player_statistics(id) VALUES(0)")
 	suite.NoError(err)
 
-	_, err = db.Exec("INSERT INTO player_statistics(id) VALUES(0)")
-	suite.NoError(err)
-
-	_, err = db.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
+	_, err = suite.DBConn.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
 	suite.NoError(err)
 
 	playerProfile, err := suite.service.GetPlayerProfile("123e4567-e89b-12d3-a456-426614174000")
@@ -67,24 +65,18 @@ func (suite *statisticsServiceTestSuite) TestGetPlayerProfileBasic() {
 }
 
 func (suite *statisticsServiceTestSuite) TestGetPlayerStatisticsBasic() {
-	db, err := suite.db.GetConnection()
+	common.ResetDB(suite.DBConn)
+
+	_, err := suite.DBConn.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
 	suite.NoError(err)
 
-	defer db.Close()
-
-	common.ResetDB(db)
+	_, err = suite.DBConn.Exec("INSERT INTO player_ratings(id) VALUES(0)")
 	suite.NoError(err)
 
-	_, err = db.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
+	_, err = suite.DBConn.Exec("INSERT INTO player_statistics VALUES(0, 0, 0.0, 0, 0, 0.0, 0, 0, 0, 0)")
 	suite.NoError(err)
 
-	_, err = db.Exec("INSERT INTO player_ratings(id) VALUES(0)")
-	suite.NoError(err)
-
-	_, err = db.Exec("INSERT INTO player_statistics VALUES(0, 0, 0.0, 0, 0, 0.0, 0, 0, 0, 0)")
-	suite.NoError(err)
-
-	_, err = db.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
+	_, err = suite.DBConn.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
 	suite.NoError(err)
 
 	playerStatistics, err := suite.service.GetPlayerStatistics("123e4567-e89b-12d3-a456-426614174000")
@@ -105,21 +97,15 @@ func (suite *statisticsServiceTestSuite) TestGetPlayerStatisticsBasic() {
 }
 
 func (suite *statisticsServiceTestSuite) TestGetMatchRecordsBasic() {
-	db, err := suite.db.GetConnection()
+	common.ResetDB(suite.DBConn)
+
+	_, err := suite.DBConn.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
 	suite.NoError(err)
 
-	defer db.Close()
-
-	common.ResetDB(db)
+	_, err = suite.DBConn.Exec("INSERT INTO match_records VALUES('123e4567-e89b-12d3-a456-426614174000','123e4567-e89b-12d3-a456-426614174000', TRUE, 0, 0, '1999-01-08 04:05:06', 0)")
 	suite.NoError(err)
 
-	_, err = db.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
-	suite.NoError(err)
-
-	_, err = db.Exec("INSERT INTO match_records VALUES('123e4567-e89b-12d3-a456-426614174000','123e4567-e89b-12d3-a456-426614174000', TRUE, 0, 0, '1999-01-08 04:05:06', 0)")
-	suite.NoError(err)
-
-	_, err = db.Exec("INSERT INTO match_records VALUES('123e4567-e89b-12d3-a456-426614173999','123e4567-e89b-12d3-a456-426614174000', TRUE, 0, 0, '1999-01-08 04:05:06', 0)")
+	_, err = suite.DBConn.Exec("INSERT INTO match_records VALUES('123e4567-e89b-12d3-a456-426614173999','123e4567-e89b-12d3-a456-426614174000', TRUE, 0, 0, '1999-01-08 04:05:06', 0)")
 	suite.NoError(err)
 
 	matchRecords, err := suite.service.GetMatchRecords("123e4567-e89b-12d3-a456-426614174000")
@@ -153,19 +139,14 @@ func (suite *statisticsServiceTestSuite) TestGetMatchRecordsBasic() {
 		},
 	})
 }
+
 func (suite *statisticsServiceTestSuite) TestGetMatchRecordBasic() {
-	db, err := suite.db.GetConnection()
+	common.ResetDB(suite.DBConn)
+
+	_, err := suite.DBConn.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
 	suite.NoError(err)
 
-	defer db.Close()
-
-	common.ResetDB(db)
-	suite.NoError(err)
-
-	_, err = db.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
-	suite.NoError(err)
-
-	_, err = db.Exec("INSERT INTO match_records VALUES('123e4567-e89b-12d3-a456-426614174000','123e4567-e89b-12d3-a456-426614174000', TRUE, 0, 0, '1999-01-08 04:05:06', 0)")
+	_, err = suite.DBConn.Exec("INSERT INTO match_records VALUES('123e4567-e89b-12d3-a456-426614174000','123e4567-e89b-12d3-a456-426614174000', TRUE, 0, 0, '1999-01-08 04:05:06', 0)")
 	suite.NoError(err)
 
 	matchRecord, err := suite.service.GetMatchRecord("123e4567-e89b-12d3-a456-426614174000")
@@ -185,4 +166,34 @@ func (suite *statisticsServiceTestSuite) TestGetMatchRecordBasic() {
 		Length:       0,
 		RatingChange: 0,
 	})
+}
+
+func (suite *statisticsServiceTestSuite) TestUpdatePlayerProfileBasic() {
+	common.ResetDB(suite.DBConn)
+
+	_, err := suite.DBConn.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
+	suite.NoError(err)
+
+	_, err = suite.DBConn.Exec("INSERT INTO player_ratings(id) VALUES(0)")
+	suite.NoError(err)
+
+	_, err = suite.DBConn.Exec("INSERT INTO player_statistics(id) VALUES(0)")
+	suite.NoError(err)
+
+	_, err = suite.DBConn.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
+	suite.NoError(err)
+
+	date, err := time.Parse("2006-01-02 15:04:05", "1999-01-08 04:05:06")
+	suite.NoError(err)
+
+	newProfile := types.PlayerProfile{
+		ID:                 0,
+		UserID:             "123e4567-e89b-12d3-a456-426614174000",
+		Playtime:           0,
+		PlayerRatingID:     0,
+		PlayerStatisticsID: 0,
+		LastUpdate:         date.UTC(),
+	}
+	err = suite.service.UpdatePlayerProfile(newProfile)
+	suite.NoError(err)
 }

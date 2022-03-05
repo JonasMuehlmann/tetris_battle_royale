@@ -6,11 +6,13 @@ import (
 
 type StatisticsServicePort interface {
 	GetPlayerProfile(userID string) (types.PlayerProfile, error)
+	UpdatePlayerProfile(newProfile types.PlayerProfile) error
 	// GetPlayerPlaytime(userID string) (int, error)
 	// GetPlayerRating(userID string) (int, error)
 	// GetPlayerProfileLastUpdateTime(userID string) (time.Time, error)
 
 	GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
+	// UpdatePlayerStatistics(userID string, newStatistics types.PlayerStatistics) error
 	// GetPlayerScore(userID string) (int, error)
 	// GetPlayerScorePerMinute(userID string) (float32, error)
 	// GetPlayerWinrate(userID string) (float32, error)
@@ -22,4 +24,5 @@ type StatisticsServicePort interface {
 
 	GetMatchRecords(userID string) ([]types.MatchRecord, error)
 	GetMatchRecord(matchID string) (types.MatchRecord, error)
+	// AddMatchRecord(userID string, record types.MatchRecord) error
 }
