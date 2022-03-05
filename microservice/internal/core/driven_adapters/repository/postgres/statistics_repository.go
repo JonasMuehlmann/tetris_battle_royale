@@ -99,3 +99,15 @@ WHERE
 
 	return nil
 }
+
+func (repo PostgresDatabaseStatisticsRepository) AddMatchRecord(record types.MatchRecord) error {
+
+	statement := "INSERT INTO match_records VALUES(:id, :user_id, :win, :score, :length, :start, :rating_change)"
+
+	_, err := repo.DBConn.NamedExec(statement, &record)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
