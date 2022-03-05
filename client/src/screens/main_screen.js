@@ -4,6 +4,7 @@ import { Screen, useScreens, withScreenContext } from "../contexts/screen-contex
 import ErrorScreen from "./404";
 import LogInScreen from "./login";
 import LobbyScreen from "./lobby";
+import FriendsBox from "../components/friends_box";
 
 const MainScreen = () => {
   const {
@@ -37,6 +38,7 @@ const MainScreen = () => {
                 transition={{ duration: 2, type: 'spring' }}
                 key={currentScreen.name}>
                 <LobbyScreen />
+                <FriendsBox />
               </motion.div>
             )
         }

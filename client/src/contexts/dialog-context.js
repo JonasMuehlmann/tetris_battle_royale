@@ -1,14 +1,17 @@
 import React, { useContext, useState } from "react";
-import Loader from "../components/loader";
 
 export class DialogType {
   static Warning = new DialogType("warning")
   static Info = new DialogType("info")
-  static Load = new DialogType("load")
+  static Load = new DialogType(
+    "load",
+    "Loading..",
+    "It won\'t take long.."
+  )
   static Authenticate = new DialogType(
     "authenticate",
     "Authenticating..",
-    "It won\'t take long.."
+    "Validating account.."
   )
 
   constructor(type, title, content) {

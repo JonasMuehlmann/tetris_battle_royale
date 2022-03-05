@@ -9,7 +9,7 @@ const Menu = () => {
 
   return (
     <div
-      className="flex w-full h-[200px] px-20 items-center justify-center">
+      className="flex w-full h-[220px] px-20 items-center justify-center">
       <ul className="flex items-center text-white gap-4 bangers">
         {
           [MenuItem.Matchfinder, MenuItem.Statistics]
@@ -30,10 +30,11 @@ const Menu = () => {
       </ul>
       <h1 className={`shadow text-center opacity-80 mx-8`}>
         <GlowingText
+          glow={false}
           className={`text-4xl font-bold`}>
           Tetris Battle Royale
         </GlowingText>
-        <p className="text-lg text-white opacity-60 border-t border-zinc-600 pt-1 mt-3 mx-36 truncate">
+        <p className="text-xl text-white opacity-60 border-t border-zinc-600 pt-2 mt-3 mx-36 truncate">
           Public Lobby
         </p>
       </h1>

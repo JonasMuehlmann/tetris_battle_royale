@@ -34,9 +34,8 @@ const Matchfinder = () => {
             }}
             className={`
               text-left cursor-pointer transition-all w-[480px]
-              p-0
               ${t.request === queueType ?
-                'pl-10' :
+                'opacity-100 pl-10' :
                 queueType === null ?
                   'opacity-30 hover:opacity-100 hover:pl-10' :
                   'opacity-10 cursor-not-allowed'}`}>
