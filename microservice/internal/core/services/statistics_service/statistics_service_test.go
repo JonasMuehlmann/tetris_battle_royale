@@ -153,3 +153,36 @@ func (suite *statisticsServiceTestSuite) TestGetMatchRecordsBasic() {
 		},
 	})
 }
+func (suite *statisticsServiceTestSuite) TestGetMatchRecordBasic() {
+	db, err := suite.db.GetConnection()
+	suite.NoError(err)
+
+	defer db.Close()
+
+	common.ResetDB(db)
+	suite.NoError(err)
+
+	_, err = db.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
+	suite.NoError(err)
+
+	_, err = db.Exec("INSERT INTO match_records VALUES('123e4567-e89b-12d3-a456-426614174000','123e4567-e89b-12d3-a456-426614174000', TRUE, 0, 0, '1999-01-08 04:05:06', 0)")
+	suite.NoError(err)
+
+	matchRecord, err := suite.service.GetMatchRecord("123e4567-e89b-12d3-a456-426614174000")
+	suite.NoError(err)
+
+	matchRecord.Start = matchRecord.Start.UTC()
+
+	date, err := time.Parse("2006-01-02 15:04:05", "1999-01-08 04:05:06")
+	suite.NoError(err)
+
+	suite.Equal(matchRecord, types.MatchRecord{
+		ID:           "123e4567-e89b-12d3-a456-426614174000",
+		UserID:       "123e4567-e89b-12d3-a456-426614174000",
+		Win:          true,
+		Score:        0,
+		Start:        date.UTC(),
+		Length:       0,
+		RatingChange: 0,
+	})
+}

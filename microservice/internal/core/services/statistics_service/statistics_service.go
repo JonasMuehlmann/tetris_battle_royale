@@ -24,3 +24,7 @@ func (service StatisticsService) GetPlayerStatistics(userID string) (types.Playe
 func (service StatisticsService) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
 	return service.StatisticsRepo.GetMatchRecords(userID)
 }
+
+func (service StatisticsService) GetMatchRecord(matchID string) (types.MatchRecord, error) {
+	return service.StatisticsRepo.GetMatchRecord(matchID)
+}

@@ -21,5 +21,5 @@ type StatisticsServicePort interface {
 	// GetPlayerNumWinsAsTop1(userID string) (int, error)
 
 	GetMatchRecords(userID string) ([]types.MatchRecord, error)
-	// GetMatchRecord(matchID int) (types.MatchRecord, error)
+	GetMatchRecord(matchID string) (types.MatchRecord, error)
 }

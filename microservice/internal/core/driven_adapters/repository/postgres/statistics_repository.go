@@ -39,3 +39,32 @@ func (repo PostgresDatabaseStatisticsRepository) GetPlayerStatistics(userID stri
 
 	return playerStatistics, nil
 }
+
+func (repo PostgresDatabaseStatisticsRepository) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
+	var matchRecords []types.MatchRecord
+	db, err := repo.GetConnection()
+	if err != nil {
+		return []types.MatchRecord{}, err
+	}
+
+	err = db.Select(&matchRecords, "SELECT * FROM  match_records WHERE user_id = $1", userID)
+	if err != nil {
+		return []types.MatchRecord{}, err
+	}
+
+	return matchRecords, nil
+}
+func (repo PostgresDatabaseStatisticsRepository) GetMatchRecord(matchID string) (types.MatchRecord, error) {
+	var matchRecord types.MatchRecord
+	db, err := repo.GetConnection()
+	if err != nil {
+		return types.MatchRecord{}, err
+	}
+
+	err = db.Get(&matchRecord, "SELECT * FROM  match_records WHERE id = $1", matchID)
+	if err != nil {
+		return types.MatchRecord{}, err
+	}
+
+	return matchRecord, nil
+}

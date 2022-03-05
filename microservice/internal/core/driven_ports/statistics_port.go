@@ -33,7 +33,7 @@ type StatisticsPort interface {
 	// SetPlayerNumWinsAsTop1(userID string) error
 
 	GetMatchRecords(userID string) ([]types.MatchRecord, error)
-	// GetMatchRecord(matchID int) (types.MatchRecord, error)
+	GetMatchRecord(matchID string) (types.MatchRecord, error)
 
 	// AddMatchRecord(userID string, record types.MatchRecord) error
 }
