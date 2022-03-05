@@ -1,18 +1,26 @@
-import { useContext, useState } from "react";
-import { Screen, ScreenContext, useScreens } from "../../contexts/screen-context";
+import { useScreens } from "../../contexts/screen-context";
 import { AnimatePresence, motion } from 'framer-motion'
+import { MoonLoader, RingLoader } from 'react-spinners'
 import Menu from "../../components/menu";
 import { MenuItem, useMenu, withMenuContext } from "../../contexts/menu-context";
 import Matchfinder from "./matchfinder";
 import PlayerProfile from "./player_profile";
 import PlayerSettings from "./player_settings";
 import Statistics from "./statistics";
+import { useQueue, withQueue } from "../../contexts/queue-context";
+import QueueBox from "../../components/queue_box";
 
 const LobbyScreen = () => {
   const { navigate } = useScreens()
+
   const {
     currentMenu,
   } = useMenu()
+
+  const {
+    isInQueue,
+    setIsInQueue,
+  } = useQueue()
 
   const renderCurrentMenu = () => (
     <AnimatePresence exitBeforeEnter>
@@ -77,8 +85,9 @@ const LobbyScreen = () => {
       <div className="flex justify-between px-52 py-16">
         {renderCurrentMenu()}
       </div>
+      <QueueBox />
     </div >
   )
 }
 
-export default withMenuContext(LobbyScreen)
+export default withQueue(withMenuContext(LobbyScreen))
