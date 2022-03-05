@@ -13,18 +13,9 @@ type PostgresDatabaseSessionRepository struct {
 }
 
 func (repo PostgresDatabaseSessionRepository) CreateSession(userID string) (string, error) {
-
 	session := types.Session{ID: "", UserID: userID, CreationTime: time.Now()}
 
-	db, err := repo.GetConnection()
-
-	if err != nil {
-		return "", err
-	}
-
-	defer db.Close()
-
-	err = db.QueryRow("INSERT INTO sessions(id, user_ID, creation_time) VALUES(uuid_generate_v4(), $1, $2) RETURNING ID", session.UserID, session.CreationTime).Scan(&session.ID)
+	err := repo.DBConn.QueryRow("INSERT INTO sessions(id, user_ID, creation_time) VALUES(uuid_generate_v4(), $1, $2) RETURNING ID", session.UserID, session.CreationTime).Scan(&session.ID)
 	if err != nil {
 		log.Printf("Error: %v", err)
 
@@ -37,15 +28,7 @@ func (repo PostgresDatabaseSessionRepository) CreateSession(userID string) (stri
 func (repo PostgresDatabaseSessionRepository) GetSession(userID string) (types.Session, error) {
 	session := types.Session{}
 
-	db, err := repo.GetConnection()
-
-	if err != nil {
-		return session, err
-	}
-
-	defer db.Close()
-
-	err = db.Get(&session, "SELECT * FROM sessions WHERE user_ID = $1", userID)
+	err := repo.DBConn.Get(&session, "SELECT * FROM sessions WHERE user_ID = $1", userID)
 	if err != nil {
 		return types.Session{}, errors.New("Failed to retrieve session")
 	}
@@ -54,15 +37,7 @@ func (repo PostgresDatabaseSessionRepository) GetSession(userID string) (types.S
 }
 
 func (repo PostgresDatabaseSessionRepository) DeleteSession(sessionID string) error {
-	db, err := repo.GetConnection()
-
-	if err != nil {
-		return err
-	}
-
-	defer db.Close()
-
-	res, err := db.Exec("DELETE FROM sessions WHERE ID = $1", sessionID)
+	res, err := repo.DBConn.Exec("DELETE FROM sessions WHERE ID = $1", sessionID)
 	if err != nil {
 		return err
 	}
