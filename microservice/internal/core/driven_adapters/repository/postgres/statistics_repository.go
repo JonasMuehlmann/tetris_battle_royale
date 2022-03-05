@@ -54,6 +54,7 @@ func (repo PostgresDatabaseStatisticsRepository) GetMatchRecords(userID string) 
 
 	return matchRecords, nil
 }
+
 func (repo PostgresDatabaseStatisticsRepository) GetMatchRecord(matchID string) (types.MatchRecord, error) {
 	var matchRecord types.MatchRecord
 	db, err := repo.GetConnection()
