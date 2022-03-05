@@ -24,3 +24,18 @@ func (repo PostgresDatabaseStatisticsRepository) GetPlayerProfile(userID string)
 
 	return playerProfile, nil
 }
+
+func (repo PostgresDatabaseStatisticsRepository) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
+	var playerStatistics types.PlayerStatistics
+	db, err := repo.GetConnection()
+	if err != nil {
+		return types.PlayerStatistics{}, err
+	}
+
+	err = db.Get(&playerStatistics, "SELECT player_statistics.* FROM player_statistics LEFT JOIN player_profiles ON player_profiles.player_statistics_id = player_statistics.id WHERE user_id = $1", userID)
+	if err != nil {
+		return types.PlayerStatistics{}, err
+	}
+
+	return playerStatistics, nil
+}
