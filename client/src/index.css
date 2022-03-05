@@ -56,13 +56,24 @@ input {
 }
 
 .green-grad-text {
-  background-color: #f2cf43;
+  background-color: #EFEFEF33;
   background-image: linear-gradient(275deg, #f2cf43 0%, #19a186 36%, #f9484a 74%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-size: 200%;
   animation: gradual 3s ease-out infinite alternate;
+}
+
+.white-clip-text {
+  background-color: #EFEFEF33;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.white-clip-text:hover {
+  background-color: #19a18699;
 }
 
 .tetris-shadow {

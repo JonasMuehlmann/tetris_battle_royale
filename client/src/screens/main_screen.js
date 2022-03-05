@@ -31,8 +31,8 @@ const MainScreen = (props) => {
           (
             <motion.div
               className="w-screen h-screen"
-              initial={{ opacity: 0, x: window.innerWidth }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: -window.innerHeight }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: window.innerWidth }}
               transition={{ duration: 3, type: 'spring' }}
               key={currentScreen.name}>

@@ -28,18 +28,18 @@ const Menu = () => {
   return (
     <div className="w-full h-full flex flex-col z-20 relative">
       <div
-        className="flex w-full h-[160px] pt-5 px-20 items-center justify-center">
+        className="flex w-full h-[200px] px-20 items-center justify-center">
         <ul className="flex items-center text-white gap-4 bangers">
           {
             leftItems.map((t, i) => (
               <li
 
                 key={i}
-                onClick={t.onClick}
+                onClick={() => setCurrentMenu(t)}
                 className={`
                   ${currentMenu?.text === t.text ?
                     'shadow green-grad-text text-5xl' :
-                    'opacity-40 hover:opacity-100 text-4xl '}
+                    'text-4xl white-clip-text'}
                   cursor-pointer transition-all w-[280px] text-center
                   `}>
                 {t.text}
@@ -60,10 +60,11 @@ const Menu = () => {
             rightItems.map((t, i) => (
               <li
                 key={i}
-                onClick={t.onClick}
+                onClick={() => setCurrentMenu(t)}
                 className={`text-4xl
-                ${currentMenu?.text === t.text ? 'shadow green-grad-text' :
-                    'opacity-40 hover:opacity-100'}
+                ${currentMenu?.text === t.text ?
+                    'shadow text-5xl green-grad-text' :
+                    'white-clip-text'}
                 cursor-pointer transition-all w-[280px] text-center`}>
                 {t.text}
               </li>
