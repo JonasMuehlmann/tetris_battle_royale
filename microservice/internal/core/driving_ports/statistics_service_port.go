@@ -10,7 +10,7 @@ type StatisticsServicePort interface {
 	// GetPlayerRating(userID string) (int, error)
 	// GetPlayerProfileLastUpdateTime(userID string) (time.Time, error)
 
-	// GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
+	GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
 	// GetPlayerScore(userID string) (int, error)
 	// GetPlayerScorePerMinute(userID string) (float32, error)
 	// GetPlayerWinrate(userID string) (float32, error)

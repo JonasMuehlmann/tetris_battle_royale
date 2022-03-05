@@ -13,7 +13,7 @@ type StatisticsPort interface {
 	// SetPlayerPlaytime(userID string) error
 	// SetPlayerRating(rating int) error
 
-	// GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
+	GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
 	// GetPlayerScore(userID string) (int, error)
 	// GetPlayerScorePerMinute(userID string) (float32, error)
 	// GetPlayerWinrate(userID string) (float32, error)

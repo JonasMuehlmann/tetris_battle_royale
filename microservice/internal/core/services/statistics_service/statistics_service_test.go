@@ -63,3 +63,39 @@ func (suite *statisticsServiceTestSuite) TestGetPlayerProfileBasic() {
 	})
 	suite.NoError(err)
 }
+
+func (suite *statisticsServiceTestSuite) TestGetPlayerStatisticsBasic() {
+	db, err := suite.db.GetConnection()
+	suite.NoError(err)
+
+	common.ResetDB(db)
+	suite.NoError(err)
+
+	_, err = db.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
+	suite.NoError(err)
+
+	_, err = db.Exec("INSERT INTO player_ratings(id) VALUES(0)")
+	suite.NoError(err)
+
+	_, err = db.Exec("INSERT INTO player_statistics VALUES(0, 0, 0.0, 0, 0, 0.0, 0, 0, 0, 0)")
+	suite.NoError(err)
+
+	_, err = db.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
+	suite.NoError(err)
+
+	playerProfile, err := suite.service.GetPlayerStatistics("123e4567-e89b-12d3-a456-426614174000")
+
+	suite.Equal(playerProfile, types.PlayerStatistics{
+		ID:             0,
+		Score:          0,
+		ScorePerMinute: 0,
+		Wins:           0,
+		Losses:         0,
+		Winrate:        0,
+		WinsAsTop10:    0,
+		WinsAsTop5:     0,
+		WinsAsTop3:     0,
+		WinsAsTop1:     0,
+	})
+	suite.NoError(err)
+}

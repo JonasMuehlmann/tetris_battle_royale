@@ -37,10 +37,33 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerProfileHandler(w http.Respo
 	common.TryWriteResponse(w, `{"playerProfile": "`+string(marhshalleDplayerProfile)+`"}`)
 }
 
+func (adapter StatisticsServiceRestAdapter) GetPlayerStatisticsHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	playerStatistics, err := adapter.Service.GetPlayerStatistics(vars["userID"])
+	if err != nil {
+		adapter.Logger.Printf("Error: %v", err)
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
+	}
+
+	marhshalleDplayerProfile, err := json.Marshal(playerStatistics)
+	if err != nil {
+		adapter.Logger.Printf("Error: %v", err)
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
+	}
+
+	common.TryWriteResponse(w, `{"playerStatistics": "`+string(marhshalleDplayerProfile)+`"}`)
+}
+
 func (adapter StatisticsServiceRestAdapter) Run() {
 	mux := mux.NewRouter()
 
 	mux.HandleFunc("/playerProfile/{userID:[a-zA-Z0-9]+}", adapter.GetPlayerProfileHandler).Methods("GET")
+	mux.HandleFunc("/playerStatistics/{userID:[a-zA-Z0-9]+}", adapter.GetPlayerStatisticsHandler).Methods("GET")
 
 	adapter.Logger.Println("Starting server on Port 8080")
 	log.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))

@@ -7,8 +7,8 @@ type PlayerStatistics struct {
 	Wins           int     `db:"wins" json:"wins"`
 	Losses         int     `db:"losses" json:"losses"`
 	Winrate        float32 `db:"winrate" json:"winrate"`
-	WinsAsTop10    int     `db:"wins_as_top10" json:"wins_as_top10"`
-	WinsAsTop5     int     `db:"wins_as_top5" json:"wins_as_top5"`
-	WinsAsTop3     int     `db:"wins_as_top3" json:"wins_as_top3"`
-	WinsAsTop1     int     `db:"wins_as_top1" json:"wins_as_top1"`
+	WinsAsTop10    int     `db:"wins_as_top_10" json:"wins_as_top_10"`
+	WinsAsTop5     int     `db:"wins_as_top_5" json:"wins_as_top_5"`
+	WinsAsTop3     int     `db:"wins_as_top_3" json:"wins_as_top_3"`
+	WinsAsTop1     int     `db:"wins_as_top_1" json:"wins_as_top_1"`
 }

@@ -16,3 +16,7 @@ type StatisticsService struct {
 func (service StatisticsService) GetPlayerProfile(userID string) (types.PlayerProfile, error) {
 	return service.StatisticsRepo.GetPlayerProfile(userID)
 }
+
+func (service StatisticsService) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
+	return service.StatisticsRepo.GetPlayerStatistics(userID)
+}
