@@ -34,7 +34,7 @@ func MakePostgresDB(host string, port int, username string, dbName string, logge
 
 	conn, err := db.GetConnection()
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	db.DBConn = conn
@@ -163,6 +163,8 @@ func (dbImpl *PostgresDatabase) GetConnection() (*sqlx.DB, error) {
 	}
 
 	dbImpl.Logger.Println("Successfully opened db connection")
+
+	db.SetMaxOpenConns(5)
 
 	return db, nil
 }

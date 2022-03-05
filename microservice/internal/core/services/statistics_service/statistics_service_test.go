@@ -20,13 +20,15 @@ type statisticsServiceTestSuite struct {
 }
 
 func (suite *statisticsServiceTestSuite) SetupTest() {
-	db := repository.MakeDefaultPostgresTestDB(log.Default())
-
-	userRepo := repository.PostgresDatabaseUserRepository{Logger: log.Default(), PostgresDatabase: *db}
-	statisticsRepo := repository.PostgresDatabaseStatisticsRepository{Logger: log.Default(), PostgresDatabase: *db}
-	suite.service = statisticsService.StatisticsService{UserRepo: userRepo, StatisticsRepo: statisticsRepo, Logger: log.Default()}
-
+	logger := common.NewDefaultLogger()
+	db := repository.MakeDefaultPostgresTestDB(logger)
 	suite.DBConn = db.DBConn
+
+	defer db.DBConn.Close()
+
+	userRepo := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
+	statisticsRepo := repository.PostgresDatabaseStatisticsRepository{Logger: logger, PostgresDatabase: *db}
+	suite.service = statisticsService.StatisticsService{UserRepo: userRepo, StatisticsRepo: statisticsRepo, Logger: logger}
 }
 
 func TestRunStatisticsServiceTestSuite(t *testing.T) {
