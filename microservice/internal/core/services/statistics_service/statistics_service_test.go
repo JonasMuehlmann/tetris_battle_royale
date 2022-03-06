@@ -28,7 +28,7 @@ func (suite *statisticsServiceTestSuite) SetupTest() {
 
 	userRepo := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	statisticsRepo := repository.PostgresDatabaseStatisticsRepository{Logger: logger, PostgresDatabase: *db}
-	suite.service = statisticsService.StatisticsService{UserRepo: userRepo, StatisticsRepo: statisticsRepo, Logger: logger}
+	suite.service = statisticsService.StatisticsService{UserRepository: userRepo, StatisticsRepository: statisticsRepo, Logger: logger}
 }
 
 func (suite *statisticsServiceTestSuite) TearDownTest() {

@@ -10,12 +10,12 @@ import (
 	"github.com/google/uuid"
 )
 
-type RedisSessionRepo struct {
+type RedisSessionRepository struct {
 	RedisStore
 	Logger *log.Logger
 }
 
-func (repo RedisSessionRepo) CreateSession(userID string) (string, error) {
+func (repo RedisSessionRepository) CreateSession(userID string) (string, error) {
 	session := types.Session{UserID: userID, CreationTime: time.Now()}
 
 	uuid.EnableRandPool()
@@ -34,7 +34,7 @@ func (repo RedisSessionRepo) CreateSession(userID string) (string, error) {
 	return session.ID, nil
 }
 
-func (repo RedisSessionRepo) GetSession(userID string) (types.Session, error) {
+func (repo RedisSessionRepository) GetSession(userID string) (types.Session, error) {
 	var session types.Session
 
 	sessionMarshalled, err := repo.Client.Get(context.Background(), userID).Bytes()
@@ -50,6 +50,6 @@ func (repo RedisSessionRepo) GetSession(userID string) (types.Session, error) {
 	return session, nil
 }
 
-func (repo RedisSessionRepo) DeleteSession(sessionID string) error {
+func (repo RedisSessionRepository) DeleteSession(sessionID string) error {
 	return repo.Client.Del(context.Background(), sessionID).Err()
 }

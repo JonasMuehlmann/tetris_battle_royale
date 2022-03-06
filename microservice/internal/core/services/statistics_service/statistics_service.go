@@ -2,45 +2,45 @@ package statisticsService
 
 import (
 	"log"
-	drivenPorts "microservice/internal/core/driven_ports"
+	"microservice/internal/core/driven_ports/repository"
 	"microservice/internal/core/types"
 )
 
 type StatisticsService struct {
-	UserRepo       drivenPorts.UserPort
-	StatisticsRepo drivenPorts.StatisticsPort
-	Logger         *log.Logger
+	UserRepository       repository.UserRepositoryPort
+	StatisticsRepository repository.StatisticsRepositoryPort
+	Logger               *log.Logger
 }
 
 // TODO: Validate if user exists
 func (service StatisticsService) GetPlayerProfile(userID string) (types.PlayerProfile, error) {
-	return service.StatisticsRepo.GetPlayerProfile(userID)
+	return service.StatisticsRepository.GetPlayerProfile(userID)
 }
 
 func (service StatisticsService) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
-	return service.StatisticsRepo.GetPlayerStatistics(userID)
+	return service.StatisticsRepository.GetPlayerStatistics(userID)
 }
 
 func (service StatisticsService) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
-	return service.StatisticsRepo.GetMatchRecords(userID)
+	return service.StatisticsRepository.GetMatchRecords(userID)
 }
 
 func (service StatisticsService) GetMatchRecord(matchID string) (types.MatchRecord, error) {
-	return service.StatisticsRepo.GetMatchRecord(matchID)
+	return service.StatisticsRepository.GetMatchRecord(matchID)
 }
 
 // func (service StatisticsService) AddMatchRecord(matchID string, record types.MatchRecord) error {
-// 	return service.StatisticsRepo.AddMatchRecord(matchID, record)
+// 	return service.StatisticsRepository.AddMatchRecord(matchID, record)
 // }
 
 func (service StatisticsService) UpdatePlayerProfile(newProfile types.PlayerProfile) error {
-	return service.StatisticsRepo.UpdatePlayerProfile(newProfile)
+	return service.StatisticsRepository.UpdatePlayerProfile(newProfile)
 }
 
 func (service StatisticsService) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
-	return service.StatisticsRepo.UpdatePlayerStatistics(newStatistics)
+	return service.StatisticsRepository.UpdatePlayerStatistics(newStatistics)
 }
 
 func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error {
-	return service.StatisticsRepo.AddMatchRecord(record)
+	return service.StatisticsRepository.AddMatchRecord(record)
 }

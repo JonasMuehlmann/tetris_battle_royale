@@ -13,7 +13,7 @@ func main() {
 
 	db := repository.MakeDefaultPostgresDB(logger)
 	statisticsRepository := postgresRepository.PostgresDatabaseStatisticsRepository{Logger: logger, PostgresDatabase: *db}
-	statisticsService := statisticsService.StatisticsService{Logger: logger, StatisticsRepo: statisticsRepository}
+	statisticsService := statisticsService.StatisticsService{Logger: logger, StatisticsRepository: statisticsRepository}
 	statisticsServiceAdapter := drivingAdapters.StatisticsServiceRestAdapter{Logger: logger, Service: statisticsService}
 	statisticsServiceAdapter.Run()
 }

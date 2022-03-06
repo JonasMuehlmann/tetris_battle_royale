@@ -20,7 +20,7 @@ func main() {
 	userRepository := postgresRepository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	sessionRepository := repository.PostgresDatabaseSessionRepository{Logger: logger, PostgresDatabase: *db}
 	// sessionRepository := redisRepository.RedisSessionRepo{Logger: logger, RedisStore: redisRepository.MakeDefaultRedisStore(logger)}
-	userService := userService.UserService{Logger: logger, UserRepo: userRepository, SessionRepo: sessionRepository}
+	userService := userService.UserService{Logger: logger, UserRepository: userRepository, SessionRepository: sessionRepository}
 	userServiceAdapter := drivingAdapters.UserServiceRestAdapter{Logger: logger, Service: userService}
 	userServiceAdapter.Run()
 }

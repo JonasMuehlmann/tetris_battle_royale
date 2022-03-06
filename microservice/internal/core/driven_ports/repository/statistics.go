@@ -1,10 +1,10 @@
-package drivenPorts
+package repository
 
 import (
 	types "microservice/internal/core/types"
 )
 
-type StatisticsPort interface {
+type StatisticsRepositoryPort interface {
 	GetPlayerProfile(userID string) (types.PlayerProfile, error)
 	UpdatePlayerProfile(newProfile types.PlayerProfile) error
 
