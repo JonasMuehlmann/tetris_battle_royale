@@ -14,7 +14,7 @@ const MatchSize = 3
 type MatchmakingService struct {
 	UserRepository        repoPorts.UserRepositoryPort
 	Logger                *log.Logger
-	Queue                 map[int]bool
+	Queue                 map[string]bool
 	GameServiceGrpcClient gameServiceProto.GameServiceClient
 }
 
@@ -29,14 +29,14 @@ func MakeMatchmakingService(userRepo repoPorts.UserRepositoryPort, logger *log.L
 	matchmakingService := MatchmakingService{
 		UserRepository:        userRepo,
 		Logger:                logger,
-		Queue:                 make(map[int]bool),
+		Queue:                 make(map[string]bool),
 		GameServiceGrpcClient: gameServiceGrpcClient,
 	}
 
 	return matchmakingService, nil
 }
 
-func (service MatchmakingService) Join(userID int) error {
+func (service MatchmakingService) Join(userID string) error {
 	service.Queue[userID] = true
 
 	service.Logger.Printf("Player %v joined the queue", userID)
@@ -51,7 +51,7 @@ func (service MatchmakingService) Join(userID int) error {
 	return nil
 }
 
-func (service MatchmakingService) Leave(userID int) error {
+func (service MatchmakingService) Leave(userID string) error {
 	delete(service.Queue, userID)
 
 	service.Logger.Printf("Player %v left the queue", userID)
@@ -60,11 +60,11 @@ func (service MatchmakingService) Leave(userID int) error {
 }
 
 func (service MatchmakingService) startGame() error {
-	userIDList := make([]int64, 0, len(service.Queue))
+	userIDList := make([]string, 0, len(service.Queue))
 
 	for k, v := range service.Queue {
 		if v {
-			userIDList = append(userIDList, int64(k))
+			userIDList = append(userIDList, k)
 		}
 	}
 

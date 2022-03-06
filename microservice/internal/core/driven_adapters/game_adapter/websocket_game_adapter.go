@@ -9,23 +9,23 @@ import (
 
 type WebsocketGameAdapter struct {
 	Logger            *log.Logger
-	PlayerConnections map[int]websocket.Conn
+	PlayerConnections map[string]websocket.Conn
 }
 
 func MakeWebsocketGameAdapter(logger *log.Logger) WebsocketGameAdapter {
 	return WebsocketGameAdapter{
 		Logger:            logger,
-		PlayerConnections: make(map[int]websocket.Conn),
+		PlayerConnections: make(map[string]websocket.Conn),
 	}
 }
 
-func (adapter WebsocketGameAdapter) ConnectPlayer(userID int, connection interface{}) error {
+func (adapter WebsocketGameAdapter) ConnectPlayer(userID string, connection interface{}) error {
 	adapter.PlayerConnections[userID] = connection.(websocket.Conn)
 
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID int, matchID int) error {
+func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID string) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)

@@ -56,14 +56,14 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 
 	// TODO: Validate if user exists
 
-	userId, err := strconv.ParseInt(body["userId"].(string), 10, 32)
-	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+	userId, ok := body["userId"].(string)
+	if !ok {
+		adapter.Logger.Printf("Error: Could not unmarshal request body")
 		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
 
-	err = adapter.Service.Join(int(userId))
+	err = adapter.Service.Join(userId)
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -81,14 +81,14 @@ func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter,
 
 	// TODO: Validate if user exists
 
-	userID, err := strconv.ParseInt(body["userId"].(string), 10, 32)
-	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+	userID, ok := body["userId"].(string)
+	if !ok {
+		adapter.Logger.Printf("Error: Could not unmarshal request body")
 		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
 
-	err = adapter.Service.Leave(int(userID))
+	err = adapter.Service.Leave(userID)
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)

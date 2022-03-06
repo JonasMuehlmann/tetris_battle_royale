@@ -1,6 +1,6 @@
 package drivingPorts
 
 type MatchmakingServicePort interface {
-	Join(userID int) error
-	Leave(userID int) error
+	Join(userID string) error
+	Leave(userID string) error
 }

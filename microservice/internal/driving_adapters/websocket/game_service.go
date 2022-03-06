@@ -6,7 +6,6 @@ import (
 	drivingPorts "microservice/internal/core/driving_ports"
 	"net"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -29,9 +28,9 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
 	}
 
-	userID, err := strconv.ParseInt(body["userID"].(string), 10, 32)
-	if err != nil {
-		log.Printf("Error: %v", err)
+	userID, ok := body["userID"].(string)
+	if !ok {
+		log.Printf("Error: Could not unmarshal request body")
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
 	}
 
@@ -42,7 +41,7 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 	}
 
 	// TODO: Check if user exists
-	err = adapter.Service.ConnectPlayer(int(userID), incomingConn)
+	err = adapter.Service.ConnectPlayer(userID, incomingConn)
 	if err != nil {
 		log.Printf("Error: %v", err)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
