@@ -5,7 +5,6 @@ import (
 	common "microservice/internal"
 	drivingPorts "microservice/internal/core/driving_ports"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -23,9 +22,10 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
-	} else {
-		common.TryWriteResponse(w, "{sessionID: "+strconv.FormatInt(int64(sessionID), 10)+"}")
+
+		return
 	}
+	common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
 }
 
 func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,9 +53,11 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
 	}
 
-	common.TryWriteResponse(w, "{sessionID: "+strconv.FormatInt(int64(sessionID), 10)+"}")
+	common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
 }
 
 func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,16 +71,16 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	userID, _ := strconv.ParseInt(sessionID.(string), 10, 32)
-
-	err := adapter.Service.Logout(int(userID))
+	err := adapter.Service.Logout(sessionID.(string))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
 	}
 
-	common.TryWriteResponse(w, common.MakeJsonError("{message: \"User logged out\"}"))
+	common.TryWriteResponse(w, `{"message": "User logged out"}`)
 }
 
 func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -108,9 +110,11 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 		adapter.Logger.Printf("Error: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError("Failed to register"))
+
+		return
 	}
 
-	common.TryWriteResponse(w, common.MakeJsonError("{message: \""+strconv.Itoa(userID)+"\"}"))
+	common.TryWriteResponse(w, `{"message": "`+userID+`"}`)
 }
 
 func (adapter UserServiceRestAdapter) Run() {
@@ -118,10 +122,10 @@ func (adapter UserServiceRestAdapter) Run() {
 
 	mux.Handle("/", http.FileServer(http.Dir("../client/build/")))
 
-	// NOTE: The api gateay should contain a prefix user/, which is stripped before forwarding
 	mux.HandleFunc("/login", adapter.LoginHandler).Methods("POST")
 	mux.HandleFunc("/register", adapter.RegisterHandler).Methods("POST")
 	mux.HandleFunc("/isLogin/{username:[a-zA-Z0-9]+}", adapter.IsLoginHandler).Methods("GET")
+	// TODO: The id should be part of the URL, not the request body
 	mux.HandleFunc("/logout", adapter.LogoutHandler).Methods("DELETE")
 
 	adapter.Logger.Println("Starting server on Port 8080")

@@ -33,20 +33,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+<<<<<<< HEAD
   name: game-service
   labels:
     app: game-service
+=======
+  name: statistics-service
+  labels:
+    app: statistics-service
+>>>>>>> origin/main
 
 spec:
   replicas: 1
   selector:
     matchLabels:
+<<<<<<< HEAD
       app: game-service
+=======
+      app: statistics-service
+>>>>>>> origin/main
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
+<<<<<<< HEAD
         app: game-service
         tier: service
     spec:
@@ -86,6 +97,15 @@ spec:
         - name: matchmaking-service
           # has to match the call to docker build -t in deploy_cluster.sh
           image: matchmaking_service:latest
+=======
+        app: statistics-service
+        tier: service
+    spec:
+      containers:
+        - name: statistics-service
+          # has to match the call to docker build -t in deploy_cluster.sh
+          image: statistics_service:latest
+>>>>>>> origin/main
           # We are using local images
           imagePullPolicy: Never
           ports:
@@ -163,6 +183,25 @@ spec:
       port: 8081
   selector:
     app: matchmaking-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: statistics-service
+  labels:
+    app: statistics-service
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+    - name: grpc
+      protocol: TCP
+      port: 8081
+  selector:
+    app: statistics-service
 ---
 apiVersion: v1
 kind: Service
@@ -281,3 +320,37 @@ spec:
    - port: 5432
   selector:
    app: db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  type: NodePort
+  ports:
+   - port: 6379
+  selector:
+   app: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 6379

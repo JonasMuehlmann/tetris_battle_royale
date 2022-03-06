@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/jmoiron/sqlx"
@@ -19,19 +20,35 @@ type PostgresDatabase struct {
 	Password string
 	DBName   string
 	Logger   *log.Logger
+	DBConn   *sqlx.DB
 }
 
 func MakePostgresDB(host string, port int, username string, dbName string, logger *log.Logger) *PostgresDatabase {
-	return &PostgresDatabase{
+	db := &PostgresDatabase{
 		Host:     host,
 		Port:     port,
 		Username: username,
 		DBName:   dbName,
-		Logger:   logger}
+		Logger:   logger,
+	}
+
+	conn, err := db.GetConnection()
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	db.DBConn = conn
+
+	return db
 }
 
 func MakeDefaultPostgresDB(logger *log.Logger) *PostgresDatabase {
-	err := godotenv.Load(".postgres_credentials.env")
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = godotenv.Load(filepath.Join(configDir, "tbr", ".postgres_credentials.env"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,7 +68,7 @@ func MakeDefaultPostgresDB(logger *log.Logger) *PostgresDatabase {
 	dbName := os.Getenv("TBR_PG_DB")
 	password := os.Getenv("TBR_PG_PASSWORD")
 
-	return &PostgresDatabase{
+	db := &PostgresDatabase{
 		Host:     host,
 		Port:     int(port),
 		Username: username,
@@ -59,6 +76,59 @@ func MakeDefaultPostgresDB(logger *log.Logger) *PostgresDatabase {
 		DBName:   dbName,
 		Logger:   logger,
 	}
+
+	conn, err := db.GetConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.DBConn = conn
+
+	return db
+}
+func MakeDefaultPostgresTestDB(logger *log.Logger) *PostgresDatabase {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = godotenv.Load(filepath.Join(configDir, "tbr", ".postgres_credentials_test.env"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	host := os.Getenv("TBR_PG_HOST")
+	portRaw := os.Getenv("TBR_PG_PORT")
+
+	var port int64
+
+	if portRaw == "" {
+		port = -1
+	} else {
+		port, err = strconv.ParseInt(portRaw, 10, 32)
+	}
+
+	username := os.Getenv("TBR_PG_USER")
+	dbName := os.Getenv("TBR_PG_DB")
+	password := os.Getenv("TBR_PG_PASSWORD")
+
+	db := &PostgresDatabase{
+		Host:     host,
+		Port:     int(port),
+		Username: username,
+		Password: password,
+		DBName:   dbName,
+		Logger:   logger,
+	}
+
+	conn, err := db.GetConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.DBConn = conn
+
+	return db
 }
 
 func (dbImpl *PostgresDatabase) MakeConnectionString() string {
@@ -93,6 +163,8 @@ func (dbImpl *PostgresDatabase) GetConnection() (*sqlx.DB, error) {
 	}
 
 	dbImpl.Logger.Println("Successfully opened db connection")
+
+	db.SetMaxOpenConns(5)
 
 	return db, nil
 }

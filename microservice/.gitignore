@@ -1,2 +1,3 @@
 vendor/
-.postgres_credentials.env
+.lvimrc
+.code_runner.json

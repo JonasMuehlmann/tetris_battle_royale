@@ -2,7 +2,7 @@
 
 # This is meant to be executed on the machine holding the kubernetes cluster!
 
-SERVICES=("user_service" "matchmaking_service" "game_service" "gateway")
+SERVICES=("user_service" "statistics_service" "matchmaking_service" "game_service" "gateway")
 
 minikube kubectl -- delete -f microservice-deployment.yaml
 minikube stop
