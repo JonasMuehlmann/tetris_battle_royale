@@ -44,6 +44,10 @@ func (service StatisticsService) UpdatePlayerStatistics(newStatistics types.Play
 	return service.StatisticsRepository.UpdatePlayerStatistics(newStatistics)
 }
 
+func (service StatisticsService) UpdatePlayerRating(newRating types.PlayerRating) error {
+	return service.StatisticsRepository.UpdatePlayerRating(newRating)
+}
+
 func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error {
 	// TODO: Update player statistics and profile
 	playerProfile, err := service.GetPlayerProfile(record.UserID)
@@ -76,7 +80,7 @@ func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error 
 
 	playerStatistics.Winrate = float32(playerStatistics.Wins) / float32(playerStatistics.Wins+playerStatistics.Losses)
 
-	playerRating.Rating += record.RatingChange
+	playerRating.MMR += record.RatingChange
 
 	switch record.WinKind {
 	case types.WinTop10:

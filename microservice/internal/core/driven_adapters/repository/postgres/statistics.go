@@ -32,6 +32,17 @@ func (repo PostgresDatabaseStatisticsRepository) GetPlayerStatistics(userID stri
 	return playerStatistics, nil
 }
 
+func (repo PostgresDatabaseStatisticsRepository) GetPlayerRating(userID string) (types.PlayerRating, error) {
+	var playerRating types.PlayerRating
+
+	err := repo.DBConn.Get(&playerRating, "SELECT player_ratings.* FROM  player_ratings LEFT JOIN player_profiles ON player_profiles.player_rating_id = player_ratings.id WHERE user_id = $1", userID)
+	if err != nil {
+		return types.PlayerRating{}, err
+	}
+
+	return playerRating, nil
+}
+
 func (repo PostgresDatabaseStatisticsRepository) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
 	var matchRecords []types.MatchRecord
 
@@ -68,6 +79,24 @@ WHERE
     id = :id`
 
 	_, err := repo.DBConn.NamedExec(statement, &newProfile)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo PostgresDatabaseStatisticsRepository) UpdatePlayerRating(newRating types.PlayerRating) error {
+	statement := `UPDATE
+    player_ratings
+SET
+    id = :id,
+    mmr = :mmr,
+    k_factor = :k_factor
+WHERE
+    id = :id`
+
+	_, err := repo.DBConn.NamedExec(statement, &newRating)
 	if err != nil {
 		return err
 	}
