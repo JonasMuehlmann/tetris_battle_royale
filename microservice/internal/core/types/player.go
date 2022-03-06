@@ -1,8 +1,7 @@
 package types
 
 type Player struct {
-	ID        int
-	UserID    int
+	ID        string
 	Score     int
 	Playfield *Playfield
 }

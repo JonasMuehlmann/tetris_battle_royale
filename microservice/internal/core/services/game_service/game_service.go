@@ -15,10 +15,9 @@ import (
 type GameService struct {
 	UserRepo repoPorts.UserRepositoryPort
 	// This port/adapter might need refactoring
-	GamePort drivenPorts.GamePort
-	Logger   *log.Logger
-	// TODO: A UUID is a better key
-	Matches    map[int]types.Match
+	GamePort   drivenPorts.GamePort
+	Logger     *log.Logger
+	Matches    map[string]types.Match
 	GrpcServer *grpc.Server
 }
 
@@ -34,7 +33,7 @@ func (service GameServiceServer) StartGame(context context.Context, userIDList *
 		return nil, err
 	}
 
-	return &gameServiceProto.MatchID{Id: int64(matchID)}, nil
+	return &gameServiceProto.MatchID{Id: matchID}, nil
 }
 
 func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
@@ -44,7 +43,7 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPo
 		UserRepo:   userRepo,
 		GamePort:   gameAdapter,
 		Logger:     logger,
-		Matches:    make(map[int]types.Match),
+		Matches:    make(map[string]types.Match),
 		GrpcServer: grpcServer,
 	}
 
@@ -53,19 +52,19 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPo
 	return gameService
 }
 
-func (service GameService) StartGame(userIDList []int64) (int, error) {
+func (service GameService) StartGame(userIDList []string) (string, error) {
 	// TODO: Generate UUID and add players to match map
-	return 0, nil
+	return "", nil
 }
 
 func (service GameService) StartGrpcServer(listener net.Listener) error {
 	return service.GrpcServer.Serve(listener)
 }
 
-func (service GameService) ConnectPlayer(userID int, connection interface{}) error {
+func (service GameService) ConnectPlayer(userID string, connection interface{}) error {
 	return service.GamePort.ConnectPlayer(userID, connection)
 }
 
-func (service GameService) SendMatchStartNotice(userID int, matchID int) error {
+func (service GameService) SendMatchStartNotice(userID string, matchID string) error {
 	return service.SendMatchStartNotice(userID, matchID)
 }

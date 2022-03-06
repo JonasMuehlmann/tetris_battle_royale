@@ -8,9 +8,9 @@ service game_service {
 }
 
 message UserIDList {
-    repeated int64 Id = 1;
+    repeated string Id = 1;
 }
 
 message MatchID {
-    int64 Id = 1;
+    string Id = 1;
 }
