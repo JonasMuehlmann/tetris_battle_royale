@@ -1,3 +1,3 @@
 # tetris_battle_royale
 
-![](docs/microservice_architecture.png)
+![](docs/service_architecture.png)
