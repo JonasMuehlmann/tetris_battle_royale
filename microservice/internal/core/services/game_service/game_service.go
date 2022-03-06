@@ -9,6 +9,7 @@ import (
 	types "microservice/internal/core/types"
 	"net"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 )
 
@@ -53,8 +54,23 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPo
 }
 
 func (service GameService) StartGame(userIDList []string) (string, error) {
-	// TODO: Generate UUID and add players to match map
-	return "", nil
+	matchID := uuid.NewString()
+
+	players := [types.MatchSize]types.Player{}
+	for i, userID := range userIDList {
+		players[i] = types.Player{
+			ID:        userID,
+			Score:     0,
+			Playfield: &types.Playfield{},
+		}
+	}
+
+	service.Matches[matchID] = types.Match{
+		ID:      matchID,
+		Players: players,
+	}
+
+	return matchID, nil
 }
 
 func (service GameService) StartGrpcServer(listener net.Listener) error {
