@@ -3,7 +3,7 @@ package matchmakingService
 import (
 	"context"
 	"log"
-	drivenPorts "microservice/internal/core/driven_ports"
+	repoPorts "microservice/internal/core/driven_ports/repository"
 	gameServiceProto "microservice/internal/core/protofiles/game_service"
 
 	"google.golang.org/grpc"
@@ -12,13 +12,13 @@ import (
 const MatchSize = 3
 
 type MatchmakingService struct {
-	UserRepo              drivenPorts.UserPort
+	UserRepository        repoPorts.UserRepositoryPort
 	Logger                *log.Logger
 	Queue                 map[int]bool
 	GameServiceGrpcClient gameServiceProto.GameServiceClient
 }
 
-func MakeMatchmakingService(userRepo drivenPorts.UserPort, logger *log.Logger) (MatchmakingService, error) {
+func MakeMatchmakingService(userRepo repoPorts.UserRepositoryPort, logger *log.Logger) (MatchmakingService, error) {
 	grpcConn, err := grpc.Dial("game-service:8081", grpc.WithInsecure())
 	if err != nil {
 		return MatchmakingService{}, err
@@ -27,7 +27,7 @@ func MakeMatchmakingService(userRepo drivenPorts.UserPort, logger *log.Logger) (
 	gameServiceGrpcClient := gameServiceProto.NewGameServiceClient(grpcConn)
 
 	matchmakingService := MatchmakingService{
-		UserRepo:              userRepo,
+		UserRepository:        userRepo,
 		Logger:                logger,
 		Queue:                 make(map[int]bool),
 		GameServiceGrpcClient: gameServiceGrpcClient,
@@ -36,7 +36,7 @@ func MakeMatchmakingService(userRepo drivenPorts.UserPort, logger *log.Logger) (
 	return matchmakingService, nil
 }
 
-func (service MatchmakingService) Join(userID int, matchStartCallback func(int) error) error {
+func (service MatchmakingService) Join(userID int) error {
 	service.Queue[userID] = true
 
 	service.Logger.Printf("Player %v joined the queue", userID)

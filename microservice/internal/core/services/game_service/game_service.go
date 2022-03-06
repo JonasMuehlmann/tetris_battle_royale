@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	drivenPorts "microservice/internal/core/driven_ports"
+	repoPorts "microservice/internal/core/driven_ports/repository"
 	gameServiceProto "microservice/internal/core/protofiles/game_service"
 	types "microservice/internal/core/types"
 	"net"
@@ -12,7 +13,8 @@ import (
 )
 
 type GameService struct {
-	UserRepo drivenPorts.UserPort
+	UserRepo repoPorts.UserRepositoryPort
+	// This port/adapter might need refactoring
 	GamePort drivenPorts.GamePort
 	Logger   *log.Logger
 	// TODO: A UUID is a better key
@@ -35,7 +37,7 @@ func (service GameServiceServer) StartGame(context context.Context, userIDList *
 	return &gameServiceProto.MatchID{Id: int64(matchID)}, nil
 }
 
-func MakeGameService(userRepo drivenPorts.UserPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
+func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
 	grpcServer := grpc.NewServer()
 
 	gameService := GameService{
