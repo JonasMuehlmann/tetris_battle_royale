@@ -3,8 +3,8 @@ package ipc
 import (
 	"context"
 	"fmt"
+	drivingPorts "microservice/internal/core/driving_ports"
 	statisticsServiceProto "microservice/internal/core/protofiles/statistics_service"
-	statisticsService "microservice/internal/core/services/statistics_service"
 	"microservice/internal/core/types"
 	"time"
 
@@ -31,12 +31,12 @@ func (service StatisticsServiceServer) AddMatchRecord(context context.Context, r
 		RatingChange: int(record.GetRatingChange()),
 	}
 
-	return &statisticsServiceProto.EmptyRequest{}, service.statisticsService.AddMatchRecord(newRecord)
+	return &statisticsServiceProto.EmptyRequest{}, (*service.statisticsService).AddMatchRecord(newRecord)
 }
 
 type StatisticsServiceServer struct {
 	statisticsServiceProto.UnimplementedStatisticsServiceServer
-	statisticsService *statisticsService.StatisticsService
+	statisticsService *drivingPorts.StatisticsServicePort
 }
 
 func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
@@ -45,7 +45,7 @@ func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
 		return fmt.Errorf("Invalid type %T for argument, expected %T", args, types.DrivenAdapterGRPCArgs{})
 	}
 
-	statisticsService, ok := statisticsServiceArgs.Service.(*statisticsService.StatisticsService)
+	statisticsService, ok := statisticsServiceArgs.Service.(*drivingPorts.StatisticsServicePort)
 	if !ok {
 		return fmt.Errorf("Invalid type %T in argument %+v, expected %T", statisticsServiceArgs.Service, args, types.DrivenAdapterGRPCArgs{}.Service)
 	}
