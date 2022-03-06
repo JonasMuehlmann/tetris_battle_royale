@@ -34,12 +34,12 @@ func (service StatisticsServiceServer) AddMatchRecord(context context.Context, r
 		RatingChange: int(record.GetRatingChange()),
 	}
 
-	return &statisticsServiceProto.EmptyRequest{}, (*service.statisticsService).AddMatchRecord(newRecord)
+	return &statisticsServiceProto.EmptyRequest{}, service.StatisticsService.AddMatchRecord(newRecord)
 }
 
 type StatisticsServiceServer struct {
 	statisticsServiceProto.UnimplementedStatisticsServiceServer
-	statisticsService *drivingPorts.StatisticsServicePort
+	StatisticsService drivingPorts.StatisticsServicePort
 	Logger            *log.Logger
 }
 
@@ -49,15 +49,22 @@ func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
 		return fmt.Errorf("Invalid type %T for argument, expected %T", args, types.DrivenAdapterGRPCArgs{})
 	}
 
-	statisticsService, ok := statisticsServiceArgs.Service.(*drivingPorts.StatisticsServicePort)
+	statisticsService, ok := statisticsServiceArgs.Service.(drivingPorts.StatisticsServicePort)
 	if !ok {
-		return fmt.Errorf("Invalid type %T in argument %+v, expected %T", statisticsServiceArgs.Service, args, types.DrivenAdapterGRPCArgs{}.Service)
+		var wanted *drivingPorts.StatisticsServicePort
+		return fmt.Errorf("Invalid type %T in argument %#v, expected %T", statisticsServiceArgs.Service, args, wanted)
 	}
+	// doesSatisfyPort := reflect.TypeOf(statisticsServiceArgs.Service).Implements(reflect.TypeOf((*drivingPorts.StatisticsServicePort)(nil)).Elem())
+	// if doesSatisfyPort {
+	// 	var wanted *drivingPorts.StatisticsServicePort
+	// 	return fmt.Errorf("Invalid type %T in argument %#v, expected %T", statisticsServiceArgs.Service, args, wanted)
+	// }
 
 	listener := statisticsServiceArgs.Listener
 
 	grpcServer := grpc.NewServer()
-	statisticsServiceServer := &StatisticsServiceServer{statisticsService: statisticsService}
+	statisticsServiceServer := &StatisticsServiceServer{StatisticsService: statisticsService}
+	// statisticsServiceServer := &StatisticsServiceServer{StatisticsService: (drivingPorts.StatisticsServicePort)(statisticsServiceArgs.Service)}
 
 	statisticsServiceProto.RegisterStatisticsServiceServer(grpcServer, statisticsServiceServer)
 

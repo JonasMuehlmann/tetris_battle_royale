@@ -31,10 +31,6 @@ func (service StatisticsService) GetMatchRecord(matchID string) (types.MatchReco
 	return service.StatisticsRepository.GetMatchRecord(matchID)
 }
 
-// func (service StatisticsService) AddMatchRecord(matchID string, record types.MatchRecord) error {
-// 	return service.StatisticsRepository.AddMatchRecord(matchID, record)
-// }
-
 func (service StatisticsService) UpdatePlayerProfile(newProfile types.PlayerProfile) error {
 	return service.StatisticsRepository.UpdatePlayerProfile(newProfile)
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type StatisticsServiceIPCClientAdapter struct {
-	grpcClient statisticsServiceProto.StatisticsServiceClient
+	GrpcClient statisticsServiceProto.StatisticsServiceClient
 	Logger     *log.Logger
 }
 
@@ -26,7 +26,7 @@ func (adapter StatisticsServiceIPCClientAdapter) AddMatchRecord(record types.Mat
 		RatingChange: int32(record.RatingChange),
 	}
 
-	_, err := adapter.grpcClient.AddMatchRecord(context.Background(), message)
+	_, err := adapter.GrpcClient.AddMatchRecord(context.Background(), message)
 
 	return err
 }
@@ -41,7 +41,7 @@ func (adapter StatisticsServiceIPCClientAdapter) Start(args interface{}) error {
 
 	adapter.Logger.Printf("Connected to GRPC server at %v", serverAddr)
 
-	adapter.grpcClient = statisticsServiceProto.NewStatisticsServiceClient(grpcConn)
+	adapter.GrpcClient = statisticsServiceProto.NewStatisticsServiceClient(grpcConn)
 
 	return nil
 }
