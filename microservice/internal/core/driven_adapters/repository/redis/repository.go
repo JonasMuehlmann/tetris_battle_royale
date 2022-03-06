@@ -3,6 +3,7 @@ package repository
 import (
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	redis "github.com/go-redis/redis/v8"
@@ -15,7 +16,12 @@ type RedisStore struct {
 }
 
 func MakeDefaultRedisStore(logger *log.Logger) RedisStore {
-	err := godotenv.Load(".redis_credentials.env")
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = godotenv.Load(filepath.Join(configDir, "tbr", ".redis_credentials.env"))
 	if err != nil {
 		log.Fatal(err)
 	}

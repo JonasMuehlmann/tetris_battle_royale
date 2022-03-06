@@ -5,18 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	drivenPorts "microservice/internal/core/driven_ports"
+	"microservice/internal/core/driven_ports/repository"
 	types "microservice/internal/core/types"
 )
 
 type UserService struct {
-	UserRepo    drivenPorts.UserPort
-	SessionRepo drivenPorts.SessionPort
-	Logger      *log.Logger
+	UserRepository    repository.UserRepositoryPort
+	SessionRepository repository.SessionRepositoryPort
+	Logger            *log.Logger
 }
 
 func (service UserService) IsLoggedIn(username string) (string, error) {
-	user, err := service.UserRepo.GetUserFromName(username)
+	user, err := service.UserRepository.GetUserFromName(username)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: User %v does not exist", username)
 		service.Logger.Println(errorMessage)
@@ -25,7 +25,7 @@ func (service UserService) IsLoggedIn(username string) (string, error) {
 		return "", errors.New(errorMessage)
 	}
 
-	session, err := service.SessionRepo.GetSession(user.ID)
+	session, err := service.SessionRepository.GetSession(user.ID)
 	if err != nil {
 
 		errorMessage := fmt.Sprintf("Error: User %v is not logged in", username)
@@ -46,7 +46,7 @@ func (service UserService) Login(username string, password string) (string, erro
 	var passwordHash []byte
 	var salt []byte
 
-	user, err := service.UserRepo.GetUserFromName(username)
+	user, err := service.UserRepository.GetUserFromName(username)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: User %v does not exist", username)
 		service.Logger.Println(errorMessage)
@@ -67,9 +67,9 @@ func (service UserService) Login(username string, password string) (string, erro
 		return "", errors.New(errorMessage)
 	}
 
-	sessionID, err := service.SessionRepo.CreateSession(user.ID)
+	sessionID, err := service.SessionRepository.CreateSession(user.ID)
 	if err != nil {
-		session, _ := service.SessionRepo.GetSession(user.ID)
+		session, _ := service.SessionRepository.GetSession(user.ID)
 		sessionID = session.ID
 		service.Logger.Printf("Found existing session with id %v, it will be reused", sessionID)
 	}
@@ -80,7 +80,7 @@ func (service UserService) Login(username string, password string) (string, erro
 }
 
 func (service UserService) Logout(sessionID string) error {
-	err := service.SessionRepo.DeleteSession(sessionID)
+	err := service.SessionRepository.DeleteSession(sessionID)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: Failed to end session with id %v", sessionID)
 		service.Logger.Println(errorMessage)
@@ -99,7 +99,7 @@ func (service UserService) Register(username string, password string) (string, e
 
 	passwordHash := hashPw([]byte(password), salt)
 
-	_, err := service.UserRepo.GetUserFromName(username)
+	_, err := service.UserRepository.GetUserFromName(username)
 	if err == nil {
 		errorMessage := fmt.Sprintf("Error: username %v is already taken", username)
 		service.Logger.Println(errorMessage)
@@ -108,7 +108,7 @@ func (service UserService) Register(username string, password string) (string, e
 		return "", errors.New(errorMessage)
 	}
 
-	userID, err := service.UserRepo.Register(username, string(passwordHash), string(salt))
+	userID, err := service.UserRepository.Register(username, string(passwordHash), string(salt))
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: Failed to register user %v", username)
 		service.Logger.Println(errorMessage)
@@ -119,7 +119,7 @@ func (service UserService) Register(username string, password string) (string, e
 
 	service.Logger.Printf("Successfully registered user %v\n", username)
 
-	sessionID, err := service.SessionRepo.CreateSession(userID)
+	sessionID, err := service.SessionRepository.CreateSession(userID)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: Failed to create session for user %v", username)
 		service.Logger.Println(errorMessage)
@@ -133,7 +133,7 @@ func (service UserService) Register(username string, password string) (string, e
 
 func (service UserService) CreateSession(userID string) (types.Session, error) {
 
-	session, err := service.SessionRepo.GetSession(userID)
+	session, err := service.SessionRepository.GetSession(userID)
 	if err != nil {
 		return types.Session{}, nil
 	}
@@ -144,5 +144,5 @@ func (service UserService) CreateSession(userID string) (types.Session, error) {
 }
 
 func (service *UserService) GetSession(userID string) (types.Session, error) {
-	return service.SessionRepo.GetSession(userID)
+	return service.SessionRepository.GetSession(userID)
 }

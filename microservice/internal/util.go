@@ -6,7 +6,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/jmoiron/sqlx"
 )
+
+func NewDefaultLogger() *log.Logger {
+	return log.New(os.Stdout, "TBR - ", log.Ltime|log.Lshortfile)
+}
 
 func MakeJsonError(err string) string {
 	return "{error: \"" + err + "\"}"
@@ -38,4 +45,10 @@ func UnmarshalRequestBody(req *http.Request) (map[string]interface{}, error) {
 	}
 
 	return bodyMap, nil
+}
+func ResetDB(db *sqlx.DB) {
+	_, err := db.Exec("TRUNCATE users, sessions, player_profiles, player_statistics,player_ratings, match_records CASCADE")
+	if err != nil {
+		log.Fatal(err)
+	}
 }

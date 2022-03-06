@@ -24,9 +24,8 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
-	} else {
-		common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
 	}
+	common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
 }
 
 func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *http.Request) {

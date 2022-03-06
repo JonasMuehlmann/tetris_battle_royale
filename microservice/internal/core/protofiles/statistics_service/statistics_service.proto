@@ -3,12 +3,17 @@ package statisticsServiceProto;
 option go_package="github.com/JonasMuehlmann/tetris_battle_royale;statisticsServiceProto";
 
 service statistics_service {
-    rpc GetStatistics(EmptyRequest) returns (StatisticsResponse);
+    rpc AddMatchRecord(MatchRecord) returns (EmptyRequest);
 }
 
-message StatisticsResponse {
-    int64 Score = 1;
-    int64 NumPlayedMatches = 2;
+message  MatchRecord{
+    string id = 1;
+    string user_id = 2;
+    bool   win = 3;
+    int32  score = 4;
+    int32  length = 5;
+    string start = 6;
+    int32  rating_change = 7;
 }
 
 message EmptyRequest {}
