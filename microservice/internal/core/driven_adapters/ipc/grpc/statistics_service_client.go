@@ -2,6 +2,7 @@ package ipc
 
 import (
 	"context"
+	"log"
 	statisticsServiceProto "microservice/internal/core/protofiles/statistics_service"
 	"microservice/internal/core/types"
 
@@ -10,6 +11,7 @@ import (
 
 type StatisticsServiceIPCClientAdapter struct {
 	grpcClient statisticsServiceProto.StatisticsServiceClient
+	Logger     *log.Logger
 }
 
 func (adapter StatisticsServiceIPCClientAdapter) AddMatchRecord(record types.MatchRecord) error {
@@ -30,10 +32,14 @@ func (adapter StatisticsServiceIPCClientAdapter) AddMatchRecord(record types.Mat
 }
 
 func (adapter StatisticsServiceIPCClientAdapter) Start(args interface{}) error {
-	grpcConn, err := grpc.Dial("statistics-service:8081", grpc.WithInsecure())
+	serverAddr := "statistics-service:8081"
+
+	grpcConn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
+
+	adapter.Logger.Printf("Connected to GRPC server at %v", serverAddr)
 
 	adapter.grpcClient = statisticsServiceProto.NewStatisticsServiceClient(grpcConn)
 

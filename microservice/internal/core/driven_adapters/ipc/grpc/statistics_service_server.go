@@ -3,9 +3,11 @@ package ipc
 import (
 	"context"
 	"fmt"
+	"log"
 	drivingPorts "microservice/internal/core/driving_ports"
 	statisticsServiceProto "microservice/internal/core/protofiles/statistics_service"
 	"microservice/internal/core/types"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -13,6 +15,7 @@ import (
 
 type StatisticsServiceIPCServerAdapter struct {
 	StatisticsServiceServer
+	Logger *log.Logger
 }
 
 func (service StatisticsServiceServer) AddMatchRecord(context context.Context, record *statisticsServiceProto.MatchRecord) (*statisticsServiceProto.EmptyRequest, error) {
@@ -37,6 +40,7 @@ func (service StatisticsServiceServer) AddMatchRecord(context context.Context, r
 type StatisticsServiceServer struct {
 	statisticsServiceProto.UnimplementedStatisticsServiceServer
 	statisticsService *drivingPorts.StatisticsServicePort
+	Logger            *log.Logger
 }
 
 func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
@@ -56,6 +60,8 @@ func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
 	statisticsServiceServer := &StatisticsServiceServer{statisticsService: statisticsService}
 
 	statisticsServiceProto.RegisterStatisticsServiceServer(grpcServer, statisticsServiceServer)
+
+	adapter.Logger.Printf("Starting GRPC server on port %v", strings.Split(listener.Addr().String(), ":")[1])
 
 	return grpcServer.Serve(listener)
 }
