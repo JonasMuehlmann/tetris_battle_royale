@@ -49,7 +49,6 @@ func (service StatisticsService) UpdatePlayerRating(newRating types.PlayerRating
 }
 
 func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error {
-	// TODO: Update player statistics and profile
 	playerProfile, err := service.GetPlayerProfile(record.UserID)
 	if err != nil {
 		return err
@@ -69,8 +68,7 @@ func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error 
 	playerProfile.LastUpdate = record.Start.Add(time.Minute * time.Duration(record.Length))
 
 	playerStatistics.Score += record.Score
-	// TODO: Figure this out
-	playerStatistics.ScorePerMinute = 0
+	playerStatistics.ScorePerMinute = float32(playerStatistics.Score) / float32(playerProfile.Playtime)
 
 	if record.Win {
 		playerStatistics.Wins += 1
