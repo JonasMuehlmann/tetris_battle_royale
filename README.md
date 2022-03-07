@@ -1,3 +1,4 @@
 # tetris_battle_royale
 
-![](docs/service_architecture.png)
+![Service architecture diagram](docs/service_architecture.png)
+![Software architecture diagram](docs/software_architecture.png)
