@@ -1,5 +1,8 @@
 main
 .idea/
+.postgres_credentials.env
+.postgres_credentials_test.env
+.redis_credentials.env
 
 # dependencies
 /client/node_modules
