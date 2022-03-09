@@ -20,7 +20,7 @@ const Menu = () => {
                 className={`
                   cursor-pointer transition-all w-[260px] text-center
                   ${currentMenu?.text === t.text ?
-                    'shadow green-grad-text text-5xl' :
+                    'green-grad-text text-5xl' :
                     'text-4xl white-clip-text'}
               `}>
                 {t.text}
@@ -28,7 +28,7 @@ const Menu = () => {
             ))
         }
       </ul>
-      <h1 className={`shadow text-center opacity-80 mx-8`}>
+      <h1 className={`text-center opacity-80 mx-8`}>
         <GlowingText
           glow={false}
           className={`text-4xl font-bold`}>
@@ -47,7 +47,7 @@ const Menu = () => {
                 onClick={() => setCurrentMenu(t)}
                 className={`text-4xl
             ${currentMenu?.text === t.text ?
-                    'shadow text-5xl green-grad-text' :
+                    'text-5xl green-grad-text' :
                     'white-clip-text'}
             cursor-pointer transition-all w-[260px] text-center`}>
                 {t.text}

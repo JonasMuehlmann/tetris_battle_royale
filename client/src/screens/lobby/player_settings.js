@@ -13,16 +13,18 @@ const PlayerSettings = () => {
   } = useScreens()
 
   return (
-    <ul className="flex flex-col gap-8 text-white bangers">
+    <ul className={`flex flex-col 
+      w-full gap-8 justify-center items-center
+      text-center text-white bangers`}>
       {
         OPTIONS.map((t, i) => (
           <li
             key={i}
             onClick={() => navigate(Screen.LogIn)}
-            className={`text-left
+            className={`
               cursor-pointer transition-all w-[480px]
-              opacity-30 hover:opacity-100 hover:pl-10`}>
-            <p className="text-7xl yellow">
+              opacity-30 hover:opacity-100 hover:scale-110`}>
+            <p className="text-7xl">
               {t.text}
             </p>
             <span className="text-2xl text-gray-200">

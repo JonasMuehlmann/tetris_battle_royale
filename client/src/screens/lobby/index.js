@@ -18,13 +18,19 @@ const LobbyScreen = () => {
       initial: { opacity: 0, x: -window.innerWidth },
       animate: { opacity: 1, x: 0 },
       exit: { opacity: 0, x: -window.innerWidth },
-      transition: { duration: .75 }
+      transition: { duration: .5, }
     },
     SlideDown: {
       initial: { opacity: 0, y: window.innerHeight },
       animate: { opacity: 1, y: 0 },
       exit: { opacity: 0, y: window.innerHeight },
-      transition: { duration: .75 }
+      transition: { duration: .5 }
+    },
+    FromCenter: {
+      initial: { opacity: 0, scale: 0 },
+      animate: { opacity: 1, scale: 1 },
+      exit: { opacity: 0, scale: 1.2 },
+      transition: { duration: .5 }
     },
   }
 
@@ -35,6 +41,7 @@ const LobbyScreen = () => {
           (
             <motion.div
               {...Motions.SlideLeft}
+              className='w-full'
               key={currentMenu.text}>
               <Matchfinder />
             </motion.div>
@@ -42,7 +49,8 @@ const LobbyScreen = () => {
           currentMenu === MenuItem.Statistics ?
             (
               <motion.div
-                {...Motions.SlideLeft}
+                {...Motions.FromCenter}
+                className='w-full'
                 key={currentMenu.text}>
                 <Statistics />
               </motion.div>
@@ -51,6 +59,7 @@ const LobbyScreen = () => {
               (
                 <motion.div
                   {...Motions.SlideDown}
+                  className='w-full'
                   key={currentMenu.text}>
                   <PlayerProfile />
                 </motion.div>
@@ -59,6 +68,7 @@ const LobbyScreen = () => {
               (
                 <motion.div
                   {...Motions.SlideDown}
+                  className='w-full'
                   key={currentMenu.text}>
                   <PlayerSettings />
                 </motion.div>
@@ -70,7 +80,7 @@ const LobbyScreen = () => {
   return (
     <div className="w-full h-full flex flex-col z-20 relative">
       <Menu />
-      <div className="flex justify-between px-52 py-16">
+      <div className="flex justify-between w-full px-52 py-16">
         {renderCurrentMenu()}
       </div>
       <QueueBox />
