@@ -1,5 +1,9 @@
 import React, { useContext, useState } from "react";
 
+/**
+ * DIALOG TYPE DEFINITIONS
+ * MUST BE PROVIDED TO OPEN DIALOG
+ */
 export class DialogType {
   static Warning = new DialogType("warning")
   static Info = new DialogType("info")
@@ -23,6 +27,10 @@ export class DialogType {
 
 export const DialogContext = React.createContext()
 
+/**
+ * DIALOG CONTEXT PROVIDER
+ * PROVIDES METHODES AND STATES FOR DIALOGS
+ */
 export const DialogProvider = ({ children }) => {
   const [isDialogVisible, setIsDialogVisible] = useState(false)
   const [currentType, setCurrentType] = useState(null)
@@ -56,4 +64,7 @@ export const withDialogContext = Component => ({ ...props }) => (
   </DialogProvider>
 )
 
+/**
+ * DELIEVERS 'VALUE'-OBJECT OF THE PROVIDER
+ */
 export const useDialog = () => useContext(DialogContext)

@@ -1,7 +1,11 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 const QueueContext = React.createContext()
 
+/**
+ * QUEUE CONTEXT PROVIDER
+ * PROVIDES METHODES AND STATES RELATED TO CURRENT QUEUE
+ */
 const QueueProvider = ({ children }) => {
   const [isInQueue, setIsInQueue] = useState(false)
   const [queueType, setQueueType] = useState(null)
@@ -51,4 +55,7 @@ export const withQueue = Component => ({ ...props }) => (
   </QueueProvider>
 )
 
+/**
+ * DELEIVERS 'VALUE'-OBJECT OF THE PROVIDER
+ */
 export const useQueue = () => useContext(QueueContext)
