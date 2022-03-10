@@ -16,26 +16,10 @@ import (
 type GameService struct {
 	UserRepo repoPorts.UserRepositoryPort
 	// This port/adapter might need refactoring
-	GamePort   drivenPorts.GamePort
-	Logger     *log.Logger
-	Matches    map[string]types.Match
-	GrpcServer *grpc.Server
-}
-
-type GameServiceServer struct {
-	gameServiceProto.UnimplementedGameServiceServer
-	GameService GameService
-}
-
-// TODO: This should be a driven adapter
-func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.EmptyMessage, error) {
-	matchID, err := service.GameService.StartGame(userIDList.GetId())
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &gameServiceProto.EmptyMessage{}, nil
+	Logger  *log.Logger
+	Matches map[string]types.Match
+	// TODO: This type's name is not consistent with the satistics service' ipc
+	IPCServer drivenPorts.GamePort
 }
 
 func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
