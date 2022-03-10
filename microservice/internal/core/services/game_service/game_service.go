@@ -1,16 +1,12 @@
 package gameService
 
 import (
-	"context"
 	"log"
 	drivenPorts "microservice/internal/core/driven_ports"
 	repoPorts "microservice/internal/core/driven_ports/repository"
-	gameServiceProto "microservice/internal/core/protofiles/game_service"
 	types "microservice/internal/core/types"
-	"net"
 
 	"github.com/google/uuid"
-	"google.golang.org/grpc"
 )
 
 type GameService struct {
@@ -23,37 +19,33 @@ type GameService struct {
 }
 
 func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
-	grpcServer := grpc.NewServer()
-
-	gameService := GameService{
-		UserRepo:   userRepo,
-		GamePort:   gameAdapter,
-		Logger:     logger,
-		Matches:    make(map[string]types.Match),
-		GrpcServer: grpcServer,
+	return GameService{
+		UserRepo:  userRepo,
+		Logger:    logger,
+		Matches:   make(map[string]types.Match),
+		IPCServer: gameAdapter,
 	}
-
-	gameServiceProto.RegisterGameServiceServer(grpcServer, &GameServiceServer{GameService: gameService})
-
-	return gameService
+	// TODO: This belongs in the main file
+	// gameServiceProto.RegisterGameServiceServer(grpcServer, &GameServiceServer{GameService: gameService})
 }
 
-// TODO: This should not return the match id
 func (service GameService) StartGame(userIDList []string) error {
 	matchID := uuid.NewString()
 
 	players := [types.MatchSize]types.Player{}
 	for i, userID := range userIDList {
+		// TODO: This should probably be refactored into a separate function and will include more complex setup logic
 		players[i] = types.Player{
 			ID:        userID,
 			Score:     0,
 			Playfield: &types.Playfield{},
 		}
 
-		err := service.GamePort.SendMatchStartNotice(userID, matchID)
+		err := service.IPCServer.SendMatchStartNotice(userID, matchID)
 		if err != nil {
 			service.Logger.Printf("Could not notify client %v of game start", userID)
-			service.Logger.Println("Error: %v", err)
+			service.Logger.Printf("Error: %v", err)
+
 			return err
 		}
 	}
@@ -63,13 +55,17 @@ func (service GameService) StartGame(userIDList []string) error {
 		Players: players,
 	}
 
+	go service.Matches[matchID].Start()
+
 	return nil
 }
 
-func (service GameService) StartGrpcServer(listener net.Listener) error {
-	return service.GrpcServer.Serve(listener)
-}
+// TODO: This belongs in the main file
+// func (service GameService) StartGrpcServer(listener net.Listener) error {
+// 	return service.GrpcServer.Serve(listener)
+// }
 
+// NOTE: This function has nothing to do with the matchmaking
 func (service GameService) ConnectPlayer(userID string, connection interface{}) error {
-	return service.GamePort.ConnectPlayer(userID, connection)
+	return service.IPCServer.ConnectPlayer(userID, connection)
 }

@@ -11,8 +11,9 @@ import (
 type StatisticsService struct {
 	UserRepository       repository.UserRepositoryPort
 	StatisticsRepository repository.StatisticsRepositoryPort
-	IPCServer            ipc.StatisticsServiceIPCServerAdapter
-	Logger               *log.Logger
+	// TODO: If this has a port as a type, we don't have an import cycle and can refer to this struct in the adapter
+	IPCServer ipc.StatisticsServiceIPCServerAdapter
+	Logger    *log.Logger
 }
 
 // TODO: Validate if user exists
