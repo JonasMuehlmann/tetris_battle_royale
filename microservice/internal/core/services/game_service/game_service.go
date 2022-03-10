@@ -27,6 +27,7 @@ type GameServiceServer struct {
 	GameService GameService
 }
 
+// TODO: This should be a driven adapter
 func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.MatchID, error) {
 	matchID, err := service.GameService.StartGame(userIDList.GetId())
 
@@ -53,6 +54,7 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPo
 	return gameService
 }
 
+// TODO: This should not return the match id
 func (service GameService) StartGame(userIDList []string) (string, error) {
 	matchID := uuid.NewString()
 
@@ -70,6 +72,7 @@ func (service GameService) StartGame(userIDList []string) (string, error) {
 		Players: players,
 	}
 
+	// TODO: Notify clients
 	return matchID, nil
 }
 
@@ -79,8 +82,4 @@ func (service GameService) StartGrpcServer(listener net.Listener) error {
 
 func (service GameService) ConnectPlayer(userID string, connection interface{}) error {
 	return service.GamePort.ConnectPlayer(userID, connection)
-}
-
-func (service GameService) SendMatchStartNotice(userID string, matchID string) error {
-	return service.SendMatchStartNotice(userID, matchID)
 }

@@ -73,8 +73,6 @@ func (service MatchmakingService) startGame() error {
 		return err
 	}
 
-	// TODO: Notify clients
-
 	service.Logger.Println("Started a game")
 
 	return nil
