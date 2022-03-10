@@ -1,14 +1,10 @@
 package drivingAdapters
 
 import (
-	"bytes"
-	"errors"
 	"log"
 	common "microservice/internal"
 	drivingPorts "microservice/internal/core/driving_ports"
-	"net"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -16,34 +12,6 @@ import (
 type MatchmakingServiceRestAdapter struct {
 	Service drivingPorts.MatchmakingServicePort
 	Logger  *log.Logger
-}
-
-// TODO: This callback mechanic is not really the way to go.
-// Instead, we should open a websocket connection where the server can send a message
-func (adapter MatchmakingServiceRestAdapter) buildMatchStartCallBack(w http.ResponseWriter, clientAddress string) func(int) error {
-	clientHost, clientPort, err := net.SplitHostPort(clientAddress)
-	clientPort = "8082"
-
-	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
-		common.TryWriteResponse(w, common.MakeJsonError("Could not register callback for match start"))
-	}
-	return func(matchID int) error {
-
-		matchIDStr := strconv.FormatInt(int64(matchID), 10)
-		responseBuffer := bytes.NewBuffer([]byte("{matchID: " + matchIDStr + "}"))
-
-		callbackResponse, err := http.Post(clientHost+":"+clientPort, "application/json", responseBuffer)
-
-		if err != nil {
-			return err
-		}
-		if callbackResponse.StatusCode != http.StatusOK {
-			return errors.New("Failed to send callback to client")
-		}
-
-		return nil
-	}
 }
 
 func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, r *http.Request) {
