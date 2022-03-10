@@ -28,14 +28,14 @@ type GameServiceServer struct {
 }
 
 // TODO: This should be a driven adapter
-func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.MatchID, error) {
+func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.EmptyMessage, error) {
 	matchID, err := service.GameService.StartGame(userIDList.GetId())
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &gameServiceProto.MatchID{Id: matchID}, nil
+	return &gameServiceProto.EmptyMessage{}, nil
 }
 
 func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
@@ -55,7 +55,7 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPo
 }
 
 // TODO: This should not return the match id
-func (service GameService) StartGame(userIDList []string) (string, error) {
+func (service GameService) StartGame(userIDList []string) error {
 	matchID := uuid.NewString()
 
 	players := [types.MatchSize]types.Player{}
@@ -65,6 +65,13 @@ func (service GameService) StartGame(userIDList []string) (string, error) {
 			Score:     0,
 			Playfield: &types.Playfield{},
 		}
+
+		err := service.GamePort.SendMatchStartNotice(userID, matchID)
+		if err != nil {
+			service.Logger.Printf("Could not notify client %v of game start", userID)
+			service.Logger.Println("Error: %v", err)
+			return err
+		}
 	}
 
 	service.Matches[matchID] = types.Match{
@@ -72,8 +79,7 @@ func (service GameService) StartGame(userIDList []string) (string, error) {
 		Players: players,
 	}
 
-	// TODO: Notify clients
-	return matchID, nil
+	return nil
 }
 
 func (service GameService) StartGrpcServer(listener net.Listener) error {

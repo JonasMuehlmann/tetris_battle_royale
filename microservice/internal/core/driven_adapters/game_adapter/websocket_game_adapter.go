@@ -31,7 +31,7 @@ func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID 
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"matchID": %v}`, matchID)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"matchID": "%v"}`, matchID)))
 	if err != nil {
 		return err
 	}
