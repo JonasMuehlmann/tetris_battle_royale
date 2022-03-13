@@ -12,9 +12,8 @@ import (
 type GameService struct {
 	UserRepo repoPorts.UserRepositoryPort
 	// This port/adapter might need refactoring
-	Logger  *log.Logger
-	Matches map[string]types.Match
-	// TODO: This type's name is not consistent with the satistics service' ipc
+	Logger    *log.Logger
+	Matches   map[string]types.Match
 	IPCServer drivenPorts.GamePort
 }
 
@@ -25,8 +24,6 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPo
 		Matches:   make(map[string]types.Match),
 		IPCServer: gameAdapter,
 	}
-	// TODO: This belongs in the main file
-	// gameServiceProto.RegisterGameServiceServer(grpcServer, &GameServiceServer{GameService: gameService})
 }
 
 func (service GameService) StartGame(userIDList []string) error {
@@ -59,11 +56,6 @@ func (service GameService) StartGame(userIDList []string) error {
 
 	return nil
 }
-
-// TODO: This belongs in the main file
-// func (service GameService) StartGrpcServer(listener net.Listener) error {
-// 	return service.GrpcServer.Serve(listener)
-// }
 
 // NOTE: This function has nothing to do with the matchmaking
 func (service GameService) ConnectPlayer(userID string, connection interface{}) error {

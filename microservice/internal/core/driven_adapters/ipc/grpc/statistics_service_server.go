@@ -13,9 +13,14 @@ import (
 	"google.golang.org/grpc"
 )
 
-type StatisticsServiceIPCServerAdapter struct {
-	StatisticsServiceServer
-	Logger *log.Logger
+//******************************************************************//
+//                           GRPC related                           //
+//******************************************************************//
+
+type StatisticsServiceServer struct {
+	statisticsServiceProto.UnimplementedStatisticsServiceServer
+	StatisticsService drivingPorts.StatisticsServicePort
+	Logger            *log.Logger
 }
 
 func (service StatisticsServiceServer) AddMatchRecord(context context.Context, record *statisticsServiceProto.MatchRecord) (*statisticsServiceProto.EmptyRequest, error) {
@@ -37,10 +42,13 @@ func (service StatisticsServiceServer) AddMatchRecord(context context.Context, r
 	return &statisticsServiceProto.EmptyRequest{}, service.StatisticsService.AddMatchRecord(newRecord)
 }
 
-type StatisticsServiceServer struct {
-	statisticsServiceProto.UnimplementedStatisticsServiceServer
-	StatisticsService drivingPorts.StatisticsServicePort
-	Logger            *log.Logger
+//******************************************************************//
+//                              Adapter                            //
+//******************************************************************//
+
+type StatisticsServiceIPCServerAdapter struct {
+	StatisticsServiceServer
+	Logger *log.Logger
 }
 
 func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
