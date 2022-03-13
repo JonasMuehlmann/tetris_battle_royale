@@ -7,7 +7,7 @@ import (
 	gameServiceProto "microservice/internal/core/protofiles/game_service"
 	gameService "microservice/internal/core/services/game_service"
 	"microservice/internal/core/types"
-	"strings"
+	"net"
 
 	"google.golang.org/grpc"
 )
@@ -62,7 +62,7 @@ func (adapter GameServiceIPCServerAdapter) Start(args interface{}) error {
 
 	gameServiceProto.RegisterGameServiceServer(grpcServer, gameServiceServer)
 
-	adapter.Logger.Printf("Starting GRPC server on port %v", strings.Split(listener.Addr().String(), ":")[1])
+	adapter.Logger.Printf("Starting GRPC server on port %v", listener.Addr().(*net.TCPAddr).Port)
 
 	return grpcServer.Serve(listener)
 }

@@ -6,9 +6,9 @@ import (
 	"log"
 	statisticsServiceProto "microservice/internal/core/protofiles/statistics_service"
 	statisticsService "microservice/internal/core/services/statistics_service"
+	"net"
 
 	"microservice/internal/core/types"
-	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -77,7 +77,7 @@ func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
 
 	statisticsServiceProto.RegisterStatisticsServiceServer(grpcServer, statisticsServiceServer)
 
-	adapter.Logger.Printf("Starting GRPC server on port %v", strings.Split(listener.Addr().String(), ":")[1])
+	adapter.Logger.Printf("Starting GRPC server on port %v", listener.Addr().(*net.TCPAddr).Port)
 
 	return grpcServer.Serve(listener)
 }

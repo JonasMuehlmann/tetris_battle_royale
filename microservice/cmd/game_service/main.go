@@ -19,7 +19,7 @@ func main() {
 	userRepo := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	gameAdapter := drivenAdapters.MakeWebsocketGameAdapter(logger)
 
-	gameService := gameService.MakeGameService(userRepo, gameAdapter, logger)
+	gameService := gameService.MakeGameService(userRepo, nil, gameAdapter, logger)
 
 	listener, err := net.Listen("tcp", ":8081")
 	if err != nil {
