@@ -3,8 +3,7 @@ package drivingAdapters
 import (
 	"log"
 	common "microservice/internal"
-	drivingPorts "microservice/internal/core/driving_ports"
-	"net"
+	gameService "microservice/internal/core/services/game_service"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -12,7 +11,7 @@ import (
 )
 
 type GameServiceWebsocketAdapter struct {
-	Service drivingPorts.GameServicePort
+	Service gameService.GameService
 	Logger  *log.Logger
 }
 
@@ -55,16 +54,5 @@ func (adapter GameServiceWebsocketAdapter) Run() {
 
 	adapter.Logger.Println("Starting server on Port 8080")
 
-	go func() {
-		adapter.Logger.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
-	}()
-
-	adapter.Logger.Println("Starting grpc server on Port 8081")
-
-	grpcListener, err := net.Listen("tcp", ":8081")
-	if err != nil {
-		adapter.Logger.Fatalf("Could not start listener for grcp server: %v", err)
-	}
-
-	adapter.Logger.Fatalf("Error: GRPC Server failed to start: %v", adapter.Service.StartGrpcServer(grpcListener))
+	adapter.Logger.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
 }

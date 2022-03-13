@@ -6,23 +6,27 @@ import (
 	repoPorts "microservice/internal/core/driven_ports/repository"
 	types "microservice/internal/core/types"
 
+	ipcPorts "microservice/internal/core/driven_ports/ipc"
+
 	"github.com/google/uuid"
 )
 
 type GameService struct {
 	UserRepo repoPorts.UserRepositoryPort
 	// This port/adapter might need refactoring
-	Logger    *log.Logger
-	Matches   map[string]types.Match
-	IPCServer drivenPorts.GamePort
+	Logger      *log.Logger
+	Matches     map[string]types.Match
+	IPCServer   ipcPorts.GameServiceIPCServerPort
+	GameAdapter drivenPorts.GamePort
 }
 
-func MakeGameService(userRepo repoPorts.UserRepositoryPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
+func MakeGameService(userRepo repoPorts.UserRepositoryPort, ipcServerAdapter ipcPorts.GameServiceIPCServerPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
 	return GameService{
-		UserRepo:  userRepo,
-		Logger:    logger,
-		Matches:   make(map[string]types.Match),
-		IPCServer: gameAdapter,
+		UserRepo:    userRepo,
+		Logger:      logger,
+		Matches:     make(map[string]types.Match),
+		IPCServer:   ipcServerAdapter,
+		GameAdapter: gameAdapter,
 	}
 }
 
@@ -38,7 +42,7 @@ func (service GameService) StartGame(userIDList []string) error {
 			Playfield: &types.Playfield{},
 		}
 
-		err := service.IPCServer.SendMatchStartNotice(userID, matchID)
+		err := service.GameAdapter.SendMatchStartNotice(userID, matchID)
 		if err != nil {
 			service.Logger.Printf("Could not notify client %v of game start", userID)
 			service.Logger.Printf("Error: %v", err)
@@ -59,5 +63,5 @@ func (service GameService) StartGame(userIDList []string) error {
 
 // NOTE: This function has nothing to do with the matchmaking
 func (service GameService) ConnectPlayer(userID string, connection interface{}) error {
-	return service.IPCServer.ConnectPlayer(userID, connection)
+	return service.GameAdapter.ConnectPlayer(userID, connection)
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	drivingPorts "microservice/internal/core/driving_ports"
 	gameServiceProto "microservice/internal/core/protofiles/game_service"
 	gameService "microservice/internal/core/services/game_service"
 	"microservice/internal/core/types"
@@ -19,7 +18,7 @@ import (
 
 type GameServiceServer struct {
 	gameServiceProto.UnimplementedGameServiceServer
-	GameService gameService.GameService
+	GameService *gameService.GameService
 	Logger      *log.Logger
 }
 
@@ -44,9 +43,9 @@ func (adapter GameServiceIPCServerAdapter) Start(args interface{}) error {
 		return fmt.Errorf("Invalid type %T for argument, expected %T", args, types.DrivenAdapterGRPCArgs{})
 	}
 
-	gameService, ok := gameServiceArgs.Service.(drivingPorts.GameServicePort)
+	gameService_, ok := gameServiceArgs.Service.(*gameService.GameService)
 	if !ok {
-		var wanted *drivingPorts.GameServicePort
+		var wanted *gameService.GameService
 		return fmt.Errorf("Invalid type %T in argument %#v, expected %T", gameServiceArgs.Service, args, wanted)
 	}
 	// doesSatisfyPort := reflect.TypeOf(gameServiceArgs.Service).Implements(reflect.TypeOf((*drivingPorts.GameServicePort)(nil)).Elem())
@@ -58,7 +57,7 @@ func (adapter GameServiceIPCServerAdapter) Start(args interface{}) error {
 	listener := gameServiceArgs.Listener
 
 	grpcServer := grpc.NewServer()
-	gameServiceServer := &GameServiceServer{GameService: gameService}
+	gameServiceServer := &GameServiceServer{GameService: gameService_}
 	// gameServiceServer := &GameServiceServer{GameService: (drivingPorts.GameServicePort)(gameServiceArgs.Service)}
 
 	gameServiceProto.RegisterGameServiceServer(grpcServer, gameServiceServer)

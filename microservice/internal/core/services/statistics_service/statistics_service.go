@@ -2,7 +2,7 @@ package statisticsService
 
 import (
 	"log"
-	ipc "microservice/internal/core/driven_adapters/ipc/grpc"
+	ipcPorts "microservice/internal/core/driven_ports/ipc"
 	"microservice/internal/core/driven_ports/repository"
 	"microservice/internal/core/types"
 	"time"
@@ -12,7 +12,7 @@ type StatisticsService struct {
 	UserRepository       repository.UserRepositoryPort
 	StatisticsRepository repository.StatisticsRepositoryPort
 	// TODO: If this has a port as a type, we don't have an import cycle and can refer to this struct in the adapter
-	IPCServer ipc.StatisticsServiceIPCServerAdapter
+	IPCServer ipcPorts.StatisticsServiceIPCServerPort
 	Logger    *log.Logger
 }
 
