@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	common "microservice/internal"
 	"net/url"
 	"os"
 	"os/signal"
@@ -12,10 +13,11 @@ import (
 )
 
 func main() {
+	*log.Default() = *common.NewDefaultLogger()
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: ":8080", Path: "/game/ws"}
+	u := url.URL{Scheme: "ws", Host: ":8080", Path: "/ws"}
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
@@ -25,21 +27,6 @@ func main() {
 	defer c.Close()
 
 	done := make(chan struct{})
-
-	go func() {
-		defer close(done)
-
-		for {
-			_, message, err := c.ReadMessage()
-			if err != nil {
-				log.Println("read:", err)
-
-				return
-			}
-
-			log.Printf("recv: %s", message)
-		}
-	}()
 
 	go func() {
 		for {
@@ -72,10 +59,23 @@ func main() {
 
 	log.Println(uuid)
 
-	err = c.WriteMessage(websocket.TextMessage, []byte(`{"userID": `+uuid+`}`))
+	err = c.WriteMessage(websocket.TextMessage, []byte(`{"userID": "`+uuid+`"}`))
 	if err != nil {
 		log.Println("write:", err)
 
 		return
+	}
+
+	defer close(done)
+
+	for {
+		_, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+
+			return
+		}
+
+		log.Printf("recv: %s", message)
 	}
 }

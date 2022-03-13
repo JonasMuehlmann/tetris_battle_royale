@@ -10,9 +10,12 @@ import (
 	drivingAdapters "microservice/internal/driving_adapters/websocket"
 	"net"
 	"os"
+	"time"
 )
 
 func main() {
+	time.Sleep(10 * time.Second)
+
 	logger := log.New(os.Stdout, "TBR - ", log.Ltime|log.Lshortfile)
 
 	db := repository.MakeDefaultPostgresDB(logger)

@@ -17,7 +17,7 @@ type MatchmakingServiceRestAdapter struct {
 func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := common.UnmarshalRequestBody(r)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
@@ -33,7 +33,7 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 
 	err = adapter.Service.Join(userId)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not join matchmaking"))
 	}
@@ -42,7 +42,7 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := common.UnmarshalRequestBody(r)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not unmarshal request body"))
 	}
@@ -58,7 +58,7 @@ func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter,
 
 	err = adapter.Service.Leave(userID)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not join matchmaking"))
 	}

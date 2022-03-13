@@ -4,7 +4,10 @@
 
 SERVICES=("user_service" "statistics_service" "matchmaking_service" "game_service" "gateway")
 
-minikube kubectl -- delete -f microservice-deployment.yaml
+for service in ${SERVICES[@]}; do
+    minikube kubectl -- delete "${service}-service"
+done
+
 minikube stop
 minikube start
 eval $(minikube docker-env)

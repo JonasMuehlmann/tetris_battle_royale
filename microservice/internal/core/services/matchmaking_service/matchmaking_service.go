@@ -44,6 +44,8 @@ func (service MatchmakingService) Join(userID string) error {
 	if len(service.Queue) == MatchSize {
 		err := service.startGame()
 		if err != nil {
+			service.Logger.Printf("Error: %v\n", err)
+
 			return err
 		}
 	}
@@ -70,6 +72,8 @@ func (service MatchmakingService) startGame() error {
 
 	_, err := service.GameServiceGrpcClient.StartGame(context.Background(), &gameServiceProto.UserIDList{Id: userIDList})
 	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 

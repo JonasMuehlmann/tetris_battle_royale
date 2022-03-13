@@ -45,7 +45,7 @@ func (service GameService) StartGame(userIDList []string) error {
 		err := service.GameAdapter.SendMatchStartNotice(userID, matchID)
 		if err != nil {
 			service.Logger.Printf("Could not notify client %v of game start", userID)
-			service.Logger.Printf("Error: %v", err)
+			service.Logger.Printf("Error: %v\n", err)
 
 			return err
 		}

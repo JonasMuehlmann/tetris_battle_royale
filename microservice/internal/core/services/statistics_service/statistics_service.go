@@ -52,16 +52,22 @@ func (service StatisticsService) UpdatePlayerRating(newRating types.PlayerRating
 func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error {
 	playerProfile, err := service.GetPlayerProfile(record.UserID)
 	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 
 	playerStatistics, err := service.GetPlayerStatistics(record.UserID)
 	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 
 	playerRating, err := service.GetPlayerRating(record.UserID)
 	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 
@@ -96,16 +102,22 @@ func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error 
 
 	err = service.UpdatePlayerProfile(playerProfile)
 	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 
 	err = service.UpdatePlayerStatistics(playerStatistics)
 	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 
 	err = service.UpdatePlayerRating(playerRating)
 	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 

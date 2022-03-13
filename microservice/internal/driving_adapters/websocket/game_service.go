@@ -21,28 +21,26 @@ var upgrader = websocket.Upgrader{
 }
 
 func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter, r *http.Request) {
-	body, err := common.UnmarshalRequestBody(r)
-	if err != nil {
-		log.Printf("Error: %v", err)
-		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
-	}
-
-	userID, ok := body["userID"].(string)
-	if !ok {
-		log.Printf("Error: Could not unmarshal request body")
-		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
-	}
-
 	incomingConn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("Error: %v", err)
+		log.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
+	}
+
+	userID := struct {
+		UserID string `json:"userID"`
+	}{}
+
+	err = incomingConn.ReadJSON(&userID)
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+		common.TryWriteResponse(w, common.MakeJsonError("Could not read from websocket connection"))
 	}
 
 	// TODO: Check if user exists
-	err = adapter.Service.ConnectPlayer(userID, incomingConn)
+	err = adapter.Service.ConnectPlayer(userID.UserID, *incomingConn)
 	if err != nil {
-		log.Printf("Error: %v", err)
+		log.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
 	}
 }
@@ -50,7 +48,7 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 func (adapter GameServiceWebsocketAdapter) Run() {
 	mux := mux.NewRouter()
 
-	mux.HandleFunc("/ws", adapter.UpgradeHandler).Methods("POST")
+	mux.HandleFunc("/ws", adapter.UpgradeHandler)
 
 	adapter.Logger.Println("Starting server on Port 8080")
 

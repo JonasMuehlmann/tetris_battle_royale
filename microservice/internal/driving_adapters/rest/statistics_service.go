@@ -20,7 +20,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerProfileHandler(w http.Respo
 
 	playerProfile, err := adapter.Service.GetPlayerProfile(vars["userID"])
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
@@ -28,7 +28,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerProfileHandler(w http.Respo
 
 	marhshalledPlayerProfile, err := json.Marshal(playerProfile)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
@@ -42,7 +42,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerStatisticsHandler(w http.Re
 
 	playerStatistics, err := adapter.Service.GetPlayerStatistics(vars["userID"])
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
@@ -50,7 +50,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerStatisticsHandler(w http.Re
 
 	marhshalledPlayerStatistics, err := json.Marshal(playerStatistics)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
@@ -64,7 +64,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordsHandler(w http.
 
 	matchRecords, err := adapter.Service.GetMatchRecords(vars["userID"])
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
@@ -72,7 +72,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordsHandler(w http.
 
 	marhshalledMatchRecords, err := json.Marshal(matchRecords)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
@@ -86,7 +86,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordHandler(w http.R
 
 	matchRecord, err := adapter.Service.GetMatchRecord(vars["matchID"])
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return
@@ -94,7 +94,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordHandler(w http.R
 
 	marhshalledMatchRecords, err := json.Marshal(matchRecord)
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
 		return

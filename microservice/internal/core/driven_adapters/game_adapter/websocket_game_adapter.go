@@ -33,6 +33,8 @@ func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID 
 
 	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"matchID": "%v"}`, matchID)))
 	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 

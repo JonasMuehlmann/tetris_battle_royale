@@ -19,7 +19,7 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 
 	sessionID, err := adapter.Service.IsLoggedIn(vars["username"])
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
@@ -50,7 +50,7 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 
 	sessionID, err := adapter.Service.Login(username.(string), password.(string))
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
@@ -73,7 +73,7 @@ func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *ht
 
 	err := adapter.Service.Logout(sessionID.(string))
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
 
@@ -107,7 +107,7 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 	userID, err := adapter.Service.Register(username.(string), password.(string))
 
 	if err != nil {
-		adapter.Logger.Printf("Error: %v", err)
+		adapter.Logger.Printf("Error: %v\n", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		common.TryWriteResponse(w, common.MakeJsonError("Failed to register"))
 
