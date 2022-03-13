@@ -29,6 +29,14 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -60,6 +68,13 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -91,6 +106,13 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -122,6 +144,13 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -154,6 +183,13 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
 ---
 apiVersion: v1
 kind: Service
@@ -259,7 +295,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/mnt/data"
+    path: "/mnt/db-data"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -267,6 +303,36 @@ metadata:
   name: db-pv-claim
   labels:
     app: db
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: secrets-pv-volume
+  labels:
+    type: local
+    app: secrets
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/secrets-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: secrets-pv-claim
+  labels:
+    app: secrets
 spec:
   storageClassName: manual
   accessModes:

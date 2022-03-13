@@ -15,7 +15,7 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	u := url.URL{Scheme: "ws", Host: "game-service:8080", Path: "/ws"}
+	u := url.URL{Scheme: "ws", Host: ":8080", Path: "/game/ws"}
 
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	if err != nil {
