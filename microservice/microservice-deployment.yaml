@@ -33,31 +33,50 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-<<<<<<< HEAD
-  name: game-service
-  labels:
-    app: game-service
-=======
   name: statistics-service
   labels:
     app: statistics-service
->>>>>>> origin/main
-
 spec:
   replicas: 1
   selector:
     matchLabels:
-<<<<<<< HEAD
-      app: game-service
-=======
       app: statistics-service
->>>>>>> origin/main
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-<<<<<<< HEAD
+        app: statistics-service
+        tier: service
+    spec:
+      containers:
+        - name: statistics-service
+          # has to match the call to docker build -t in deploy_cluster.sh
+          image: statistics_service:latest
+          # We are using local images
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-service
+  labels:
+    app: game-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
         app: game-service
         tier: service
     spec:
@@ -79,7 +98,6 @@ metadata:
   name: matchmaking-service
   labels:
     app: matchmaking-service
-
 spec:
   replicas: 1
   selector:
@@ -97,15 +115,6 @@ spec:
         - name: matchmaking-service
           # has to match the call to docker build -t in deploy_cluster.sh
           image: matchmaking_service:latest
-=======
-        app: statistics-service
-        tier: service
-    spec:
-      containers:
-        - name: statistics-service
-          # has to match the call to docker build -t in deploy_cluster.sh
-          image: statistics_service:latest
->>>>>>> origin/main
           # We are using local images
           imagePullPolicy: Never
           ports:
