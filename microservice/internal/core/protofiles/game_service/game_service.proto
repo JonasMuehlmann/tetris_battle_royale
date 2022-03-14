@@ -1,0 +1,15 @@
+
+syntax = "proto3";
+package gameServiceProto;
+option go_package="github.com/JonasMuehlmann/tetris_battle_royale;gameServiceProto";
+
+service game_service {
+    rpc StartGame(UserIDList) returns (EmptyMessage);
+}
+
+message UserIDList {
+    repeated string Id = 1;
+}
+
+message EmptyMessage {
+}

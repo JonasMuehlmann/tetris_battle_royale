@@ -9,11 +9,13 @@ type StatisticsRepositoryPort interface {
 	UpdatePlayerProfile(newProfile types.PlayerProfile) error
 
 	// GetPlayerPlaytime(userID string) (int, error)
-	// GetPlayerRating(userID string) (int, error)
 	// GetPlayerProfileLastUpdateTime(userID string) (time.Time, error)
 
 	// SetPlayerPlaytime(userID string) error
 	// SetPlayerRating(rating int) error
+
+	GetPlayerRating(userID string) (types.PlayerRating, error)
+	UpdatePlayerRating(newRating types.PlayerRating) error
 
 	GetPlayerStatistics(userID string) (types.PlayerStatistics, error)
 	UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error

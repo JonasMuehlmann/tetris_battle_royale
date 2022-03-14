@@ -15,7 +15,6 @@ func main() {
 
 	logger := common.NewDefaultLogger()
 
-	// TODO: Set correct response codes
 	db := repository.MakeDefaultPostgresDB(logger)
 	userRepository := postgresRepository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	sessionRepository := repository.PostgresDatabaseSessionRepository{Logger: logger, PostgresDatabase: *db}

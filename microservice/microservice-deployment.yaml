@@ -29,6 +29,14 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -36,7 +44,6 @@ metadata:
   name: statistics-service
   labels:
     app: statistics-service
-
 spec:
   replicas: 1
   selector:
@@ -61,6 +68,89 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-service
+  labels:
+    app: game-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: game-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: game-service
+        tier: service
+    spec:
+      containers:
+        - name: game-service
+          # has to match the call to docker build -t in deploy_cluster.sh
+          image: game_service:latest
+          # We are using local images
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matchmaking-service
+  labels:
+    app: matchmaking-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matchmaking-service
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: matchmaking-service
+        tier: service
+    spec:
+      containers:
+        - name: matchmaking-service
+          # has to match the call to docker build -t in deploy_cluster.sh
+          image: matchmaking_service:latest
+          # We are using local images
+          imagePullPolicy: Never
+          ports:
+          - containerPort: 8080
+          env:
+          - name: PORT
+            value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -93,6 +183,13 @@ spec:
           env:
           - name: PORT
             value: "8080"
+          volumeMounts:
+            - mountPath: /root/.config/tbr
+              name: secrets
+      volumes:
+        - name: secrets
+          persistentVolumeClaim:
+            claimName: secrets-pv-claim
 ---
 apiVersion: v1
 kind: Service
@@ -116,6 +213,25 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: matchmaking-service
+  labels:
+    app: matchmaking-service
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+    - name: grpc
+      protocol: TCP
+      port: 8081
+  selector:
+    app: matchmaking-service
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: statistics-service
   labels:
     app: statistics-service
@@ -131,6 +247,25 @@ spec:
       port: 8081
   selector:
     app: statistics-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-service
+  labels:
+    app: game-service
+    tier: service
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+    - name: grpc
+      protocol: TCP
+      port: 8081
+  selector:
+    app: game-service
 ---
 apiVersion: v1
 kind: Service
@@ -160,7 +295,7 @@ spec:
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/mnt/data"
+    path: "/mnt/db-data"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -168,6 +303,36 @@ metadata:
   name: db-pv-claim
   labels:
     app: db
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: secrets-pv-volume
+  labels:
+    type: local
+    app: secrets
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/mnt/secrets-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: secrets-pv-claim
+  labels:
+    app: secrets
 spec:
   storageClassName: manual
   accessModes:
@@ -212,9 +377,9 @@ spec:
                 name: db-config
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: postgredb
+              name: postgresdb
       volumes:
-        - name: postgredb
+        - name: postgresdb
           persistentVolumeClaim:
             claimName: db-pv-claim
 ---

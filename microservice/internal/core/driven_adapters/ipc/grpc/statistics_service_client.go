@@ -36,6 +36,8 @@ func (adapter StatisticsServiceIPCClientAdapter) Start(args interface{}) error {
 
 	grpcConn, err := grpc.Dial(serverAddr, grpc.WithInsecure())
 	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
 		return err
 	}
 

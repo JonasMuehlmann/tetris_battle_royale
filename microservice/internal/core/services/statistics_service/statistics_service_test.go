@@ -236,10 +236,20 @@ func (suite *statisticsServiceTestSuite) TestAddMatchRecordBasic() {
 	_, err := suite.DBConn.Exec("INSERT INTO users(id) VALUES('123e4567-e89b-12d3-a456-426614174000')")
 	suite.NoError(err)
 
+	_, err = suite.DBConn.Exec("INSERT INTO player_ratings VALUES(0, 0, 0)")
+	suite.NoError(err)
+
+	_, err = suite.DBConn.Exec("INSERT INTO player_statistics VALUES(0, 0, 0.0, 0, 0, 0.0, 0, 0, 0, 0)")
+	suite.NoError(err)
+
+	_, err = suite.DBConn.Exec("INSERT INTO player_profiles VALUES(0, '123e4567-e89b-12d3-a456-426614174000', 0, 0, 0, '1999-01-08 04:05:06')")
+	suite.NoError(err)
+
 	record := types.MatchRecord{
 		ID:           "123e4567-e89b-12d3-a456-426614174000",
 		UserID:       "123e4567-e89b-12d3-a456-426614174000",
 		Win:          false,
+		WinKind:      0,
 		Score:        0,
 		Start:        time.Time{},
 		Length:       0,

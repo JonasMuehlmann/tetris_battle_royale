@@ -49,6 +49,7 @@ CREATE TABLE match_records(
     id            UUID PRIMARY KEY,
     user_id       UUID,
     win           BOOLEAN,
+    win_kind      INTEGER,
     score         INTEGER,
     length        INTEGER,
     start         TIMESTAMP,

@@ -4,18 +4,24 @@ import (
 	"context"
 	"fmt"
 	"log"
-	drivingPorts "microservice/internal/core/driving_ports"
 	statisticsServiceProto "microservice/internal/core/protofiles/statistics_service"
+	statisticsService "microservice/internal/core/services/statistics_service"
+	"net"
+
 	"microservice/internal/core/types"
-	"strings"
 	"time"
 
 	"google.golang.org/grpc"
 )
 
-type StatisticsServiceIPCServerAdapter struct {
-	StatisticsServiceServer
-	Logger *log.Logger
+//******************************************************************//
+//                           GRPC related                           //
+//******************************************************************//
+
+type StatisticsServiceServer struct {
+	statisticsServiceProto.UnimplementedStatisticsServiceServer
+	StatisticsService *statisticsService.StatisticsService
+	Logger            *log.Logger
 }
 
 func (service StatisticsServiceServer) AddMatchRecord(context context.Context, record *statisticsServiceProto.MatchRecord) (*statisticsServiceProto.EmptyRequest, error) {
@@ -37,10 +43,13 @@ func (service StatisticsServiceServer) AddMatchRecord(context context.Context, r
 	return &statisticsServiceProto.EmptyRequest{}, service.StatisticsService.AddMatchRecord(newRecord)
 }
 
-type StatisticsServiceServer struct {
-	statisticsServiceProto.UnimplementedStatisticsServiceServer
-	StatisticsService drivingPorts.StatisticsServicePort
-	Logger            *log.Logger
+//******************************************************************//
+//                              Adapter                            //
+//******************************************************************//
+
+type StatisticsServiceIPCServerAdapter struct {
+	StatisticsServiceServer
+	Logger *log.Logger
 }
 
 func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
@@ -49,9 +58,9 @@ func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
 		return fmt.Errorf("Invalid type %T for argument, expected %T", args, types.DrivenAdapterGRPCArgs{})
 	}
 
-	statisticsService, ok := statisticsServiceArgs.Service.(drivingPorts.StatisticsServicePort)
+	statisticsService_, ok := statisticsServiceArgs.Service.(*statisticsService.StatisticsService)
 	if !ok {
-		var wanted *drivingPorts.StatisticsServicePort
+		var wanted *statisticsService.StatisticsService
 		return fmt.Errorf("Invalid type %T in argument %#v, expected %T", statisticsServiceArgs.Service, args, wanted)
 	}
 	// doesSatisfyPort := reflect.TypeOf(statisticsServiceArgs.Service).Implements(reflect.TypeOf((*drivingPorts.StatisticsServicePort)(nil)).Elem())
@@ -63,12 +72,12 @@ func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
 	listener := statisticsServiceArgs.Listener
 
 	grpcServer := grpc.NewServer()
-	statisticsServiceServer := &StatisticsServiceServer{StatisticsService: statisticsService}
+	statisticsServiceServer := &StatisticsServiceServer{StatisticsService: statisticsService_}
 	// statisticsServiceServer := &StatisticsServiceServer{StatisticsService: (drivingPorts.StatisticsServicePort)(statisticsServiceArgs.Service)}
 
 	statisticsServiceProto.RegisterStatisticsServiceServer(grpcServer, statisticsServiceServer)
 
-	adapter.Logger.Printf("Starting GRPC server on port %v", strings.Split(listener.Addr().String(), ":")[1])
+	adapter.Logger.Printf("Starting GRPC server on port %v", listener.Addr().(*net.TCPAddr).Port)
 
 	return grpcServer.Serve(listener)
 }
