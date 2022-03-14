@@ -20,7 +20,12 @@ func MakeWebsocketGameAdapter(logger *log.Logger) WebsocketGameAdapter {
 }
 
 func (adapter WebsocketGameAdapter) ConnectPlayer(userID string, connection interface{}) error {
-	adapter.PlayerConnections[userID] = connection.(websocket.Conn)
+	conn, ok := connection.(websocket.Conn)
+	if !ok {
+		return fmt.Errorf("Invalid type %T for argument, expected %T", connection, websocket.Conn{})
+	}
+
+	adapter.PlayerConnections[userID] = conn
 
 	return nil
 }
