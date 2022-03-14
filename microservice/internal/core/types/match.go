@@ -1,6 +1,6 @@
 package types
 
-const MatchSize = 10
+const MatchSize = 2
 
 type Match struct {
 	ID      string
