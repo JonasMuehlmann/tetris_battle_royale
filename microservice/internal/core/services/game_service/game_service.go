@@ -65,3 +65,23 @@ func (service GameService) StartGame(userIDList []string) error {
 func (service GameService) ConnectPlayer(userID string, connection interface{}) error {
 	return service.GameAdapter.ConnectPlayer(userID, connection)
 }
+
+func (service GameService) MoveBlock(userID string, direction types.MoveDirection) error {
+	// TODO: Implement
+	return nil
+}
+
+func (service GameService) RotateBlock(userID string, direction types.RotationDirection) error {
+	// TODO: Implement
+	return nil
+}
+
+func (service GameService) HardDropBlock(userID string) error {
+	// TODO: Implement
+	return nil
+}
+
+func (service GameService) ToggleSoftDrop(userID string) error {
+	// TODO: Implement
+	return nil
+}

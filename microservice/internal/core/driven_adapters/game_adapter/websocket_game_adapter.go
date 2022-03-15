@@ -3,6 +3,7 @@ package drivenAdapters
 import (
 	"fmt"
 	"log"
+	"microservice/internal/core/types"
 
 	"github.com/gorilla/websocket"
 )
@@ -38,5 +39,35 @@ func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID 
 		return err
 	}
 
+	return nil
+}
+
+func (adapter WebsocketGameAdapter) SendUpdatedBlockState(userID string, newState types.BlockState) error {
+	// TODO: Implement
+	return nil
+}
+
+func (adapter WebsocketGameAdapter) SendBlockLockinNotice(userID string) error {
+	// TODO: Implement
+	return nil
+}
+
+func (adapter WebsocketGameAdapter) SendRowClearNotice(userID string, rowNum int) error {
+	// TODO: Implement
+	return nil
+}
+
+func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock types.BlockType) error {
+	// TODO: Implement
+	return nil
+}
+
+func (adapter WebsocketGameAdapter) SendScoreGain(userID string, score int) error {
+	// TODO: Implement
+	return nil
+}
+
+func (adapter WebsocketGameAdapter) SendEventNotice(userID string, event string) error {
+	// TODO: Implement
 	return nil
 }

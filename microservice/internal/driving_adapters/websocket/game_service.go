@@ -4,6 +4,7 @@ import (
 	"log"
 	common "microservice/internal"
 	gameService "microservice/internal/core/services/game_service"
+	"microservice/internal/core/types"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -43,6 +44,26 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 		log.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
 	}
+}
+
+func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(userID string, direction types.MoveDirection) error {
+	// TODO: Implement
+	return adapter.Service.MoveBlock(userID, direction)
+}
+
+func (adapter GameServiceWebsocketAdapter) HandleRotateBlock(userID string, direction types.RotationDirection) error {
+	// TODO: Implement
+	return adapter.Service.RotateBlock(userID, direction)
+}
+
+func (adapter GameServiceWebsocketAdapter) HandleHardDropBlock(userID string) error {
+	// TODO: Implement
+	return adapter.Service.HardDropBlock(userID)
+}
+
+func (adapter GameServiceWebsocketAdapter) HandleToggleSoftDrop(userID string) error {
+	// TODO: Implement
+	return adapter.Service.ToggleSoftDrop(userID)
 }
 
 func (adapter GameServiceWebsocketAdapter) Run() {

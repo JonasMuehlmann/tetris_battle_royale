@@ -18,8 +18,6 @@ for service in ${SERVICES[@]}; do
 done
 
 minikube kubectl -- apply -f microservice-deployment.yaml
-# kubectl port-forward service/user-service 8080:8080
-# kubectl port-forward service/statistics-service 8081:8080
 
 # Useful commands:
 # kubectl get services
@@ -27,3 +25,4 @@ minikube kubectl -- apply -f microservice-deployment.yaml
 # kubectl describe pod user-service
 # kubectl get pods -l app=user-service
 # kubectl logs satistics-service-<long-hash>
+# kubectl port-forward service/user-service 8080:8080
