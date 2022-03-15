@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion"
+import { useEffect } from "react"
 import { BeatLoader, MoonLoader, PulseLoader, SyncLoader } from "react-spinners"
 import { useQueue } from "../contexts/queue-context"
+import { Screen, useScreens } from "../contexts/screen-context"
 
 const QueueBox = () => {
   const {
@@ -8,6 +10,16 @@ const QueueBox = () => {
     cancelQueue,
     elapsed
   } = useQueue()
+
+  const {
+    navigate
+  } = useScreens()
+
+  useEffect(() => {
+    if (elapsed > 5) {
+      navigate(Screen.Tetris)
+    }
+  }, [elapsed])
 
   return (
     <AnimatePresence>

@@ -6,7 +6,7 @@ import React, { Component, useContext, useState } from "react";
  */
 export class MenuItem {
   static Matchfinder = new MenuItem(
-    'Matchfinder'
+    'Match'
   )
   static Statistics = new MenuItem(
     'Stats'

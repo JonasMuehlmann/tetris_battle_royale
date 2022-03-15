@@ -80,7 +80,7 @@ const LobbyScreen = () => {
   return (
     <div className="w-full h-full flex flex-col z-20 relative">
       <Menu />
-      <div className="flex justify-between w-full px-52 py-16">
+      <div className="flex justify-between w-full lg:px-52 px-36 py-16">
         {renderCurrentMenu()}
       </div>
       <QueueBox />
