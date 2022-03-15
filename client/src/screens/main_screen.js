@@ -47,8 +47,8 @@ const MainScreen = () => {
                   className="w-screen h-screen"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ y: -window.innerHeight }}
-                  transition={{ duration: 1.5, type: 'spring', delay: .25 }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  transition={{ duration: 1.5, type: 'spring' }}
                   key={currentScreen.name}>
                   <TetrisScreen />
                 </motion.div>

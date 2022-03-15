@@ -9,7 +9,9 @@ import { useStatus } from '../../hooks/useStatus'
 import { checkCollision, createStage } from "./helpers";
 
 
-const Tetris = () => {
+const Tetris = ({
+  onGameOver = () => { }
+}) => {
   const wrapperRef = useRef(null)
 
   const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
@@ -36,23 +38,21 @@ const Tetris = () => {
   //#region MOVEMENTS
 
   const drop = () => {
-    // Increase level when player has cleared 10 rows
     if (rows > (level + 1) * 10) {
-      setLevel(prev => prev + 1);
-      // Also increase speed
-      setDropTime(1000 / (level + 1) + 200);
+      setLevel(prev => prev + 1)
+      setDropTime(1000 / (level + 1) + 200)
     }
 
     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-      updatePlayerPos({ x: 0, y: 1, collided: false });
+      updatePlayerPos({ x: 0, y: 1, collided: false })
     } else {
-      // Game over!
       if (player.pos.y < 1) {
-        console.log('GAME OVER!!!');
-        setGameOver(true);
-        setDropTime(null);
+        console.log('GAME OVER!')
+        onGameOver()
+        setGameOver(true)
+        setDropTime(null)
       }
-      updatePlayerPos({ x: 0, y: 0, collided: true });
+      updatePlayerPos({ x: 0, y: 0, collided: true })
     }
   }
 
@@ -114,11 +114,13 @@ const Tetris = () => {
             (
               <motion.div
                 key={gameStarted}
-                initial={{ opacity: 0, scale: .25, rotateY: 360 }}
+                initial={{ opacity: 0, scale: .25, rotateY: 180 }}
                 animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                transition={{ duration: 1.5, type: 'spring' }}
                 className="flex gap-2">
                 <Stage
-                  stage={stage}>
+                  stage={stage}
+                  gameOver={gameOver}>
                 </Stage>
               </motion.div>
             ) :
@@ -127,23 +129,24 @@ const Tetris = () => {
                 key={gameStarted}
                 initial={{ opacity: .25, y: 15, scale: 0.5 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.5 }}
+                exit={{ scale: 1.25 }}
+                transition={{ duration: .5, type: 'spring' }}
                 className={`text-center
                   ${timerCount <= 1 && 'green-grad-text'}`}>
-                <p className="text-8xl bangers">
+                <motion.p
+                  className="text-8xl bangers">
                   {
                     timerCount
                   }
-                </p>
-                <p className="text-4xl truncate bangers">
+                </motion.p>
+                <span className="text-4xl truncate w-40 bangers">
                   {
                     timerCount <= 1 &&
                     `Get Ready!`
                   }
-                </p>
+                </span>
               </motion.div>
-            )
-        }
+            )}
       </AnimatePresence>
     </div>
   )

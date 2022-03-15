@@ -11,10 +11,12 @@ const TetrisScreen = () => {
     <div className="flex flex-col justify-center items-center z-50 w-full h-full text-white relative">
       <button
         onClick={() => navigate(Screen.Menu)}
-        className="absolute left-28 top-20 text-4xl green-grad-text opacity-20 transition-all font-semibold hover:opacity-100">
+        className="absolute left-28 top-20 text-4xl opacity-20 transition-all font-semibold hover:opacity-100">
         BACK
       </button>
-      <Tetris />
+      <Tetris
+        onGameOver={() => setTimeout(() => navigate(Screen.Menu), 1000)}
+      />
     </div>
   )
 }

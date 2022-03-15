@@ -1,9 +1,10 @@
 import Cell from './cell'
 import { TETROMINOS } from './tetrominos'
 
-const Stage = ({ stage }) => (
+const Stage = ({ stage, gameOver }) => (
   <div
     style={{
+      ...gameOver && { filter: 'grayscale(1)' },
       display: 'grid',
       gridTemplateRows: `repeat(
         ${stage.length},
