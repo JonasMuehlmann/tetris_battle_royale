@@ -46,24 +46,38 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 	}
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(userID string, direction types.MoveDirection) error {
+func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]string) error {
 	// TODO: Implement
-	return adapter.Service.MoveBlock(userID, direction)
+	var userID string
+	var matchID string
+	var direction types.MoveDirection
+
+	return adapter.Service.MoveBlock(userID, matchID, direction)
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleRotateBlock(userID string, direction types.RotationDirection) error {
+func (adapter GameServiceWebsocketAdapter) HandleRotateBlock(message map[string]string) error {
 	// TODO: Implement
-	return adapter.Service.RotateBlock(userID, direction)
+	var userID string
+	var matchID string
+	var direction types.RotationDirection
+
+	return adapter.Service.RotateBlock(userID, matchID, direction)
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleHardDropBlock(userID string) error {
+func (adapter GameServiceWebsocketAdapter) HandleHardDropBlock(message map[string]string) error {
 	// TODO: Implement
-	return adapter.Service.HardDropBlock(userID)
+	var userID string
+	var matchID string
+
+	return adapter.Service.HardDropBlock(userID, matchID)
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleToggleSoftDrop(userID string) error {
+func (adapter GameServiceWebsocketAdapter) HandleToggleSoftDrop(message map[string]string) error {
 	// TODO: Implement
-	return adapter.Service.ToggleSoftDrop(userID)
+	var userID string
+	var matchID string
+
+	return adapter.Service.ToggleSoftDrop(userID, matchID)
 }
 
 func (adapter GameServiceWebsocketAdapter) Run() {
@@ -73,5 +87,11 @@ func (adapter GameServiceWebsocketAdapter) Run() {
 
 	adapter.Logger.Println("Starting server on Port 8080")
 
-	adapter.Logger.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
+	go func() {
+		adapter.Logger.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
+	}()
+
+	// TODO: Implement read loop and dispatch to the below functions
+	for {
+	}
 }
