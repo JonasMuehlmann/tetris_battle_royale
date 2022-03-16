@@ -15,7 +15,7 @@ type GameService struct {
 	UserRepo repoPorts.UserRepositoryPort
 	// This port/adapter might need refactoring
 	Logger      *log.Logger
-	Matches     map[string]types.Match
+	Matches     map[string]Match
 	IPCServer   ipcPorts.GameServiceIPCServerPort
 	GameAdapter drivenPorts.GamePort
 }
@@ -24,7 +24,7 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, ipcServerAdapter ipc
 	return GameService{
 		UserRepo:    userRepo,
 		Logger:      logger,
-		Matches:     make(map[string]types.Match),
+		Matches:     make(map[string]Match),
 		IPCServer:   ipcServerAdapter,
 		GameAdapter: gameAdapter,
 	}
@@ -33,13 +33,13 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, ipcServerAdapter ipc
 func (service GameService) StartGame(userIDList []string) error {
 	matchID := uuid.NewString()
 
-	players := [types.MatchSize]types.Player{}
+	players := [MatchSize]Player{}
 	for i, userID := range userIDList {
 		// TODO: This should probably be refactored into a separate function and will include more complex setup logic
-		players[i] = types.Player{
+		players[i] = Player{
 			ID:        userID,
 			Score:     0,
-			Playfield: &types.Playfield{},
+			Playfield: &Playfield{},
 		}
 
 		err := service.GameAdapter.SendMatchStartNotice(userID, matchID)
@@ -51,7 +51,7 @@ func (service GameService) StartGame(userIDList []string) error {
 		}
 	}
 
-	service.Matches[matchID] = types.Match{
+	service.Matches[matchID] = Match{
 		ID:      matchID,
 		Players: players,
 	}
