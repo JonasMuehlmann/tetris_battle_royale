@@ -4,7 +4,7 @@ import "microservice/internal/core/types"
 
 type GamePort interface {
 	ConnectPlayer(userID string, connection interface{}) error
-	SendMatchStartNotice(userID string, matchID string) error
+	SendMatchStartNotice(userID string, matchID string, opponents []types.Opponent) error
 
 	SendUpdatedBlockState(userID string, newState types.BlockState) error
 	SendBlockLockinNotice(userID string) error
