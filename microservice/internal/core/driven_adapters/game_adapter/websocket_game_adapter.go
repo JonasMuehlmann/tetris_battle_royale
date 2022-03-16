@@ -75,7 +75,7 @@ func (adapter WebsocketGameAdapter) SendRowClearNotice(userID string, rowNum int
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock types.BlockType) error {
+func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, dequeuedBlock types.BlockType, enqueuedBlock types.BlockType) error {
 	// TODO: Implement
 	return nil
 }
