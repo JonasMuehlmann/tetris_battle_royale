@@ -1,14 +1,21 @@
 import React, { useContext, useState } from "react";
-import Loader from "../components/loader";
 
+/**
+ * DIALOG TYPE DEFINITIONS
+ * MUST BE PROVIDED TO OPEN DIALOG
+ */
 export class DialogType {
   static Warning = new DialogType("warning")
   static Info = new DialogType("info")
-  static Load = new DialogType("load")
+  static Load = new DialogType(
+    "load",
+    "Loading..",
+    "It won\'t take long.."
+  )
   static Authenticate = new DialogType(
     "authenticate",
     "Authenticating..",
-    "It won\'t take long.."
+    "Validating account.."
   )
 
   constructor(type, title, content) {
@@ -20,6 +27,10 @@ export class DialogType {
 
 export const DialogContext = React.createContext()
 
+/**
+ * DIALOG CONTEXT PROVIDER
+ * PROVIDES METHODES AND STATES FOR DIALOGS
+ */
 export const DialogProvider = ({ children }) => {
   const [isDialogVisible, setIsDialogVisible] = useState(false)
   const [currentType, setCurrentType] = useState(null)
@@ -42,7 +53,6 @@ export const DialogProvider = ({ children }) => {
         currentType,
       },
     }}>
-      <Loader />
       {children}
     </DialogContext.Provider>
   )
@@ -54,4 +64,7 @@ export const withDialogContext = Component => ({ ...props }) => (
   </DialogProvider>
 )
 
+/**
+ * DELIEVERS 'VALUE'-OBJECT OF THE PROVIDER
+ */
 export const useDialog = () => useContext(DialogContext)

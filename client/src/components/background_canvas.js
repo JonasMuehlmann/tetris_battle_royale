@@ -15,8 +15,8 @@ export const BackgroundCanvas = () => {
       canvasRef.current.height = window.innerHeight;
 
       const context = canvasRef.current.getContext('2d');
-      const starsCount = 180;
-      const blocksCount = 7;
+      const starsCount = 150;
+      const blocksCount = 10;
 
       setPainter(
         new Painter(
@@ -29,14 +29,16 @@ export const BackgroundCanvas = () => {
     }
   }
 
-
   useEffect(() => {
     window.addEventListener('resize', resize)
-    resize()
+    if (!painter) {
+      resize()
+    }
+
     return () => {
       window.removeEventListener('resize', resize)
     }
-  }, []);
+  }, [painter]);
 
   return (
     <canvas className='absolute top-0 left-0 z-0' ref={canvasRef}></canvas>

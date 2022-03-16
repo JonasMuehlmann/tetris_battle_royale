@@ -1,5 +1,6 @@
 import { BackgroundCanvas } from './components/background_canvas';
-import { withScreenContext } from './contexts/screen-context';
+import Loader from './components/loader';
+import { withDialogContext } from './contexts/dialog-context';
 import MainScreen from './screens/main_screen';
 
 function App() {
@@ -7,8 +8,9 @@ function App() {
     <div className="w-screen h-screen flex flex-col justify-center items-center">
       <BackgroundCanvas />
       <MainScreen />
+      <Loader />
     </div>
   );
 }
 
-export default withScreenContext(App);
+export default withDialogContext(App);
