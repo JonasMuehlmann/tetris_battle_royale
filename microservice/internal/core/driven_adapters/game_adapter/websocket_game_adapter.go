@@ -119,7 +119,18 @@ func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock
 }
 
 func (adapter WebsocketGameAdapter) SendScoreGain(userID string, score int) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"score": "%v"}`, score)))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
