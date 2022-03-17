@@ -1,6 +1,7 @@
 package drivenAdapters
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"microservice/internal/core/types"
@@ -48,7 +49,24 @@ func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID 
 }
 
 func (adapter WebsocketGameAdapter) SendUpdatedBlockState(userID string, newState types.BlockState) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+	out, jsonErr := json.Marshal(newState)
+	if jsonErr != nil {
+		adapter.Logger.Printf("Error: %v\n", jsonErr)
+
+		return jsonErr
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(out))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
