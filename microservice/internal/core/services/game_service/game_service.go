@@ -39,7 +39,7 @@ func (service GameService) StartGame(userIDList []string) error {
 		players[i] = Player{
 			ID:        userID,
 			Score:     0,
-			Playfield: &Playfield{},
+			Playfield: Playfield{},
 		}
 
 		// Build list of opponent user IDs
