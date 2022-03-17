@@ -1,6 +1,7 @@
 package drivingAdapters
 
 import (
+	"encoding/json"
 	"log"
 	common "microservice/internal"
 	gameService "microservice/internal/core/services/game_service"
@@ -12,8 +13,10 @@ import (
 )
 
 type GameServiceWebsocketAdapter struct {
-	Service gameService.GameService
-	Logger  *log.Logger
+	Service           gameService.GameService
+	Logger            *log.Logger
+	clientConnections []ClientConnection
+	IncomingMesssages chan []byte
 }
 
 var upgrader = websocket.Upgrader{
@@ -44,22 +47,30 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 		log.Printf("Error: %v\n", err)
 		common.TryWriteResponse(w, common.MakeJsonError("Could not establish websocket connection"))
 	}
+
+	connection := ClientConnection{
+		userID: userID.UserID,
+		conn:   incomingConn,
+	}
+
+	adapter.clientConnections = append(adapter.clientConnections, connection)
+
+	go connection.ReadPump(adapter.IncomingMesssages)
 }
 
 func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]string) error {
 
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
-	var direction types.MoveDirection = message["direction"]
+	var direction types.MoveDirection = types.MoveDirection(message["direction"])
 
 	return adapter.Service.MoveBlock(userID, matchID, direction)
 }
 
 func (adapter GameServiceWebsocketAdapter) HandleRotateBlock(message map[string]string) error {
-	// TODO: Implement
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
-	var direction types.RotationDirection = message["direction"]
+	var direction types.RotationDirection = types.RotationDirection(message["direction"])
 
 	return adapter.Service.RotateBlock(userID, matchID, direction)
 }
@@ -89,7 +100,20 @@ func (adapter GameServiceWebsocketAdapter) Run() {
 		adapter.Logger.Fatalf("Error: Server failed to start: %v", http.ListenAndServe(":8080", mux))
 	}()
 
-	// TODO: Implement read loop and dispatch to the below functions
 	for {
+		raw := <-adapter.IncomingMesssages
+		var message map[string]string
+		json.Unmarshal(raw, &message)
+		switch message["type"] {
+		case "MoveBlock":
+			adapter.HandleMoveBlock(message)
+		case "RotateBlock":
+			adapter.HandleRotateBlock(message)
+		case "HardDrop":
+			adapter.HandleHardDropBlock(message)
+		case "SoftDrop":
+			adapter.HandleToggleSoftDrop(message)
+		}
+
 	}
 }
