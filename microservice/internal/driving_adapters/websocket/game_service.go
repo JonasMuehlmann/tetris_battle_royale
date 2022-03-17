@@ -72,9 +72,8 @@ func (adapter GameServiceWebsocketAdapter) HandleHardDropBlock(message map[strin
 }
 
 func (adapter GameServiceWebsocketAdapter) HandleToggleSoftDrop(message map[string]string) error {
-	// TODO: Implement
-	var userID string
-	var matchID string
+	var userID string = message["userID"]
+	var matchID string = message["matchID"]
 
 	return adapter.Service.ToggleSoftDrop(userID, matchID)
 }
