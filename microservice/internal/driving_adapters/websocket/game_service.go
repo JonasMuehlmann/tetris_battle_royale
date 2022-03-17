@@ -48,26 +48,25 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 
 func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]string) error {
 
-	userID = message["userID"]
-	matchID = message["matchID"]
-	direction = message["direction"]
+	var userID string = message["userID"]
+	var matchID string = message["matchID"]
+	var direction types.MoveDirection = message["direction"]
 
 	return adapter.Service.MoveBlock(userID, matchID, direction)
 }
 
 func (adapter GameServiceWebsocketAdapter) HandleRotateBlock(message map[string]string) error {
 	// TODO: Implement
-	var userID string
-	var matchID string
-	var direction types.RotationDirection
+	var userID string = message["userID"]
+	var matchID string = message["matchID"]
+	var direction types.RotationDirection = message["direction"]
 
 	return adapter.Service.RotateBlock(userID, matchID, direction)
 }
 
 func (adapter GameServiceWebsocketAdapter) HandleHardDropBlock(message map[string]string) error {
-	// TODO: Implement
-	var userID string
-	var matchID string
+	var userID string = message["userID"]
+	var matchID string = message["matchID"]
 
 	return adapter.Service.HardDropBlock(userID, matchID)
 }
