@@ -1,10 +1,12 @@
-import React, { useState } from "react";
-import LogIn from '../screens/login/index'
-import Menu from "../screens/menu/index";
+import React, { useContext, useState } from "react";
 
+/**
+ * SCREEN DEFINITIONS
+ * MUST BE PROVIDED AS ARGUMENT TO NAVIGATE
+ */
 export class Screen {
-  static LogIn = new Screen("login", LogIn)
-  static Menu = new Screen("menu", Menu)
+  static LogIn = new Screen("login")
+  static Menu = new Screen("menu")
   static Queue = new Screen("queue")
   static Tetris = new Screen("tetris")
   static Result = new Screen("result")
@@ -17,8 +19,12 @@ export class Screen {
   }
 }
 
-export const ScreenContext = React.createContext()
+const ScreenContext = React.createContext()
 
+/**
+ * SCREEN CONTEXT PROVIDER
+ * PROVIDES METHODES AND STATES RELATED TO SCREENS
+ */
 export const ScreenProvider = ({ children }) => {
   const [currentScreen, setCurrentScreen] = useState(Screen.LogIn)
 
@@ -40,3 +46,8 @@ export const withScreenContext = Component => ({ ...props }) => (
     <Component {...props} />
   </ScreenProvider>
 )
+
+/**
+ * DELIEVERS 'VALUE'-OBJECT OF THE PROVIDER
+ */
+export const useScreens = () => useContext(ScreenContext)

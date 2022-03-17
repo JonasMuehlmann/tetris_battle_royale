@@ -3,7 +3,7 @@ import Block from "./block";
 import Star from "./star";
 
 const BG_RADIANS = 0.0001;
-const BG_ALPHA = 0.80;
+const BG_ALPHA = 0.86;
 const BG_ROTATE_RADIANS = 0.0005;
 
 export class Painter {
@@ -12,7 +12,7 @@ export class Painter {
   rotateValue = BG_ROTATE_RADIANS;
   speed = 0;
   rotating = false;
-  resetting = false;
+  stop = false;
   stars = [];
   drawWidth = 0;
   drawHeight = 0;
@@ -31,7 +31,7 @@ export class Painter {
     this.blocksCount = blocksCount
     this.canvasWidth = canvasWidth
     this.canvasHeight = canvasHeight
-    this.drawWidth = canvasWidth + 200;
+    this.drawWidth = canvasWidth + 100;
     this.drawHeight = canvasHeight;
 
     this.init()
@@ -54,38 +54,14 @@ export class Painter {
     this.stars.forEach(star => star.spawn())
     this.blocks.forEach(block => block.spawn())
 
-    this.setSpeed(4.25);
+    this.setSpeed(3.5);
   }
 
   update() {
     // clears canvas
     this.context.fillStyle = `rgba(20, 20, 20, ${this.backgroundAlpha})`;
-    this.context.fillRect(0, 0, this.canvasWidth, this.canvasWidth);
-
-    // rotates canvas
-    this.context.save();
-    // sets the pivot point
-    this.context.translate(this.canvasWidth / 2, this.canvasHeight / 2);
-    // takes radians (360° = 2 * Math.PI)
-    this.context.rotate(this.backgroundRotateRadians);
-    if (this.rotating && this.backgroundRotateRadians > 0) {
-      this.backgroundRotateRadians += this.rotateValue;
-    }
-    if (this.backgroundRotateRadians >= 2 * Math.PI) {
-      this.backgroundRotateRadians = 0;
-    }
-    /* 
-     * beschleunigt sich, wenn sich zurücksetzt
-     */
-    if (this.resetting) {
-      this.rotateValue *= 1.025;
-      if (this.backgroundRotateRadians <= 0) {
-        this.rotateValue = 0;
-        this.backgroundRotateRadians = 0;
-        this.rotating = false;
-        this.resetting = false;
-      }
-    }
+    this.context.fillRect(0, 0, this.drawWidth, this.drawHeight);
+    this.context.save()
     /*
      * zeichnet Sterne
      */
@@ -96,7 +72,6 @@ export class Painter {
         star.update()
       }
     })
-
     this.blocks.forEach(block => {
       if (block.x < -this.canvasWidth) {
         block.respawn()
@@ -105,7 +80,16 @@ export class Painter {
       }
     })
 
-    this.context.restore();
+    if (this.stop) {
+      const currentSpeed = this.speed
+      if (currentSpeed > 0) {
+        this.setSpeed(currentSpeed - 0.1)
+      } else if (currentSpeed < 0) {
+        this.setSpeed(0)
+      }
+    }
+
+    this.context.restore()
   }
 
   rotate() {
@@ -129,9 +113,14 @@ export class Painter {
   setSpeed(speed) {
     this.speed = speed;
     this.stars.forEach(star => {
-      const newSpeed = this.speed * random(1.0, 1.25)
-      star.velocity.x = newSpeed > 15 ? 15 - newSpeed : newSpeed
+      let randomized = this.speed * (Math.random() + 0.75)
+      randomized = randomized > 15 ? 15 - randomized : randomized
+      star.velocity.x = randomized
     });
-    this.blocks.forEach(block => block.velocity.x = this.speed * random(1.0, 1.25));
+    this.blocks.forEach(block => {
+      let randomized = this.speed * (Math.random() + 0.75)
+      randomized = randomized > 15 ? 15 - randomized : randomized
+      block.velocity.x = randomized
+    });
   }
 }
