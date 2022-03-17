@@ -71,7 +71,18 @@ func (adapter WebsocketGameAdapter) SendUpdatedBlockState(userID string, newStat
 }
 
 func (adapter WebsocketGameAdapter) SendBlockLockinNotice(userID string) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(`{"LockIn": "true"}`))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
