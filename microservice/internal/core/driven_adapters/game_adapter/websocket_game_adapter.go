@@ -87,7 +87,18 @@ func (adapter WebsocketGameAdapter) SendBlockLockinNotice(userID string) error {
 }
 
 func (adapter WebsocketGameAdapter) SendRowClearNotice(userID string, rowNum int) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"rowNum": "%v"}`, rowNum)))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
