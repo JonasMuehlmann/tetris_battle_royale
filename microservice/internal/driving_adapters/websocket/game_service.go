@@ -47,10 +47,10 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 }
 
 func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]string) error {
-	// TODO: Implement
-	var userID string
-	var matchID string
-	var direction types.MoveDirection
+
+	userID = message["userID"]
+	matchID = message["matchID"]
+	direction = message["direction"]
 
 	return adapter.Service.MoveBlock(userID, matchID, direction)
 }
