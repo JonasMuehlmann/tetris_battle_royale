@@ -135,6 +135,17 @@ func (adapter WebsocketGameAdapter) SendScoreGain(userID string, score int) erro
 }
 
 func (adapter WebsocketGameAdapter) SendEventNotice(userID string, event string) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"event": "%v"}`, event)))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
