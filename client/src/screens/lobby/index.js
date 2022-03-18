@@ -37,7 +37,7 @@ const LobbyScreen = () => {
               {...Motions.SlideLeft}
               key={currentMenu.text}>
               <Matchfinder />
-            </motion.div>
+            </motion.div>  
           ) :
           currentMenu === MenuItem.Statistics ?
             (

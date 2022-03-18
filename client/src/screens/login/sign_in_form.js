@@ -61,7 +61,7 @@ const SignInForm = (
         type='text'
         value={model.username}
         onChange={e => {
-          if (e.target || e.target.value !== ' ') {
+          if (e.target) {
             setModel({ ...model, username: e.target.value })
           }
         }}
@@ -83,7 +83,7 @@ const SignInForm = (
         type='password'
         value={model.password}
         onChange={e => {
-          if (e.target || e.target.value !== ' ')
+          if (e.target)
             setModel({ ...model, password: e.target.value })
         }}
         placeholder='Password'
