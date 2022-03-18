@@ -32,13 +32,25 @@ func (adapter WebsocketGameAdapter) ConnectPlayer(userID string, connection inte
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID string) error {
+func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID string, opponents []types.Opponent) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"matchID": "%v"}`, matchID)))
+	data := map[string]interface{}{
+		"matchID":   matchID,
+		"opponents": opponents,
+	}
+
+	dataJson, err := json.Marshal(data)
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
+	err = userConn.WriteMessage(websocket.TextMessage, dataJson)
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -102,13 +114,13 @@ func (adapter WebsocketGameAdapter) SendRowClearNotice(userID string, rowNum int
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock types.BlockType) error {
+func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock types.BlockType, enqueuedBlock types.BlockType) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"newBlock": "%v"}`, newBlock)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"newBlock": "%v", "enqueuedBlock": "%v"}`, newBlock, enqueuedBlock)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 

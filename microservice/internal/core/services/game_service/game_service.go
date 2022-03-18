@@ -39,10 +39,37 @@ func (service GameService) StartGame(userIDList []string) error {
 		players[i] = Player{
 			ID:        userID,
 			Score:     0,
-			Playfield: &Playfield{},
+			Playfield: Playfield{},
 		}
 
-		err := service.GameAdapter.SendMatchStartNotice(userID, matchID)
+		// Build list of opponent user IDs
+		opponentList := make([]types.Opponent, len(userIDList))
+		opponentUserIDList := make([]string, len(userIDList))
+
+		copy(opponentUserIDList, userIDList)
+
+		for j, opponentUserID := range opponentUserIDList {
+			if opponentUserID == userID {
+				opponentUserIDList[j] = opponentUserIDList[len(opponentUserIDList)-1]
+				opponentUserIDList = opponentUserIDList[:len(opponentUserIDList)-1]
+
+				break
+			}
+		}
+
+		// Build list of opponent user names
+		for j, opponentUserID := range opponentUserIDList {
+			user, err := service.UserRepo.GetUserFromID(opponentUserID)
+			if err != nil {
+				service.Logger.Printf("Error: %v\n", err)
+
+				return err
+			}
+
+			opponentList = append(opponentList, types.Opponent{opponentUserIDList[j], user.Username})
+		}
+
+		err := service.GameAdapter.SendMatchStartNotice(userID, matchID, opponentList)
 		if err != nil {
 			service.Logger.Printf("Could not notify client %v of game start", userID)
 			service.Logger.Printf("Error: %v\n", err)
