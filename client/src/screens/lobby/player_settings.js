@@ -1,4 +1,5 @@
 import { Screen, useScreens } from "../../contexts/screen-context"
+import { AiFillSound } from "react-icons/ai"
 
 const OPTIONS = [
   {
@@ -55,9 +56,7 @@ const PlayerSettings = () => {
 
   return (
     <div className="absolute h-3/6 w-4/6">
-      <div className="absolute h-14 w-14 top-0 right-0 bg-red-800"
-           //style={{backgroundColor: bgColor}}
-           /*onClick={this.toggelSound}*/></div>
+        < AiFillSound className="absolute h-14 w-14 top-0 right-0 text-white opacity-30 hover:opacity-100" />
 
       <ul className="flex flex-col gap-8 text-white bangers absolute bottom-0 right-0 transition-all hover:right-4">
         {
