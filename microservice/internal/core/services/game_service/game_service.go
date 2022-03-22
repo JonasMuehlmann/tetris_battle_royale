@@ -115,8 +115,10 @@ func (service GameService) MoveBlock(userID string, matchID string, direction ty
 		break
 	}
 
-	// TODO: Implement
-	return nil
+	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
+		BlockState:     service.Matches[matchID].Players[userID].Playfield.curBlockPosition,
+		RotationChange: types.RotationDirection.RotateNone,
+	})
 }
 
 func (service GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
