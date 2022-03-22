@@ -94,6 +94,27 @@ func (service GameService) ConnectPlayer(userID string, connection interface{}) 
 }
 
 func (service GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
+
+	if service.Matches[matchID] == nil {
+		service.Logger.Printf("The match %v does not exist.", matchID)
+		return nil
+	} else if service.Matches[matchID].Players[userID] == nil {
+		service.Logger.Printf("The user is not a member of the match.")
+		return nil
+	}
+
+	switch direction {
+	case types.MoveDirection.MoveLeft:
+		service.Matches[matchID].Players[userID].Playfield.MoveBlockLeft()
+		break
+	case types.MoveDirection.MoveRight:
+		service.Matches[matchID].Players[userID].Playfield.MoveBlockRight()
+		break
+	case types.MoveDirection.MoveDown:
+		service.Matches[matchID].Players[userID].Playfield.MoveBlockDown()
+		break
+	}
+
 	// TODO: Implement
 	return nil
 }
