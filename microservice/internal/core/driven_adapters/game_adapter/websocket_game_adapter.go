@@ -1,6 +1,7 @@
 package drivenAdapters
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"microservice/internal/core/types"
@@ -31,13 +32,25 @@ func (adapter WebsocketGameAdapter) ConnectPlayer(userID string, connection inte
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID string) error {
+func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID string, opponents []types.Opponent) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"matchID": "%v"}`, matchID)))
+	data := map[string]interface{}{
+		"matchID":   matchID,
+		"opponents": opponents,
+	}
+
+	dataJson, err := json.Marshal(data)
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
+	err = userConn.WriteMessage(websocket.TextMessage, dataJson)
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -48,31 +61,103 @@ func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID 
 }
 
 func (adapter WebsocketGameAdapter) SendUpdatedBlockState(userID string, newState types.BlockState) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+	out, jsonErr := json.Marshal(newState)
+	if jsonErr != nil {
+		adapter.Logger.Printf("Error: %v\n", jsonErr)
+
+		return jsonErr
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(out))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
 func (adapter WebsocketGameAdapter) SendBlockLockinNotice(userID string) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(`{"LockIn": "true"}`))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
 func (adapter WebsocketGameAdapter) SendRowClearNotice(userID string, rowNum int) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"rowNum": "%v"}`, rowNum)))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock types.BlockType) error {
-	// TODO: Implement
+func (adapter WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock types.BlockType, enqueuedBlock types.BlockType) error {
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"newBlock": "%v", "enqueuedBlock": "%v"}`, newBlock, enqueuedBlock)))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
 func (adapter WebsocketGameAdapter) SendScoreGain(userID string, score int) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"score": "%v"}`, score)))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }
 
 func (adapter WebsocketGameAdapter) SendEventNotice(userID string, event string) error {
-	// TODO: Implement
+	userConn, ok := adapter.PlayerConnections[userID]
+	if !ok {
+		return fmt.Errorf("Player with the id %v is not connected", userID)
+	}
+
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"event": "%v"}`, event)))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+
+		return err
+	}
+
 	return nil
 }

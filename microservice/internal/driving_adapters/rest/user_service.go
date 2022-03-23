@@ -1,6 +1,7 @@
 package drivingAdapters
 
 import (
+	"fmt"
 	"log"
 	common "microservice/internal"
 	drivingPorts "microservice/internal/core/driving_ports"
@@ -57,7 +58,17 @@ func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
+	user, err := adapter.Service.UserRepository.GetUserFromName(username.(string))
+
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
+	}
+
+	common.TryWriteResponse(w, fmt.Sprintf(`{"sessionID": "%v", "userID": "%v", "username": "%v"}`, sessionID, user.ID, user.Username))
 }
 
 func (adapter UserServiceRestAdapter) LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -114,7 +125,17 @@ func (adapter UserServiceRestAdapter) RegisterHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	common.TryWriteResponse(w, `{"message": "`+userID+`"}`)
+	sessionID, err := adapter.Service.Login(username.(string), password.(string))
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
+	}
+
+	common.TryWriteResponse(w, fmt.Sprintf(`{"sessionID": "%v", "userID": "%v", "username": "%v"}`, sessionID, userID, username.(string)))
+
 }
 
 func (adapter UserServiceRestAdapter) Run() {

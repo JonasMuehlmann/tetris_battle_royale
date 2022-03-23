@@ -26,7 +26,7 @@ const ScreenContext = React.createContext()
  * PROVIDES METHODES AND STATES RELATED TO SCREENS
  */
 export const ScreenProvider = ({ children }) => {
-  const [currentScreen, setCurrentScreen] = useState(Screen.LogIn)
+  const [currentScreen, setCurrentScreen] = useState(Screen.Menu)
 
   const navigate = screen => {
     if (!(screen instanceof Screen)) return;

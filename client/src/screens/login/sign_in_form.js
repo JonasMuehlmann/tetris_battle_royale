@@ -67,8 +67,6 @@ const SignInForm = (
     </>
   )
 
-  // #endregion
-
   return (
     <motion.form
       initial={{ opacity: 0, x: -window.innerWidth / 2, scale: 0 }}
