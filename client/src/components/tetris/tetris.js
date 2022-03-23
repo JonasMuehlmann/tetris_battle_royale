@@ -6,11 +6,16 @@ import { usePlayer } from '../../hooks/usePlayer'
 import { useStage } from '../../hooks/useStage'
 import { useStatus } from '../../hooks/useStatus'
 import { checkCollision, createStage } from "./helpers";
+import { useKeybinds } from "../../contexts/keybinds-context";
 
 
 const Tetris = ({
   onGameOver = () => { }
 }) => {
+  const {
+    keybinds,
+  } = useKeybinds();
+
   const wrapperRef = useRef(null)
 
   const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
@@ -76,13 +81,13 @@ const Tetris = ({
 
   const move = ({ keyCode }) => {
     if (!gameOver) {
-      if (keyCode === 37) {
+      if (keyCode === keybinds.left.key) {
         moveBlock(-1);
-      } else if (keyCode === 39) {
+      } else if (keyCode === keybinds.right.key) {
         moveBlock(1);
-      } else if (keyCode === 40) {
+      } else if (keyCode === keybinds.drop.key) {
         dropBlock();
-      } else if (keyCode === 38) {
+      } else if (keyCode === keybinds.rotate.key) {
         playerRotate(stage, 1);
       }
     }

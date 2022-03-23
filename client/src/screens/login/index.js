@@ -24,6 +24,7 @@ const LogInScreen = () => {
   const {
     navigate,
   } = useScreens()
+
   const {
     showDialog,
     hideDialog,

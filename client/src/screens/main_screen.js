@@ -6,6 +6,7 @@ import LogInScreen from "./login";
 import LobbyScreen from "./lobby";
 import FriendsBox from "../components/friends_box";
 import TetrisScreen from "./tetris";
+import { KeybindsContextProvider } from "../contexts/keybinds-context";
 
 const MainScreen = () => {
   const {
@@ -60,17 +61,19 @@ const MainScreen = () => {
 
   return (
     <div className="z-20">
-      {
-        currentScreen ?
-          (
-            renderCurrentScreen()
-          ) :
-          (
-            <ErrorScreen
-              onNavigate={() => navigate(Screen.LogIn)}
-            />
-          )
-      }
+      <KeybindsContextProvider>
+        {
+          currentScreen ?
+            (
+              renderCurrentScreen()
+            ) :
+            (
+              <ErrorScreen
+                onNavigate={() => navigate(Screen.LogIn)}
+              />
+            )
+        }
+      </KeybindsContextProvider>
     </div>
   )
 }

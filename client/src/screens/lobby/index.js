@@ -44,7 +44,7 @@ const LobbyScreen = () => {
               className='w-full'
               key={currentMenu.text}>
               <Matchfinder />
-            </motion.div>  
+            </motion.div>
           ) :
           currentMenu === MenuItem.Statistics ?
             (
@@ -68,7 +68,7 @@ const LobbyScreen = () => {
               (
                 <motion.div
                   {...Motions.SlideDown}
-                  className='w-full'
+                  className='w-full h-full'
                   key={currentMenu.text}>
                   <PlayerSettings />
                 </motion.div>
@@ -80,7 +80,7 @@ const LobbyScreen = () => {
   return (
     <div className="w-full h-full flex flex-col z-20 relative">
       <Menu />
-      <div className="flex justify-between w-full 2xl:px-52 px-28 py-16">
+      <div className="flex justify-between w-full h-full 2xl:px-52 px-28 py-28">
         {renderCurrentMenu()}
       </div>
       <QueueBox />

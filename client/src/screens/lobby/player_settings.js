@@ -1,5 +1,7 @@
 import { Screen, useScreens } from "../../contexts/screen-context"
 import { AiFillSound } from "react-icons/ai"
+import { useKeybinds } from "../../contexts/keybinds-context"
+import { useEffect, useState } from "react"
 
 const OPTIONS = [
   {
@@ -8,7 +10,7 @@ const OPTIONS = [
   },
 ]
 
-const keybinds = [
+const keybindsSample = [
   {
     control: 'Move Left',
     keybind: '*',
@@ -26,7 +28,7 @@ const keybinds = [
     keybind: '*',
   },
   {
-    control: 'Drop: Sorf',
+    control: 'Drop: Soft',
     keybind: '*',
   },
   {
@@ -44,19 +46,72 @@ const PlayerSettings = () => {
     navigate
   } = useScreens()
 
-  /*const bgColor = "green"
+  const {
+    updateKeybind,
+    keybinds
+  } = useKeybinds()
 
-  toggelSound = (e) => {
-    if (bgColor == "green") {
-      bgColor = "red"  
-    } else {
-      bgColor = "green"
-    }
-  }*/
+  const [iconBackground, setIconBackground] = useState("#107896")
+  const [selectedKeybind, setSelectedKeybind] = useState(null)
+
+  const toggleSound = (e) => {
+    setIconBackground(prev => prev === "#107896" ? "#9a2617" : "#107896")
+  }
+
+  const onKeyDown = (e) => {
+    console.log(selectedKeybind)
+    if (!selectedKeybind) return;
+
+
+    updateKeybind(selectedKeybind[0], {
+      label: selectedKeybind[1].label,
+      key: e.keyCode,
+      keyName: e.key,
+    })
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', onKeyDown)
+  }, [])
+
+  const KeybindTable = () => (
+    <table className="absolute top-0 left-0">
+      <thead className="yellow text-3xl">
+        <tr>
+          <th className="pr-52 pb-4">Control</th>
+          <th className="pb-4">Keybind</th>
+        </tr>
+      </thead>
+      <tbody className="text-white">
+        {Object.entries(keybinds)?.map((entry, i) => (
+          <tr
+            key={i}
+            className="border border-transparent border-b-zinc-600">
+            <td className="py-2">
+              {entry[1].label}
+            </td>
+            <td
+              onClick={e => setSelectedKeybind(entry)}
+              className={`py-2 text-center transition-all focus:outline-0
+                ${entry[0] === selectedKeybind?.[0] ? 'opacity-80' : 'opacity-20'}`}>
+              <button className="h-8 rounded border-solid hover:border-2 hover:border-yellow-200">
+                {entry[1].keyName}
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table >
+  )
 
   return (
-    <div className="absolute h-3/6 w-4/6">
-      <AiFillSound className="absolute h-14 w-14 top-0 right-0 text-white opacity-30 hover:opacity-100" />
+    <div
+      className="w-full h-full relative">
+      <AiFillSound
+        fill={iconBackground}
+        onClick={toggleSound}
+        className="absolute h-14 w-14 top-0 right-0 text-white opacity-30 hover:opacity-100"
+      />
 
       <ul className="flex flex-col gap-8 text-white bangers absolute bottom-0 right-0 transition-all hover:right-4">
         {
@@ -77,36 +132,11 @@ const PlayerSettings = () => {
           ))
         }
       </ul>
-      
+
       <KeybindTable />
     </div>
   )
 }
-
-const KeybindTable = () => (
-  <table className="absolute top-0 left-0">
-    <thead className="yellow text-3xl">
-      <tr>
-        <th className="pr-52 pb-4">Control</th>
-        <th className="pb-4">Keybind</th>
-      </tr>
-    </thead>
-    <tbody className="text-white">
-      {keybinds.map(({control, keybind}) => (
-        <tr className="border border-transparent border-b-zinc-600">
-          <td className="py-2">
-            {control}
-          </td>
-          <td className="py-2 text-center">
-            <button className="w-8 h-8 rounded border-solid hover:border-2 hover:border-yellow-200">
-              {keybind}
-            </button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-)
 
 const KeybindMessage = () => (
   <div>
