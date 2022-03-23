@@ -26,7 +26,18 @@ func (adapter UserServiceRestAdapter) IsLoginHandler(w http.ResponseWriter, r *h
 
 		return
 	}
-	common.TryWriteResponse(w, `{"sessionID": "`+sessionID+`"}`)
+
+	user, err := adapter.Service.UserRepository.GetUserFromName(vars["username"])
+
+	if err != nil {
+		adapter.Logger.Printf("Error: %v\n", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		common.TryWriteResponse(w, common.MakeJsonError(err.Error()))
+
+		return
+	}
+
+	common.TryWriteResponse(w, fmt.Sprintf(`{"sessionID": "%v", "userID": "%v", "username": "%v"}`, sessionID, user.ID, user.Username))
 }
 
 func (adapter UserServiceRestAdapter) LoginHandler(w http.ResponseWriter, r *http.Request) {

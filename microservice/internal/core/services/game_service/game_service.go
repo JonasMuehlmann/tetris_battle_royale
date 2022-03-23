@@ -94,21 +94,104 @@ func (service GameService) ConnectPlayer(userID string, connection interface{}) 
 }
 
 func (service GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
-	// TODO: Implement
-	return nil
+
+	success, player := service.validateUserAndMatch(userID, matchID)
+
+	if !success {
+		return nil
+	}
+
+	switch direction {
+	case types.MoveDirection("left"):
+		player.Playfield.MoveBlockLeft()
+		break
+	case types.MoveDirection("right"):
+		player.Playfield.MoveBlockRight()
+		break
+	case types.MoveDirection("down"):
+		player.Playfield.MoveBlockDown()
+		break
+	}
+
+	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
+		BlockPosition:  player.Playfield.curBlockPosition,
+		RotationChange: types.RotationDirection("none"),
+	})
 }
 
 func (service GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
-	// TODO: Implement
-	return nil
+
+	success, player := service.validateUserAndMatch(userID, matchID)
+	if !success {
+		return nil
+	}
+
+	switch direction {
+	case types.RotationDirection("left"):
+		player.Playfield.RotateBlockClockwise()
+		break
+	case types.RotationDirection("right"):
+		player.Playfield.RotateBlockCounterClockwise()
+		break
+	}
+
+	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
+		BlockPosition:  player.Playfield.curBlockPosition,
+		RotationChange: direction,
+	})
 }
 
 func (service GameService) HardDropBlock(userID string, matchID string) error {
-	// TODO: Implement
-	return nil
+	success, player := service.validateUserAndMatch(userID, matchID)
+
+	if !success {
+		return nil
+	}
+	player.Playfield.HardDropBlock()
+
+	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
+		BlockPosition:  player.Playfield.curBlockPosition,
+		RotationChange: types.RotationDirection("none"),
+	})
 }
 
 func (service GameService) ToggleSoftDrop(userID string, matchID string) error {
-	// TODO: Implement
-	return nil
+	success, player := service.validateUserAndMatch(userID, matchID)
+
+	if !success {
+		return nil
+	}
+	player.Playfield.ToggleSoftDrop()
+
+	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
+		BlockPosition:  player.Playfield.curBlockPosition,
+		RotationChange: types.RotationDirection("none"),
+	})
+}
+
+func findUser(userID string, match Match) (bool, Player) {
+	var player Player
+	for _, v := range match.Players {
+		if v.ID == userID {
+			player = v
+			return true, v
+		}
+	}
+	return false, player
+}
+
+func (service *GameService) validateUserAndMatch(userID string, matchID string) (bool, Player) {
+	var player Player
+	if _, ok := service.Matches[matchID]; ok {
+		match := service.Matches[matchID]
+		success, player := findUser(userID, match)
+		if !success {
+			service.Logger.Printf("The user is not a member of the match.")
+		}
+		return false, player
+	} else {
+		service.Logger.Printf("The match %v does not exist.", matchID)
+		return false, player
+	}
+	return true, player
 }
