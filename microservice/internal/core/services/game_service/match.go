@@ -15,3 +15,22 @@ type Match struct {
 
 func (match Match) Start() {
 }
+
+func (match *Match) HandlePlayerEliminations() {
+	var playerID string
+
+	for {
+		select {
+		case <-match.GameStop:
+			// TODO: Handle End of match tasks
+			return
+		case playerID = <-match.PlayerEliminations:
+			match.NumPlayersAlive--
+			match.EliminatedPlayers[playerID] = &match.Players[playerID]
+
+			if match.NumPlayersAlive == 0 {
+				match.GameStop <- true
+			}
+		}
+	}
+}

@@ -63,6 +63,7 @@ func (playfield *Playfield) StartGame() {
 
 func (playfield *Playfield) StopGame() {
 	playfield.GameStop <- true
+	playfield.Player.Match.PlayerEliminations <- playfield.Player.ID
 	playfield.DisableGravity()
 }
 

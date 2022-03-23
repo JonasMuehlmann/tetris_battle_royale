@@ -79,8 +79,9 @@ func (service GameService) StartGame(userIDList []string) error {
 	}
 
 	service.Matches[matchID] = Match{
-		ID:      matchID,
-		Players: players,
+		ID:                 matchID,
+		Players:            players,
+		PlayerEliminations: make(chan string, 10),
 	}
 
 	go service.Matches[matchID].Start()
