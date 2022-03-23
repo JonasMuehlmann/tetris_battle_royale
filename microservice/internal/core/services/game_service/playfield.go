@@ -27,7 +27,10 @@ type Playfield struct {
 	GameStop                     chan bool
 	isBlockSoftDropping          bool
 
-	BlockPreview types.BlockPreview
+	BlockPreview BlockPreview
+	// TODO: Having this much logic in the Playfield and referencing back to
+	// the player looks like a code smell
+	Player *Player
 }
 
 func MakePlayField() Playfield {
