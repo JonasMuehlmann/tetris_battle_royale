@@ -182,6 +182,7 @@ func findUser(userID string, match Match) (bool, Player) {
 }
 
 func (service *GameService) validateUserAndMatch(userID string, matchID string) (bool, Player) {
+	// TODO: Clean up here
 	var player Player
 	if _, ok := service.Matches[matchID]; ok {
 		match := service.Matches[matchID]

@@ -3,6 +3,7 @@ package gameService
 const MatchSize = 2
 
 type Match struct {
+	// TODO: Refactor this convoluted interaction
 	ID                 string
 	Players            [MatchSize]Player
 	PlayerEliminations chan string
