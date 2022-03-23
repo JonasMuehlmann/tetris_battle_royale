@@ -44,7 +44,7 @@ const LobbyScreen = () => {
               className='w-full'
               key={currentMenu.text}>
               <Matchfinder />
-            </motion.div>
+            </motion.div>  
           ) :
           currentMenu === MenuItem.Statistics ?
             (

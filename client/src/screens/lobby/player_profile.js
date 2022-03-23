@@ -1,3 +1,5 @@
+import {useState} from 'react'
+
 const OPTIONS = Object.freeze([
   {
     text: 'Profile',
@@ -27,6 +29,10 @@ const PlayerProfile = () => {
           </li>
         ))
       }
+      <button
+        className='text-white opacity-50 transition-all hover:opacity-100 hover:text-red'>
+        Open
+      </button>
     </ul>
   )
 }
