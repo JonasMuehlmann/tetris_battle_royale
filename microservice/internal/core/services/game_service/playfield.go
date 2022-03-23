@@ -1,6 +1,7 @@
 package gameService
 
 import (
+	"math"
 	types "microservice/internal/core/types"
 	"time"
 )
@@ -28,6 +29,8 @@ type Playfield struct {
 	isBlockSoftDropping          bool
 
 	BlockPreview types.BlockPreview
+
+	Acceleration float64
 }
 
 func MakePlayField() Playfield {
@@ -40,6 +43,7 @@ func MakePlayField() Playfield {
 		gravityTicker:                *time.NewTicker(InitialGravityTickLength),
 		gravityStop:                  make(chan bool, 1),
 		GameStop:                     make(chan bool, 1),
+		Acceleration:                 1,
 	}
 
 	for row := 0; row < newField.height; row++ {
@@ -56,6 +60,7 @@ func MakePlayField() Playfield {
 func (playfield *Playfield) StartGame() {
 	playfield.SpawnNewBlock(types.GenerateRandomBlock())
 	playfield.EnableGravity()
+	go playfield.setAcceleration()
 }
 
 func (playfield *Playfield) StopGame() {
@@ -134,7 +139,7 @@ func (playfield *Playfield) MoveBlockRight() {
 
 func (playfield *Playfield) MoveBlockDown() {
 	var newPosition = playfield.curBlockPosition
-	newPosition.y -= 1
+	newPosition.y -= math.Round(1 * playfield.Acceleration)
 
 	if playfield.CanBlockOccupyPosition(newPosition) {
 		playfield.curBlockPosition = newPosition
@@ -150,10 +155,10 @@ func (playfield *Playfield) HardDropBlock() {
 	var newPosition = playfield.curBlockPosition
 
 	for playfield.CanBlockOccupyPosition(newPosition) {
-		newPosition.y -= 1
+		newPosition.y -= math.Round(1 * playfield.Acceleration)
 	}
 
-	newPosition.y += 1
+	newPosition.y += math.Round(1 * playfield.Acceleration)
 	playfield.curBlockPosition = newPosition
 	playfield.LockInBlock()
 }
@@ -264,5 +269,14 @@ func (playfield *Playfield) SpawnNewBlock(newBlock types.Block) {
 
 	if !playfield.CanBlockOccupyPosition(playfield.curBlockPosition) {
 		playfield.StopGame()
+	}
+}
+
+func (playfield *Playfield) setAcceleration() {
+
+	//TODO: should probably be configurable
+	ticker := time.NewTicker(30 * time.Second)
+	for _ = range ticker.C {
+		playfield.Acceleration += 0.1
 	}
 }
