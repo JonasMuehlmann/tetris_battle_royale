@@ -1,5 +1,4 @@
 import Stage from "./stage";
-import Display from './display'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { useTimer } from '../../hooks/useTimer'
@@ -107,7 +106,12 @@ const Tetris = ({
       tabIndex='-1'
       onKeyDown={move}
       onKeyUp={softDrop}
-      className="flex justify-center items-center gap-2 focus:outline-0 w-screen h-screen">
+      className="flex justify-center items-center gap-2 focus:outline-0 w-screen h-screen relative">
+      <div className="absolute left-1/2 top-20 -translate-x-1/2">
+        <p className="text-white font-semibold text-2xl">
+          {score}
+        </p>
+      </div>
       <AnimatePresence exitBeforeEnter>
         {
           gameStarted ?
@@ -129,7 +133,7 @@ const Tetris = ({
                 key={gameStarted}
                 initial={{ opacity: .25, y: 15, scale: 0.5 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ scale: 1.25 }}
+                exit={{ scale: 2.0, opacity: 0 }}
                 transition={{ duration: .5, type: 'spring' }}
                 className={`text-center
                   ${timerCount <= 1 && 'green-grad-text'}`}>

@@ -35,54 +35,41 @@ const LogInScreen = () => {
 
   // #region EVENTS
 
-  const onSignIn = async model => {
-    try {
-      showDialog(DialogType.Authenticate)
-      /**
-       * IN ORDER TO TEST THIS API
-       * YOU MUST START THE GATEWAY FIRST (SERVER)
-       * OTHERWISE IT WILL AUTOMATICALLY NAVIGATE TO LOBBY
-       * 
-       * const response = await axios.post(`/user/login`, {
-       *    username: model.username,
-       *    password: model.password,
-       * })
-       * hideDialog()
-       * 
-       */
-
-      /**
-       * FOR UI TEST PURPOSE
-       * COMMENT OUT IF SERVER IS ON
-       */
+  const onSignIn = async (model, bypass = false) => {
+    showDialog(DialogType.Authenticate)
+    if (bypass) {
       setTimeout(() => { hideDialog(); navigate(Screen.Menu) }, 2500)
+    }
+
+    try {
+      const res = await axios.post("/login", {
+        username: model.username,
+        password: model.password
+      })
+      console.log(res.data.user)
+
     } catch (error) {
-      console.info(error)
+      console.info(error.message)
+    } finally {
+      hideDialog()
     }
   }
 
   const onSignUp = async model => {
     try {
       showDialog(DialogType.Authenticate)
-      /**
-       * IN ORDER TO TEST THIS API
-       * YOU MUST START THE GATEWAY FIRST (SERVER)
-       * OTHERWISE IT WILL AUTOMATICALLY NAVIGATE TO LOBBY
-       * 
-       * const result = await axios.post(`/user`, {
-       *    username: model.username,
-       *    password: model.password,
-       * })
-       * hideDialog()
-       */
-
-      /**
-       * FOR UI TEST PURPOSE
-       * COMMENT OUT IF SERVER IS ON
-       */
-      setTimeout(() => { hideDialog() }, 2500)
+      const res = await axios.post(
+        '/register',
+        {
+          username: model.username,
+          password: model.password,
+        }
+      )
+      console.log(res)
     } catch (error) {
       console.info(error)
+    } finally {
+      hideDialog()
     }
   }
 

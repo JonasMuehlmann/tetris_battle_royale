@@ -78,7 +78,7 @@ const SignInForm = (
       onSubmit={e => {
         e.preventDefault()
         if (isValid()) {
-          onSubmit(model)
+          onSubmit(model, true)
         }
       }}
       className='flex flex-col gap-2'>

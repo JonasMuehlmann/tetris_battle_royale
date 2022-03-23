@@ -71,9 +71,7 @@ const SignUpForm = (
         type='text'
         value={model.username}
         onChange={e => {
-          if (e.target || e.target.value !== ' ') {
-            setModel({ ...model, username: e.target.value })
-          }
+          setModel({ ...model, username: e.target.value })
         }}
         placeholder='Username'
         autoComplete="off"
@@ -95,8 +93,7 @@ const SignUpForm = (
         value={model.password}
         autoComplete="off"
         onChange={e => {
-          if (e.target || e.target.value !== ' ')
-            setModel({ ...model, password: e.target.value })
+          setModel({ ...model, password: e.target.value })
         }}
         placeholder='Password'
         className='border-4 border-[#19a186]'
@@ -117,8 +114,7 @@ const SignUpForm = (
         autoComplete="off"
         value={model.passwordReenter}
         onChange={e => {
-          if (e.target || e.target.value !== ' ')
-            setModel({ ...model, passwordReenter: e.target.value })
+          setModel({ ...model, passwordReenter: e.target.value })
         }}
         placeholder='Reenter password.'
         className='border-4 border-[#19a186]'
