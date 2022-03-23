@@ -8,6 +8,8 @@ import (
 
 	ipcPorts "microservice/internal/core/driven_ports/ipc"
 
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -83,8 +85,22 @@ func (service GameService) StartGame(userIDList []string) error {
 		Players: players,
 	}
 
-	go service.Matches[matchID].Start()
+	go service.StartGameInternal(matchID)
 
+	return nil
+}
+
+func (service GameService) StartGameInternal(matchID string) error {
+	time.Sleep(5)
+	for _, v := range service.Matches[matchID].Players {
+		v.Playfield.BlockPreview.MakeBlockPreview()
+		v.Playfield.StartGame()
+
+		err := service.GameAdapter.SendStartBlockPreview(v.ID, v.Playfield.BlockPreview)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
