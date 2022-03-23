@@ -26,8 +26,7 @@ type Playfield struct {
 	gravityStop                  chan bool
 	GameStop                     chan bool
 	isBlockSoftDropping          bool
-
-	BlockPreview types.BlockPreview
+	BlockPreview                 BlockPreview
 }
 
 func MakePlayField() Playfield {
@@ -100,7 +99,7 @@ func (playfield *Playfield) LockInBlock() {
 
 	for row := 0; row < types.BlockWidth; row++ {
 		for col := 0; col < types.BlockWidth; col++ {
-			curFieldPosition = &playfield.field[playfield.curBlockPosition.y-row][playfield.curBlockPosition.x+col]
+			curFieldPosition = &playfield.field[playfield.curBlockPosition.Y-row][playfield.curBlockPosition.X+col]
 			*curFieldPosition = *curFieldPosition || playfield.curBlock[row][col]
 		}
 	}
@@ -112,7 +111,7 @@ func (playfield *Playfield) LockInBlock() {
 
 func (playfield *Playfield) MoveBlockLeft() {
 	var newPosition = playfield.curBlockPosition
-	newPosition.x -= 1
+	newPosition.X -= 1
 
 	if playfield.CanBlockOccupyPosition(newPosition) {
 		playfield.curBlockPosition = newPosition
@@ -123,7 +122,7 @@ func (playfield *Playfield) MoveBlockLeft() {
 
 func (playfield *Playfield) MoveBlockRight() {
 	var newPosition = playfield.curBlockPosition
-	newPosition.x += 1
+	newPosition.X += 1
 
 	if playfield.CanBlockOccupyPosition(newPosition) {
 		playfield.curBlockPosition = newPosition
@@ -134,7 +133,7 @@ func (playfield *Playfield) MoveBlockRight() {
 
 func (playfield *Playfield) MoveBlockDown() {
 	var newPosition = playfield.curBlockPosition
-	newPosition.y -= 1
+	newPosition.Y -= 1
 
 	if playfield.CanBlockOccupyPosition(newPosition) {
 		playfield.curBlockPosition = newPosition
@@ -150,10 +149,10 @@ func (playfield *Playfield) HardDropBlock() {
 	var newPosition = playfield.curBlockPosition
 
 	for playfield.CanBlockOccupyPosition(newPosition) {
-		newPosition.y -= 1
+		newPosition.Y -= 1
 	}
 
-	newPosition.y += 1
+	newPosition.Y += 1
 	playfield.curBlockPosition = newPosition
 	playfield.LockInBlock()
 }
@@ -162,10 +161,10 @@ func (playfield *Playfield) UpdateGhostBlockPosition() {
 	var newPosition = playfield.curBlockPosition
 
 	for playfield.CanBlockOccupyPosition(newPosition) {
-		newPosition.y -= 1
+		newPosition.Y -= 1
 	}
 
-	newPosition.y += 1
+	newPosition.Y += 1
 	//playfield.curGhostBlockPosition = newPosition
 }
 
@@ -227,7 +226,7 @@ func (playfield *Playfield) CanBlockOccupyPosition(newPosition types.Position) b
 	for row := 0; row < types.BlockWidth; row += 1 {
 		for col := 0; col < types.BlockWidth; col += 1 {
 			// if playfield.curBlock[row][col] && playfield.field[playfield.curBlockPosition.y-row-1][playfield.curBlockPosition.x+col] {
-			if playfield.curBlock[row][col] && playfield.field[newPosition.y-row][newPosition.x+col] {
+			if playfield.curBlock[row][col] && playfield.field[newPosition.Y-row][newPosition.X+col] {
 				return false
 			}
 		}
@@ -258,8 +257,8 @@ func (playfield *Playfield) SpawnNewBlock(newBlock types.Block) {
 	playfield.curBlock = newBlock
 
 	playfield.curBlockPosition = types.Position{
-		x: (playfield.width)/2 - types.BlockWidth/2,
-		y: playfield.height - playfield.padding - 1,
+		X: (playfield.width)/2 - types.BlockWidth/2,
+		Y: playfield.height - playfield.padding - 1,
 	}
 
 	if !playfield.CanBlockOccupyPosition(playfield.curBlockPosition) {
