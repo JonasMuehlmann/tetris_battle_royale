@@ -9,7 +9,7 @@ const Menu = () => {
 
   return (
     <div
-      className="flex w-full h-[220px] px-20 items-center justify-center">
+      className="flex w-full h-[220px] 2xl:px-40 px-24 items-center justify-between relative">
       <ul className="flex items-center text-white gap-4 bangers">
         {
           [MenuItem.Matchfinder, MenuItem.Statistics]
@@ -18,23 +18,24 @@ const Menu = () => {
                 key={i}
                 onClick={() => setCurrentMenu(t)}
                 className={`
-                  cursor-pointer transition-all w-[260px] text-center
+                  cursor-pointer transition-all text-center w-56
                   ${currentMenu?.text === t.text ?
-                    'shadow green-grad-text text-5xl' :
-                    'text-4xl white-clip-text'}
+                    'green-grad-text lg:text-5xl text-3xl' :
+                    'lg:text-4xl text-2xl white-clip-text'}
               `}>
                 {t.text}
               </li>
             ))
         }
       </ul>
-      <h1 className={`shadow text-center opacity-80 mx-8`}>
+      <h1 className={`absolute left-1/2 top-20 -translate-x-1/2 
+        text-center opacity-80`}>
         <GlowingText
           glow={false}
-          className={`text-4xl font-bold`}>
+          className={`2xl:text-4xl text-3xl font-bold`}>
           Tetris Battle Royale
         </GlowingText>
-        <p className="text-xl text-white opacity-60 border-t border-zinc-600 pt-2 mt-3 mx-36 truncate">
+        <p className="2xl:text-xl text-lg text-white opacity-60 border-t border-zinc-600 pt-2 mt-3 mx-36 truncate">
           Public Lobby
         </p>
       </h1>
@@ -45,11 +46,11 @@ const Menu = () => {
               <li
                 key={i}
                 onClick={() => setCurrentMenu(t)}
-                className={`text-4xl
+                className={`text-4xl w-56
             ${currentMenu?.text === t.text ?
-                    'shadow text-5xl green-grad-text' :
+                    'lg:text-5xl text-3xl green-grad-text' :
                     'white-clip-text'}
-            cursor-pointer transition-all w-[260px] text-center`}>
+            cursor-pointer transition-all text-center`}>
                 {t.text}
               </li>
             ))

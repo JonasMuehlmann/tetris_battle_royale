@@ -8,12 +8,10 @@ const OPTIONS = Object.freeze([
 ])
 
 const PlayerProfile = () => {
-  const [isOpen, setIsOpen] = useState(false)
-
-  // #region COMPONENTS
-  // #endregion
   return (
-    <ul className="flex flex-col gap-8 text-white bangers">
+    <ul className={`flex flex-col w-full h-full
+      justify-center items-center gap-8 
+      text-white bangers text-center`}>
       {
         OPTIONS.map((t, i) => (
           <li

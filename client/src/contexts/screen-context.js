@@ -1,5 +1,9 @@
 import React, { useContext, useState } from "react";
 
+/**
+ * SCREEN DEFINITIONS
+ * MUST BE PROVIDED AS ARGUMENT TO NAVIGATE
+ */
 export class Screen {
   static LogIn = new Screen("login")
   static Menu = new Screen("menu")
@@ -15,8 +19,12 @@ export class Screen {
   }
 }
 
-export const ScreenContext = React.createContext()
+const ScreenContext = React.createContext()
 
+/**
+ * SCREEN CONTEXT PROVIDER
+ * PROVIDES METHODES AND STATES RELATED TO SCREENS
+ */
 export const ScreenProvider = ({ children }) => {
   const [currentScreen, setCurrentScreen] = useState(Screen.Menu)
 
@@ -39,4 +47,7 @@ export const withScreenContext = Component => ({ ...props }) => (
   </ScreenProvider>
 )
 
+/**
+ * DELIEVERS 'VALUE'-OBJECT OF THE PROVIDER
+ */
 export const useScreens = () => useContext(ScreenContext)

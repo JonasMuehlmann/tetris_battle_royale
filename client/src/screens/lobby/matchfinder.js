@@ -57,7 +57,7 @@ const Matchfinder = () => {
 
   return (
     <ul className="flex flex-col gap-10 text-white bangers">
-      <h2 className="text-4xl opacity-60 shadow mb-4">
+      <h2 className="text-4xl opacity-60 mb-4">
         Select Mode
       </h2>
       <MatchModes />

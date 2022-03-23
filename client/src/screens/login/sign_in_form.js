@@ -47,51 +47,6 @@ const SignInForm = (
 
   // #endregion
 
-  // #region COMPONENTS
-
-  const Username = () => (
-    <>
-      <label className='flex flex-col'>
-        Username
-        <p className='text-sm text-red-400'>
-          {errors?.username}
-        </p>
-      </label>
-      <input
-        type='text'
-        value={model.username}
-        onChange={e => {
-          if (e.target) {
-            setModel({ ...model, username: e.target.value })
-          }
-        }}
-        placeholder='Username'
-        className='border-4 border-[#19a186]'
-      />
-    </>
-  )
-
-  const Password = () => (
-    <>
-      <label>
-        Password
-        <p className='text-sm text-red-400'>
-          {errors?.password}
-        </p>
-      </label>
-      <input
-        type='password'
-        value={model.password}
-        onChange={e => {
-          if (e.target)
-            setModel({ ...model, password: e.target.value })
-        }}
-        placeholder='Password'
-        className='border-4 border-[#19a186]'
-      />
-    </>
-  )
-
   const Actions = () => (
     <>
       <button
@@ -112,8 +67,6 @@ const SignInForm = (
     </>
   )
 
-  // #endregion
-
   return (
     <motion.form
       initial={{ opacity: 0, x: -window.innerWidth / 2, scale: 0 }}
@@ -127,8 +80,36 @@ const SignInForm = (
         }
       }}
       className='flex flex-col gap-2'>
-      <Username />
-      <Password />
+      <label className='flex flex-col'>
+        Username
+        <p className='text-sm text-red-400'>
+          {errors?.username}
+        </p>
+      </label>
+      <input
+        type='text'
+        value={model.username}
+        onChange={e => {
+          setModel({ ...model, username: e.target.value })
+        }}
+        placeholder='Username'
+        className='border-4 border-[#19a186]'
+      />
+      <label>
+        Password
+        <p className='text-sm text-red-400'>
+          {errors?.password}
+        </p>
+      </label>
+      <input
+        type='password'
+        value={model.password}
+        onChange={e => {
+          setModel({ ...model, password: e.target.value })
+        }}
+        placeholder='Password'
+        className='border-4 border-[#19a186]'
+      />
       <Actions />
     </motion.form>
   )

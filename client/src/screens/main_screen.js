@@ -5,6 +5,7 @@ import ErrorScreen from "./404";
 import LogInScreen from "./login";
 import LobbyScreen from "./lobby";
 import FriendsBox from "../components/friends_box";
+import TetrisScreen from "./tetris";
 
 const MainScreen = () => {
   const {
@@ -21,42 +22,57 @@ const MainScreen = () => {
             (
               <motion.div
                 className="w-screen h-screen"
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -window.innerWidth }}
-                transition={{ duration: 2, type: 'spring' }}
+                exit={{ opacity: 0, scale: .35 }}
+                transition={{ duration: 1.5, type: 'spring' }}
                 key={currentScreen.name} >
                 <LogInScreen />
               </motion.div>
             ) :
-            currentScreen?.name === 'menu' &&
-            (
-              <motion.div
-                className="w-screen h-screen"
-                initial={{ opacity: 0, y: -window.innerHeight }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: window.innerWidth }}
-                transition={{ duration: 2, type: 'spring' }}
-                key={currentScreen.name}>
-                <LobbyScreen />
-                <FriendsBox />
-              </motion.div>
-            )
+            currentScreen?.name === 'menu' ?
+              (
+                <motion.div
+                  className="w-screen h-screen"
+                  initial={{ opacity: 0, y: -window.innerHeight }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -window.innerHeight }}
+                  transition={{ duration: 1.5, type: 'spring', delay: .25 }}
+                  key={currentScreen.name}>
+                  <LobbyScreen />
+                  <FriendsBox />
+                </motion.div>
+              ) :
+              currentScreen?.name === 'tetris' &&
+              (
+                <motion.div
+                  className="w-screen h-screen"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  transition={{ duration: 1.5, type: 'spring' }}
+                  key={currentScreen.name}>
+                  <TetrisScreen />
+                </motion.div>
+              )
         }
       </AnimatePresence>
     )
   }
 
   return (
-    currentScreen ?
-      (
-        renderCurrentScreen()
-      ) :
-      (
-        <ErrorScreen
-          onNavigate={() => navigate(Screen.LogIn)}
-        />
-      )
-  );
+    <div className="z-20">
+      {
+        currentScreen ?
+          (
+            renderCurrentScreen()
+          ) :
+          (
+            <ErrorScreen
+              onNavigate={() => navigate(Screen.LogIn)}
+            />
+          )
+      }
+    </div>
+  )
 }
 
 export default withScreenContext(MainScreen)

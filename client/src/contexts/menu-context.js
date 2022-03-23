@@ -1,8 +1,12 @@
 import React, { Component, useContext, useState } from "react";
 
+/**
+ * MENU-SCREENS IN LOBBY DEFINITIONS
+ * MUST BE PROVIDED TO NAVIGATE IN BETWEEN
+ */
 export class MenuItem {
   static Matchfinder = new MenuItem(
-    'Matchfinder'
+    'Match'
   )
   static Statistics = new MenuItem(
     'Stats'
@@ -21,6 +25,10 @@ export class MenuItem {
 
 const MenuContext = React.createContext()
 
+/**
+ * MENU CONTEXT PROVIDER
+ * PROVIDES METHODES AND STATES RELATED TO LOBBY-MENU-SCREEN
+ */
 const MenuContextProvider = ({ children }) => {
   const [currentMenu, setCurrentMenu] = useState(MenuItem.Matchfinder)
 
@@ -40,4 +48,7 @@ export const withMenuContext = Component => ({ ...props }) => (
   </MenuContextProvider>
 )
 
+/**
+ * DELEIVERS 'VALUE'-OBJECT OF THE PROVIDER
+ */
 export const useMenu = () => useContext(MenuContext)
