@@ -16,13 +16,17 @@ type Match struct {
 func (match Match) Start() {
 }
 
+func (match *Match) Stop() {
+	// TODO: Handle End of match tasks like sending statistics, sending score board data, etc.
+}
+
 func (match *Match) HandlePlayerEliminations() {
 	var playerID string
 
 	for {
 		select {
 		case <-match.GameStop:
-			// TODO: Handle End of match tasks
+			match.Stop()
 			return
 		case playerID = <-match.PlayerEliminations:
 			match.NumPlayersAlive--
