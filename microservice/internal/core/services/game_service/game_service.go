@@ -111,87 +111,103 @@ func (service GameService) ConnectPlayer(userID string, connection interface{}) 
 
 func (service GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
 
-	if service.Matches[matchID] == nil {
-		service.Logger.Printf("The match %v does not exist.", matchID)
-		return nil
-	} else if service.Matches[matchID].Players[userID] == nil {
-		service.Logger.Printf("The user is not a member of the match.")
+	success, player := service.validateUserAndMatch(userID, matchID)
+
+	if !success {
 		return nil
 	}
 
 	switch direction {
-	case types.MoveDirection.MoveLeft:
-		service.Matches[matchID].Players[userID].Playfield.MoveBlockLeft()
+	case types.MoveDirection("left"):
+		player.Playfield.MoveBlockLeft()
 		break
-	case types.MoveDirection.MoveRight:
-		service.Matches[matchID].Players[userID].Playfield.MoveBlockRight()
+	case types.MoveDirection("right"):
+		player.Playfield.MoveBlockRight()
 		break
-	case types.MoveDirection.MoveDown:
-		service.Matches[matchID].Players[userID].Playfield.MoveBlockDown()
+	case types.MoveDirection("down"):
+		player.Playfield.MoveBlockDown()
 		break
 	}
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockState:     service.Matches[matchID].Players[userID].Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection.RotateNone,
+		BlockPosition:  player.Playfield.curBlockPosition,
+		RotationChange: types.RotationDirection("none"),
 	})
 }
 
 func (service GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
 
-	if service.Matches[matchID] == nil {
-		service.Logger.Printf("The match %v does not exist.", matchID)
-		return nil
-	} else if service.Matches[matchID].Players[userID] == nil {
-		service.Logger.Printf("The user is not a member of the match.")
+	success, player := service.validateUserAndMatch(userID, matchID)
+	if !success {
 		return nil
 	}
 
 	switch direction {
-	case types.RotationDirection.RotateLeft:
-		service.Matches[matchID].Players[userID].Playfield.RotateBlockClockwise()
+	case types.RotationDirection("left"):
+		player.Playfield.RotateBlockClockwise()
 		break
-	case types.RotationDirection.RotateRight:
-		service.Matches[matchID].Players[userID].Playfield.RotateBlockCounterClockwise()
+	case types.RotationDirection("right"):
+		player.Playfield.RotateBlockCounterClockwise()
 		break
 	}
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockState:     service.Matches[matchID].Players[userID].Playfield.curBlockPosition,
+		BlockPosition:  player.Playfield.curBlockPosition,
 		RotationChange: direction,
 	})
 }
 
 func (service GameService) HardDropBlock(userID string, matchID string) error {
-	if service.Matches[matchID] == nil {
-		service.Logger.Printf("The match %v does not exist.", matchID)
-		return nil
-	} else if service.Matches[matchID].Players[userID] == nil {
-		service.Logger.Printf("The user is not a member of the match.")
+	success, player := service.validateUserAndMatch(userID, matchID)
+
+	if !success {
 		return nil
 	}
-
-	service.Matches[matchID].Players[userID].Playfield.HardDropBlock()
+	player.Playfield.HardDropBlock()
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockState:     service.Matches[matchID].Players[userID].Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection.RotateNone,
+		BlockPosition:  player.Playfield.curBlockPosition,
+		RotationChange: types.RotationDirection("none"),
 	})
 }
 
 func (service GameService) ToggleSoftDrop(userID string, matchID string) error {
-	if service.Matches[matchID] == nil {
-		service.Logger.Printf("The match %v does not exist.", matchID)
-		return nil
-	} else if service.Matches[matchID].Players[userID] == nil {
-		service.Logger.Printf("The user is not a member of the match.")
+	success, player := service.validateUserAndMatch(userID, matchID)
+
+	if !success {
 		return nil
 	}
-
-	service.Matches[matchID].Players[userID].Playfield.ToggleSoftDrop()
+	player.Playfield.ToggleSoftDrop()
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockState:     service.Matches[matchID].Players[userID].Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection.RotateNone,
+		BlockPosition:  player.Playfield.curBlockPosition,
+		RotationChange: types.RotationDirection("none"),
 	})
+}
+
+func findUser(userID string, match Match) (bool, Player) {
+	var player Player
+	for _, v := range match.Players {
+		if v.ID == userID {
+			player = v
+			return true, v
+		}
+	}
+	return false, player
+}
+
+func (service *GameService) validateUserAndMatch(userID string, matchID string) (bool, Player) {
+	var player Player
+	if _, ok := service.Matches[matchID]; ok {
+		match := service.Matches[matchID]
+		success, player := findUser(userID, match)
+		if !success {
+			service.Logger.Printf("The user is not a member of the match.")
+		}
+		return false, player
+	} else {
+		service.Logger.Printf("The match %v does not exist.", matchID)
+		return false, player
+	}
+	return true, player
 }
