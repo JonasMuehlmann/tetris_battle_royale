@@ -27,14 +27,8 @@ type Playfield struct {
 	gravityStop                  chan bool
 	GameStop                     chan bool
 	isBlockSoftDropping          bool
-<<<<<<< HEAD
-
-	BlockPreview types.BlockPreview
-
-	Acceleration float64
-=======
+	Acceleration                 float64
 	BlockPreview                 BlockPreview
->>>>>>> MMT-79-game-service
 }
 
 func MakePlayField() Playfield {
@@ -143,11 +137,8 @@ func (playfield *Playfield) MoveBlockRight() {
 
 func (playfield *Playfield) MoveBlockDown() {
 	var newPosition = playfield.curBlockPosition
-<<<<<<< HEAD
-	newPosition.y -= math.Round(1 * playfield.Acceleration)
-=======
-	newPosition.Y -= 1
->>>>>>> MMT-79-game-service
+
+	newPosition.Y -= math.Round(1 * playfield.Acceleration)
 
 	if playfield.CanBlockOccupyPosition(newPosition) {
 		playfield.curBlockPosition = newPosition
@@ -163,7 +154,7 @@ func (playfield *Playfield) HardDropBlock() {
 	var newPosition = playfield.curBlockPosition
 
 	for playfield.CanBlockOccupyPosition(newPosition) {
-		
+
 		newPosition.Y -= math.Round(1 * playfield.Acceleration)
 	}
 
