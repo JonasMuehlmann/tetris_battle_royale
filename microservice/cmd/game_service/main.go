@@ -36,7 +36,11 @@ func main() {
 		Logger: logger,
 	}
 
+	statisticsIPCClient := ipc.StatisticsServiceIPCClientAdapter{Logger: logger}
+
 	gameService.IPCServer = &ipcServer
+	gameService.StatisticsIPCClient = &statisticsIPCClient
+
 	gameServiceAdapter := drivingAdapters.GameServiceWebsocketAdapter{Logger: logger, Service: &gameService}
 
 	grpcServerArgs := types.DrivenAdapterGRPCArgs{
@@ -46,6 +50,13 @@ func main() {
 
 	go func() {
 		err := gameService.IPCServer.Start(grpcServerArgs)
+		if err != nil {
+			logger.Fatalf("Error: %v", err)
+		}
+	}()
+	go func() {
+		err := statisticsIPCClient.Start(nil)
+
 		if err != nil {
 			logger.Fatalf("Error: %v", err)
 		}

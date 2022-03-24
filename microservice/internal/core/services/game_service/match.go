@@ -1,11 +1,16 @@
 package gameService
 
-import "microservice/internal/core/types"
+import (
+	"microservice/internal/core/types"
+	"time"
+
+	"github.com/google/uuid"
+)
 
 const MatchSize = 2
 
+// REFACTOR: Refactor this convoluted interaction betweenn the match, playfield and game service
 type Match struct {
-	// TODO: Refactor this convoluted interaction
 	ID                 string
 	Players            map[string]Player
 	PlayerEliminations chan string
@@ -28,8 +33,31 @@ func (match *Match) Stop() {
 
 	for _, player := range match.Players {
 
-		match.GameService.GameAdapter.SendEndOfMatchData(player.ID, endOfMatchData)
+		err := match.GameService.GameAdapter.SendEndOfMatchData(player.ID, endOfMatchData)
+		if err != nil {
+			match.GameService.Logger.Printf("Error: %v\n", err)
+		}
+
+		// FIX: Fill in default initialized statistics
+		matchRecord := types.MatchRecord{
+			ID:           uuid.NewString(),
+			UserID:       player.ID,
+			Win:          false,
+			WinKind:      0,
+			Score:        player.Score,
+			Start:        time.Time{},
+			Length:       0,
+			RatingChange: 0,
+		}
+
+		err = match.GameService.StatisticsIPCClient.AddMatchRecord(matchRecord)
+		if err != nil {
+			match.GameService.Logger.Printf("Error: %v\n", err)
+		}
 	}
+
+	// HACK: This feels wrong, but it might work for now
+	delete(match.GameService.Matches, match.ID)
 
 }
 
@@ -61,7 +89,7 @@ func (match *Match) HandlePlayerEliminations() {
 func (match *Match) generateEndOfMatchData() (types.EndOfMatchData, error) {
 	endOfMatchData := types.EndOfMatchData{}
 
-	// NOTE: This should only do one iteration, IDK any other way to retrieve the sole element of a map
+	// HACK: IDK any other way to retrieve the sole element of a map
 	for playerID := range match.AlivePlayers {
 		endOfMatchData.Scorboard.Winner = playerID
 

@@ -17,10 +17,11 @@ import (
 type GameService struct {
 	UserRepo repoPorts.UserRepositoryPort
 	// This port/adapter might need refactoring
-	Logger      *log.Logger
-	Matches     map[string]Match
-	IPCServer   ipcPorts.GameServiceIPCServerPort
-	GameAdapter drivenPorts.GamePort
+	Logger              *log.Logger
+	Matches             map[string]Match
+	IPCServer           ipcPorts.GameServiceIPCServerPort
+	GameAdapter         drivenPorts.GamePort
+	StatisticsIPCClient ipcPorts.StatisticsServiceIPCClientPort
 }
 
 func MakeGameService(userRepo repoPorts.UserRepositoryPort, ipcServerAdapter ipcPorts.GameServiceIPCServerPort, gameAdapter drivenPorts.GamePort, logger *log.Logger) GameService {
