@@ -33,10 +33,10 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, ipcServerAdapter ipc
 func (service GameService) StartGame(userIDList []string) error {
 	matchID := uuid.NewString()
 
-	players := [MatchSize]Player{}
-	for i, userID := range userIDList {
+	players := map[string]Player{}
+	for _, userID := range userIDList {
 		// TODO: This should probably be refactored into a separate function and will include more complex setup logic
-		players[i] = Player{
+		players[userID] = Player{
 			ID:        userID,
 			Score:     0,
 			Playfield: Playfield{},
@@ -102,20 +102,17 @@ func (service GameService) MoveBlock(userID string, matchID string, direction ty
 	}
 
 	switch direction {
-	case types.MoveDirection("left"):
+	case types.MoveLeft:
 		player.Playfield.MoveBlockLeft()
-		break
-	case types.MoveDirection("right"):
+	case types.MoveRight:
 		player.Playfield.MoveBlockRight()
-		break
-	case types.MoveDirection("down"):
+	case types.MoveDown:
 		player.Playfield.MoveBlockDown()
-		break
 	}
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
 		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection("none"),
+		RotationChange: types.RotateNone,
 	})
 }
 
@@ -127,12 +124,10 @@ func (service GameService) RotateBlock(userID string, matchID string, direction 
 	}
 
 	switch direction {
-	case types.RotationDirection("left"):
+	case types.RotateLeft:
 		player.Playfield.RotateBlockClockwise()
-		break
-	case types.RotationDirection("right"):
+	case types.RotateRight:
 		player.Playfield.RotateBlockCounterClockwise()
-		break
 	}
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
@@ -151,7 +146,7 @@ func (service GameService) HardDropBlock(userID string, matchID string) error {
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
 		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection("none"),
+		RotationChange: types.RotateNone,
 	})
 }
 
@@ -169,28 +164,14 @@ func (service GameService) ToggleSoftDrop(userID string, matchID string) error {
 	})
 }
 
-func findUser(userID string, match Match) (bool, Player) {
-	var player Player
-	for _, v := range match.Players {
-		if v.ID == userID {
-			player = v
-			return true, v
-		}
-	}
-	return false, player
-}
-
 func (service *GameService) validateUserAndMatch(userID string, matchID string) (bool, Player) {
 	var player Player
-	if _, ok := service.Matches[matchID]; ok {
-		match := service.Matches[matchID]
-		success, player := findUser(userID, match)
-		if !success {
-			service.Logger.Printf("The user is not a member of the match.")
-		}
-		return false, player
-	} else {
+	if _, ok := service.Matches[matchID]; !ok {
 		service.Logger.Printf("The match %v does not exist.", matchID)
+		return false, player
+	}
+	if _, ok := service.Matches[matchID].Players[userID]; !ok {
+		service.Logger.Printf("The user is not a member of the match.")
 		return false, player
 	}
 	return true, player
