@@ -14,7 +14,7 @@ type StatisticsServiceIPCClientAdapter struct {
 	Logger     *log.Logger
 }
 
-func (adapter StatisticsServiceIPCClientAdapter) AddMatchRecord(record types.MatchRecord) error {
+func (adapter *StatisticsServiceIPCClientAdapter) AddMatchRecord(record types.MatchRecord) error {
 
 	message := &statisticsServiceProto.MatchRecord{
 		Id:           record.ID,
@@ -31,7 +31,7 @@ func (adapter StatisticsServiceIPCClientAdapter) AddMatchRecord(record types.Mat
 	return err
 }
 
-func (adapter StatisticsServiceIPCClientAdapter) Start(args interface{}) error {
+func (adapter *StatisticsServiceIPCClientAdapter) Start(args interface{}) error {
 	serverAddr := "statistics-service:8081"
 
 	grpcConn, err := grpc.Dial(serverAddr, grpc.WithInsecure())

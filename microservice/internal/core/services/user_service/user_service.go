@@ -15,7 +15,11 @@ type UserService struct {
 	Logger            *log.Logger
 }
 
-func (service UserService) IsLoggedIn(username string) (string, error) {
+func (service *UserService) GetUserRepository() repository.UserRepositoryPort {
+	return service.UserRepository
+}
+
+func (service *UserService) IsLoggedIn(username string) (string, error) {
 	user, err := service.UserRepository.GetUserFromName(username)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: User %v does not exist", username)
@@ -42,7 +46,7 @@ func (service UserService) IsLoggedIn(username string) (string, error) {
 	return session.ID, nil
 }
 
-func (service UserService) Login(username string, password string) (string, error) {
+func (service *UserService) Login(username string, password string) (string, error) {
 	var passwordHash []byte
 	var salt []byte
 
@@ -79,7 +83,7 @@ func (service UserService) Login(username string, password string) (string, erro
 	return sessionID, nil
 }
 
-func (service UserService) Logout(sessionID string) error {
+func (service *UserService) Logout(sessionID string) error {
 	err := service.SessionRepository.DeleteSession(sessionID)
 	if err != nil {
 		errorMessage := fmt.Sprintf("Error: Failed to end session with id %v", sessionID)
@@ -94,7 +98,7 @@ func (service UserService) Logout(sessionID string) error {
 	return nil
 }
 
-func (service UserService) Register(username string, password string) (string, error) {
+func (service *UserService) Register(username string, password string) (string, error) {
 	salt := generateSalt(saltLength)
 
 	passwordHash := hashPw([]byte(password), salt)
@@ -131,7 +135,7 @@ func (service UserService) Register(username string, password string) (string, e
 	return sessionID, nil
 }
 
-func (service UserService) CreateSession(userID string) (types.Session, error) {
+func (service *UserService) CreateSession(userID string) (types.Session, error) {
 
 	session, err := service.SessionRepository.GetSession(userID)
 	if err != nil {

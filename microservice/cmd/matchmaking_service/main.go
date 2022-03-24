@@ -13,12 +13,12 @@ func main() {
 
 	db := repository.MakeDefaultPostgresDB(logger)
 	userRepository := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
-	matchmakingService, err := matchmakingService.MakeMatchmakingService(userRepository, logger)
+	matchmakingService, err := matchmakingService.MakeMatchmakingService(&userRepository, logger)
 
 	if err != nil {
 		logger.Fatal(err)
 	}
 
-	userServiceAdapter := drivingAdapters.MatchmakingServiceRestAdapter{Logger: logger, Service: matchmakingService}
+	userServiceAdapter := drivingAdapters.MatchmakingServiceRestAdapter{Logger: logger, Service: &matchmakingService}
 	userServiceAdapter.Run()
 }
