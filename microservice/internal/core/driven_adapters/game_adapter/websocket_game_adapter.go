@@ -184,13 +184,13 @@ func (adapter *WebsocketGameAdapter) SendEventNotice(userID string, event string
 	return nil
 }
 
-func (adapter *WebsocketGameAdapter) SendEliminationNotice(userID string) error {
+func (adapter *WebsocketGameAdapter) SendEliminationNotice(userID string, eliminatedPlayerID string) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(`{"elimination": "true"}`))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"eliminated_player": "%v"}`, userID)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 

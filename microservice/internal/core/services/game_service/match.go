@@ -22,16 +22,20 @@ func (match *Match) Stop() {
 }
 
 func (match *Match) HandlePlayerEliminations() {
-	var playerID string
+	var eliminatedPlayerID string
 
 	for {
 		select {
 		case <-match.GameStop:
 			match.Stop()
 			return
-		case playerID = <-match.PlayerEliminations:
+		case eliminatedPlayerID = <-match.PlayerEliminations:
 			match.NumPlayersAlive--
-			match.EliminatedPlayers[playerID] = true
+			match.EliminatedPlayers[eliminatedPlayerID] = true
+
+			for _, player := range match.Players {
+				match.GameService.GameAdapter.SendEliminationNotice(player.ID, eliminatedPlayerID)
+			}
 
 			if match.NumPlayersAlive == 0 {
 				match.GameStop <- true
