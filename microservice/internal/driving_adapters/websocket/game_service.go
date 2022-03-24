@@ -13,7 +13,7 @@ import (
 )
 
 type GameServiceWebsocketAdapter struct {
-	Service           gameService.GameService
+	Service           *gameService.GameService
 	Logger            *log.Logger
 	clientConnections []ClientConnection
 	IncomingMesssages chan []byte

@@ -36,7 +36,7 @@ func main() {
 		Logger: logger,
 	}
 
-	gameService.IPCServer = ipcServer
+	gameService.IPCServer = &ipcServer
 	gameServiceAdapter := drivingAdapters.GameServiceWebsocketAdapter{Logger: logger, Service: &gameService}
 
 	grpcServerArgs := types.DrivenAdapterGRPCArgs{
