@@ -1,6 +1,7 @@
 package gameService
 
 import (
+	"fmt"
 	"log"
 	drivenPorts "microservice/internal/core/driven_ports"
 	repoPorts "microservice/internal/core/driven_ports/repository"
@@ -44,34 +45,14 @@ func (service *GameService) StartGame(userIDList []string) error {
 			Playfield: Playfield{},
 		}
 
-		// Build list of opponent user IDs
-		opponentList := make([]types.Opponent, len(userIDList))
-		opponentUserIDList := make([]string, len(userIDList))
+		opponentList, err := service.buildOpponentList(userIDList, userID)
+		if err != nil {
+			log.Printf("Error: %v\n", err)
 
-		copy(opponentUserIDList, userIDList)
-
-		for j, opponentUserID := range opponentUserIDList {
-			if opponentUserID == userID {
-				opponentUserIDList[j] = opponentUserIDList[len(opponentUserIDList)-1]
-				opponentUserIDList = opponentUserIDList[:len(opponentUserIDList)-1]
-
-				break
-			}
+			return err
 		}
 
-		// Build list of opponent user names
-		for j, opponentUserID := range opponentUserIDList {
-			user, err := service.UserRepo.GetUserFromID(opponentUserID)
-			if err != nil {
-				service.Logger.Printf("Error: %v\n", err)
-
-				return err
-			}
-
-			opponentList = append(opponentList, types.Opponent{opponentUserIDList[j], user.Username})
-		}
-
-		err := service.GameAdapter.SendMatchStartNotice(userID, matchID, opponentList)
+		err = service.GameAdapter.SendMatchStartNotice(userID, matchID, opponentList)
 		if err != nil {
 			service.Logger.Printf("Could not notify client %v of game start", userID)
 			service.Logger.Printf("Error: %v\n", err)
@@ -89,6 +70,36 @@ func (service *GameService) StartGame(userIDList []string) error {
 	go service.StartGameInternal(matchID)
 
 	return nil
+}
+
+func (service *GameService) buildOpponentList(userIDList []string, userID string) ([]types.Opponent, error) {
+	opponentList := make([]types.Opponent, len(userIDList))
+	opponentUserIDList := make([]string, len(userIDList))
+
+	copy(opponentUserIDList, userIDList)
+
+	// Build list of opponent user IDs
+	for j, opponentUserID := range opponentUserIDList {
+		if opponentUserID == userID {
+			opponentUserIDList[j] = opponentUserIDList[len(opponentUserIDList)-1]
+			opponentUserIDList = opponentUserIDList[:len(opponentUserIDList)-1]
+
+			break
+		}
+	}
+
+	// Build list of opponent user names
+	for j, opponentUserID := range opponentUserIDList {
+		user, err := service.UserRepo.GetUserFromID(opponentUserID)
+		if err != nil {
+			service.Logger.Printf("Error: %v\n", err)
+
+			return nil, err
+		}
+
+		opponentList = append(opponentList, types.Opponent{opponentUserIDList[j], user.Username})
+	}
+	return opponentList, nil
 }
 
 func (service *GameService) StartGameInternal(matchID string) error {
@@ -155,6 +166,8 @@ func (service *GameService) RotateBlock(userID string, matchID string, direction
 		player.Playfield.RotateBlockClockwise()
 	case types.RotateRight:
 		player.Playfield.RotateBlockCounterClockwise()
+	default:
+		return fmt.Errorf(`Received invalid rotation direction "%v"`, direction)
 	}
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
