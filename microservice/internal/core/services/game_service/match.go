@@ -9,7 +9,7 @@ type Match struct {
 	PlayerEliminations chan string
 	PlayerCount        int
 	NumPlayersAlive    int
-	EliminatedPlayers  map[string]*Player
+	EliminatedPlayers  map[string]bool
 	GameService        *GameService
 	GameStop           chan bool
 }
@@ -31,7 +31,7 @@ func (match *Match) HandlePlayerEliminations() {
 			return
 		case playerID = <-match.PlayerEliminations:
 			match.NumPlayersAlive--
-			match.EliminatedPlayers[playerID] = &match.Players[playerID]
+			match.EliminatedPlayers[playerID] = true
 
 			if match.NumPlayersAlive == 0 {
 				match.GameStop <- true
