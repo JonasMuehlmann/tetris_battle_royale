@@ -176,7 +176,7 @@ func (service GameService) ToggleSoftDrop(userID string, matchID string) error {
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
 		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection("none"),
+		RotationChange: types.RotateNone,
 	})
 }
 
