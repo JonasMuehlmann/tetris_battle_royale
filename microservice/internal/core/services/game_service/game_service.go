@@ -93,10 +93,15 @@ func (service GameService) StartGame(userIDList []string) error {
 func (service GameService) StartGameInternal(matchID string) error {
 	time.Sleep(5)
 	for _, v := range service.Matches[matchID].Players {
-		v.Playfield.BlockPreview.MakeBlockPreview()
+		v.Playfield.BlockPreview = MakeBlockPreview()
 		v.Playfield.StartGame()
 
-		err := service.GameAdapter.SendStartBlockPreview(v.ID, v.Playfield.BlockPreview)
+		var blocks []types.Block
+		for e := v.Playfield.BlockPreview.blockQueue.Front(); e != nil; e = e.Next() {
+			blocks = append(blocks, types.Block(e.Value.(types.Block)))
+		}
+
+		err := service.GameAdapter.SendStartBlockPreview(v.ID, blocks)
 		if err != nil {
 			return err
 		}

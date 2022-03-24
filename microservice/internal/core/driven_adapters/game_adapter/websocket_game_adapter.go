@@ -60,7 +60,7 @@ func (adapter WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID 
 	return nil
 }
 
-func (adapter WebsocketGameAdapter) SendStartBlockPreview(userID string, newPreview types.BlockPreview) error {
+func (adapter WebsocketGameAdapter) SendStartBlockPreview(userID string, newPreview []types.Block) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
