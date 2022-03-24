@@ -32,7 +32,7 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, ipcServerAdapter ipc
 	}
 }
 
-func (service GameService) StartGame(userIDList []string) error {
+func (service *GameService) StartGame(userIDList []string) error {
 	matchID := uuid.NewString()
 
 	players := map[string]Player{}
@@ -90,7 +90,7 @@ func (service GameService) StartGame(userIDList []string) error {
 	return nil
 }
 
-func (service GameService) StartGameInternal(matchID string) error {
+func (service *GameService) StartGameInternal(matchID string) error {
 	time.Sleep(5)
 	for _, v := range service.Matches[matchID].Players {
 		v.Playfield.BlockPreview = MakeBlockPreview()
@@ -110,11 +110,11 @@ func (service GameService) StartGameInternal(matchID string) error {
 }
 
 // NOTE: This function has nothing to do with the matchmaking
-func (service GameService) ConnectPlayer(userID string, connection interface{}) error {
+func (service *GameService) ConnectPlayer(userID string, connection interface{}) error {
 	return service.GameAdapter.ConnectPlayer(userID, connection)
 }
 
-func (service GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
+func (service *GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
 
 	success, player := service.validateUserAndMatch(userID, matchID)
 
@@ -137,7 +137,7 @@ func (service GameService) MoveBlock(userID string, matchID string, direction ty
 	})
 }
 
-func (service GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
+func (service *GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
 
 	success, player := service.validateUserAndMatch(userID, matchID)
 	if !success {
@@ -171,7 +171,7 @@ func (service GameService) HardDropBlock(userID string, matchID string) error {
 	})
 }
 
-func (service GameService) ToggleSoftDrop(userID string, matchID string) error {
+func (service *GameService) ToggleSoftDrop(userID string, matchID string) error {
 	success, player := service.validateUserAndMatch(userID, matchID)
 
 	if !success {
