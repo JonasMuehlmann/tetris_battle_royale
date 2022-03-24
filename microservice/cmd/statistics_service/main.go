@@ -31,7 +31,7 @@ func main() {
 		Logger: logger,
 	}
 
-	statisticsService.IPCServer = ipcServer
+	statisticsService.IPCServer = &ipcServer
 	statisticsServiceAdapter := drivingAdapters.StatisticsServiceRestAdapter{Logger: logger, Service: &statisticsService}
 
 	grpcServerArgs := types.DrivenAdapterGRPCArgs{
