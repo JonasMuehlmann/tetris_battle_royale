@@ -38,27 +38,14 @@ func (service *GameService) StartGame(userIDList []string) error {
 
 	players := map[string]Player{}
 	for _, userID := range userIDList {
-		// TODO: This should probably be refactored into a separate function and will include more complex setup logic
-		players[userID] = Player{
-			ID:        userID,
-			Score:     0,
-			Playfield: Playfield{},
-		}
-
-		opponentList, err := service.buildOpponentList(userIDList, userID)
+		player, err := service.initPlayer(players, userID, userIDList, matchID)
 		if err != nil {
 			log.Printf("Error: %v\n", err)
 
 			return err
 		}
 
-		err = service.GameAdapter.SendMatchStartNotice(userID, matchID, opponentList)
-		if err != nil {
-			service.Logger.Printf("Could not notify client %v of game start", userID)
-			service.Logger.Printf("Error: %v\n", err)
-
-			return err
-		}
+		players[userID] = player
 	}
 
 	service.Matches[matchID] = Match{
@@ -70,36 +57,6 @@ func (service *GameService) StartGame(userIDList []string) error {
 	go service.StartGameInternal(matchID)
 
 	return nil
-}
-
-func (service *GameService) buildOpponentList(userIDList []string, userID string) ([]types.Opponent, error) {
-	opponentList := make([]types.Opponent, len(userIDList))
-	opponentUserIDList := make([]string, len(userIDList))
-
-	copy(opponentUserIDList, userIDList)
-
-	// Build list of opponent user IDs
-	for j, opponentUserID := range opponentUserIDList {
-		if opponentUserID == userID {
-			opponentUserIDList[j] = opponentUserIDList[len(opponentUserIDList)-1]
-			opponentUserIDList = opponentUserIDList[:len(opponentUserIDList)-1]
-
-			break
-		}
-	}
-
-	// Build list of opponent user names
-	for j, opponentUserID := range opponentUserIDList {
-		user, err := service.UserRepo.GetUserFromID(opponentUserID)
-		if err != nil {
-			service.Logger.Printf("Error: %v\n", err)
-
-			return nil, err
-		}
-
-		opponentList = append(opponentList, types.Opponent{opponentUserIDList[j], user.Username})
-	}
-	return opponentList, nil
 }
 
 func (service *GameService) StartGameInternal(matchID string) error {
@@ -226,4 +183,58 @@ func (service *GameService) validateUserAndMatch(userID string, matchID string) 
 	}
 
 	return nil, player
+}
+
+func (service *GameService) buildOpponentList(userIDList []string, userID string) ([]types.Opponent, error) {
+	opponentList := make([]types.Opponent, len(userIDList))
+	opponentUserIDList := make([]string, len(userIDList))
+
+	copy(opponentUserIDList, userIDList)
+
+	// Build list of opponent user IDs
+	for j, opponentUserID := range opponentUserIDList {
+		if opponentUserID == userID {
+			opponentUserIDList[j] = opponentUserIDList[len(opponentUserIDList)-1]
+			opponentUserIDList = opponentUserIDList[:len(opponentUserIDList)-1]
+
+			break
+		}
+	}
+
+	// Build list of opponent user names
+	for j, opponentUserID := range opponentUserIDList {
+		user, err := service.UserRepo.GetUserFromID(opponentUserID)
+		if err != nil {
+			service.Logger.Printf("Error: %v\n", err)
+
+			return nil, err
+		}
+
+		opponentList = append(opponentList, types.Opponent{opponentUserIDList[j], user.Username})
+	}
+	return opponentList, nil
+}
+
+func (service *GameService) initPlayer(players map[string]Player, userID string, userIDList []string, matchID string) (Player, error) {
+	player := Player{
+		ID:        userID,
+		Score:     0,
+		Playfield: Playfield{},
+	}
+
+	opponentList, err := service.buildOpponentList(userIDList, userID)
+	if err != nil {
+		log.Printf("Error: %v\n", err)
+
+		return Player{}, err
+	}
+
+	err = service.GameAdapter.SendMatchStartNotice(userID, matchID, opponentList)
+	if err != nil {
+		service.Logger.Printf("Could not notify client %v of game start", userID)
+		service.Logger.Printf("Error: %v\n", err)
+
+		return Player{}, err
+	}
+	return player, nil
 }
