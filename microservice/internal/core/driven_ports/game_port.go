@@ -13,4 +13,6 @@ type GamePort interface {
 	SendScoreGain(userID string, score int) error
 	SendEventNotice(userID string, event string) error
 	SendStartBlockPreview(userID string, newPreview []types.Block) error
+	SendEliminationNotice(userID string, eliminatedPlayerID string) error
+	SendEndOfMatchData(userID string, endOfMatchData types.EndOfMatchData) error
 }

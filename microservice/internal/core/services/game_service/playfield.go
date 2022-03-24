@@ -26,7 +26,11 @@ type Playfield struct {
 	gravityStop                  chan bool
 	GameStop                     chan bool
 	isBlockSoftDropping          bool
-	BlockPreview                 BlockPreview
+
+	BlockPreview BlockPreview
+	// TODO: Having this much logic in the Playfield and referencing back to
+	// the player looks like a code smell
+	Player *Player
 }
 
 func MakePlayField() Playfield {
@@ -59,6 +63,7 @@ func (playfield *Playfield) StartGame() {
 
 func (playfield *Playfield) StopGame() {
 	playfield.GameStop <- true
+	playfield.Player.Match.PlayerEliminations <- playfield.Player.ID
 	playfield.DisableGravity()
 }
 
