@@ -117,10 +117,12 @@ func (service *GameService) ConnectPlayer(userID string, connection interface{})
 
 func (service *GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
 
-	success, player := service.validateUserAndMatch(userID, matchID)
+	err, player := service.validateUserAndMatch(userID, matchID)
 
-	if !success {
-		return nil
+	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
+		return err
 	}
 
 	switch direction {
@@ -140,9 +142,12 @@ func (service *GameService) MoveBlock(userID string, matchID string, direction t
 
 func (service *GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
 
-	success, player := service.validateUserAndMatch(userID, matchID)
-	if !success {
-		return nil
+	err, player := service.validateUserAndMatch(userID, matchID)
+
+	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
+		return err
 	}
 
 	switch direction {
@@ -159,11 +164,14 @@ func (service *GameService) RotateBlock(userID string, matchID string, direction
 }
 
 func (service GameService) HardDropBlock(userID string, matchID string) error {
-	success, player := service.validateUserAndMatch(userID, matchID)
+	err, player := service.validateUserAndMatch(userID, matchID)
 
-	if !success {
-		return nil
+	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
+		return err
 	}
+
 	player.Playfield.HardDropBlock()
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
@@ -173,11 +181,14 @@ func (service GameService) HardDropBlock(userID string, matchID string) error {
 }
 
 func (service *GameService) ToggleSoftDrop(userID string, matchID string) error {
-	success, player := service.validateUserAndMatch(userID, matchID)
+	err, player := service.validateUserAndMatch(userID, matchID)
 
-	if !success {
-		return nil
+	if err != nil {
+		service.Logger.Printf("Error: %v\n", err)
+
+		return err
 	}
+
 	player.Playfield.ToggleSoftDrop()
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
@@ -186,16 +197,20 @@ func (service *GameService) ToggleSoftDrop(userID string, matchID string) error 
 	})
 }
 
-func (service *GameService) validateUserAndMatch(userID string, matchID string) (bool, Player) {
-	// TODO: Clean up here
-	var player Player
-	if _, ok := service.Matches[matchID]; !ok {
-		service.Logger.Printf("The match %v does not exist.", matchID)
-		return false, player
+func (service *GameService) validateUserAndMatch(userID string, matchID string) (error, Player) {
+	match, ok := service.Matches[matchID]
+	if !ok {
+		err := types.InvalidMatchIDError{matchID}
+
+		return err, Player{}
 	}
-	if _, ok := service.Matches[matchID].Players[userID]; !ok {
-		service.Logger.Printf("The user is not a member of the match.")
-		return false, player
+
+	player, ok := match.Players[userID]
+	if !ok {
+		err := types.InvalidUserIDError{userID}
+
+		return err, Player{}
 	}
-	return true, player
+
+	return nil, player
 }
