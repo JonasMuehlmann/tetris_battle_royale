@@ -5,7 +5,7 @@ const MatchSize = 2
 type Match struct {
 	// TODO: Refactor this convoluted interaction
 	ID                 string
-	Players            [MatchSize]Player
+	Players            map[string]Player
 	PlayerEliminations chan string
 	PlayerCount        int
 	NumPlayersAlive    int

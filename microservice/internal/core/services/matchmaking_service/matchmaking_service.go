@@ -36,7 +36,7 @@ func MakeMatchmakingService(userRepo repoPorts.UserRepositoryPort, logger *log.L
 	return matchmakingService, nil
 }
 
-func (service MatchmakingService) Join(userID string) error {
+func (service *MatchmakingService) Join(userID string) error {
 	service.Queue[userID] = true
 
 	service.Logger.Printf("Player %v joined the queue", userID)
@@ -53,7 +53,7 @@ func (service MatchmakingService) Join(userID string) error {
 	return nil
 }
 
-func (service MatchmakingService) Leave(userID string) error {
+func (service *MatchmakingService) Leave(userID string) error {
 	delete(service.Queue, userID)
 
 	service.Logger.Printf("Player %v left the queue", userID)
@@ -61,7 +61,7 @@ func (service MatchmakingService) Leave(userID string) error {
 	return nil
 }
 
-func (service MatchmakingService) startGame() error {
+func (service *MatchmakingService) startGame() error {
 	userIDList := make([]string, 0, len(service.Queue))
 
 	for k, v := range service.Queue {

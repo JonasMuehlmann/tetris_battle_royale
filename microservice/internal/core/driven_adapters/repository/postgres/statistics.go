@@ -10,7 +10,7 @@ type PostgresDatabaseStatisticsRepository struct {
 	Logger *log.Logger
 }
 
-func (repo PostgresDatabaseStatisticsRepository) GetPlayerProfile(userID string) (types.PlayerProfile, error) {
+func (repo *PostgresDatabaseStatisticsRepository) GetPlayerProfile(userID string) (types.PlayerProfile, error) {
 	var playerProfile types.PlayerProfile
 
 	err := repo.DBConn.Get(&playerProfile, "SELECT * FROM player_profiles WHERE user_id = $1", userID)
@@ -21,7 +21,7 @@ func (repo PostgresDatabaseStatisticsRepository) GetPlayerProfile(userID string)
 	return playerProfile, nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
+func (repo *PostgresDatabaseStatisticsRepository) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
 	var playerStatistics types.PlayerStatistics
 
 	err := repo.DBConn.Get(&playerStatistics, "SELECT player_statistics.* FROM player_statistics LEFT JOIN player_profiles ON player_profiles.player_statistics_id = player_statistics.id WHERE user_id = $1", userID)
@@ -32,7 +32,7 @@ func (repo PostgresDatabaseStatisticsRepository) GetPlayerStatistics(userID stri
 	return playerStatistics, nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) GetPlayerRating(userID string) (types.PlayerRating, error) {
+func (repo *PostgresDatabaseStatisticsRepository) GetPlayerRating(userID string) (types.PlayerRating, error) {
 	var playerRating types.PlayerRating
 
 	err := repo.DBConn.Get(&playerRating, "SELECT player_ratings.* FROM  player_ratings LEFT JOIN player_profiles ON player_profiles.player_rating_id = player_ratings.id WHERE user_id = $1", userID)
@@ -43,7 +43,7 @@ func (repo PostgresDatabaseStatisticsRepository) GetPlayerRating(userID string) 
 	return playerRating, nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
+func (repo *PostgresDatabaseStatisticsRepository) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
 	var matchRecords []types.MatchRecord
 
 	err := repo.DBConn.Select(&matchRecords, "SELECT * FROM  match_records WHERE user_id = $1", userID)
@@ -54,7 +54,7 @@ func (repo PostgresDatabaseStatisticsRepository) GetMatchRecords(userID string) 
 	return matchRecords, nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) GetMatchRecord(matchID string) (types.MatchRecord, error) {
+func (repo *PostgresDatabaseStatisticsRepository) GetMatchRecord(matchID string) (types.MatchRecord, error) {
 	var matchRecord types.MatchRecord
 
 	err := repo.DBConn.Get(&matchRecord, "SELECT * FROM  match_records WHERE id = $1", matchID)
@@ -65,7 +65,7 @@ func (repo PostgresDatabaseStatisticsRepository) GetMatchRecord(matchID string) 
 	return matchRecord, nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) UpdatePlayerProfile(newProfile types.PlayerProfile) error {
+func (repo *PostgresDatabaseStatisticsRepository) UpdatePlayerProfile(newProfile types.PlayerProfile) error {
 	statement := `UPDATE
     player_profiles
 SET
@@ -86,7 +86,7 @@ WHERE
 	return nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) UpdatePlayerRating(newRating types.PlayerRating) error {
+func (repo *PostgresDatabaseStatisticsRepository) UpdatePlayerRating(newRating types.PlayerRating) error {
 	statement := `UPDATE
     player_ratings
 SET
@@ -104,7 +104,7 @@ WHERE
 	return nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
+func (repo *PostgresDatabaseStatisticsRepository) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
 	statement := `UPDATE
     player_statistics
 SET
@@ -129,7 +129,7 @@ WHERE
 	return nil
 }
 
-func (repo PostgresDatabaseStatisticsRepository) AddMatchRecord(record types.MatchRecord) error {
+func (repo *PostgresDatabaseStatisticsRepository) AddMatchRecord(record types.MatchRecord) error {
 
 	statement := "INSERT INTO match_records VALUES(:id, :user_id, :win, :score, :length, :start, :rating_change)"
 

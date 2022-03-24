@@ -8,6 +8,8 @@ import (
 
 	ipcPorts "microservice/internal/core/driven_ports/ipc"
 
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -30,13 +32,13 @@ func MakeGameService(userRepo repoPorts.UserRepositoryPort, ipcServerAdapter ipc
 	}
 }
 
-func (service GameService) StartGame(userIDList []string) error {
+func (service *GameService) StartGame(userIDList []string) error {
 	matchID := uuid.NewString()
 
-	players := [MatchSize]Player{}
-	for i, userID := range userIDList {
+	players := map[string]Player{}
+	for _, userID := range userIDList {
 		// TODO: This should probably be refactored into a separate function and will include more complex setup logic
-		players[i] = Player{
+		players[userID] = Player{
 			ID:        userID,
 			Score:     0,
 			Playfield: Playfield{},
@@ -84,17 +86,36 @@ func (service GameService) StartGame(userIDList []string) error {
 		PlayerEliminations: make(chan string, 10),
 	}
 
-	go service.Matches[matchID].Start()
+	go service.StartGameInternal(matchID)
 
 	return nil
 }
 
+func (service *GameService) StartGameInternal(matchID string) error {
+	time.Sleep(5)
+	for _, v := range service.Matches[matchID].Players {
+		v.Playfield.BlockPreview = MakeBlockPreview()
+		v.Playfield.StartGame()
+
+		var blocks []types.Block
+		for e := v.Playfield.BlockPreview.blockQueue.Front(); e != nil; e = e.Next() {
+			blocks = append(blocks, types.Block(e.Value.(types.Block)))
+		}
+
+		err := service.GameAdapter.SendStartBlockPreview(v.ID, blocks)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // NOTE: This function has nothing to do with the matchmaking
-func (service GameService) ConnectPlayer(userID string, connection interface{}) error {
+func (service *GameService) ConnectPlayer(userID string, connection interface{}) error {
 	return service.GameAdapter.ConnectPlayer(userID, connection)
 }
 
-func (service GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
+func (service *GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
 
 	success, player := service.validateUserAndMatch(userID, matchID)
 
@@ -103,24 +124,21 @@ func (service GameService) MoveBlock(userID string, matchID string, direction ty
 	}
 
 	switch direction {
-	case types.MoveDirection("left"):
+	case types.MoveLeft:
 		player.Playfield.MoveBlockLeft()
-		break
-	case types.MoveDirection("right"):
+	case types.MoveRight:
 		player.Playfield.MoveBlockRight()
-		break
-	case types.MoveDirection("down"):
+	case types.MoveDown:
 		player.Playfield.MoveBlockDown()
-		break
 	}
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
 		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection("none"),
+		RotationChange: types.RotateNone,
 	})
 }
 
-func (service GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
+func (service *GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
 
 	success, player := service.validateUserAndMatch(userID, matchID)
 	if !success {
@@ -128,12 +146,10 @@ func (service GameService) RotateBlock(userID string, matchID string, direction 
 	}
 
 	switch direction {
-	case types.RotationDirection("left"):
+	case types.RotateLeft:
 		player.Playfield.RotateBlockClockwise()
-		break
-	case types.RotationDirection("right"):
+	case types.RotateRight:
 		player.Playfield.RotateBlockCounterClockwise()
-		break
 	}
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
@@ -152,11 +168,11 @@ func (service GameService) HardDropBlock(userID string, matchID string) error {
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
 		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection("none"),
+		RotationChange: types.RotateNone,
 	})
 }
 
-func (service GameService) ToggleSoftDrop(userID string, matchID string) error {
+func (service *GameService) ToggleSoftDrop(userID string, matchID string) error {
 	success, player := service.validateUserAndMatch(userID, matchID)
 
 	if !success {
@@ -166,33 +182,19 @@ func (service GameService) ToggleSoftDrop(userID string, matchID string) error {
 
 	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
 		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotationDirection("none"),
+		RotationChange: types.RotateNone,
 	})
-}
-
-func findUser(userID string, match Match) (bool, Player) {
-	var player Player
-	for _, v := range match.Players {
-		if v.ID == userID {
-			player = v
-			return true, v
-		}
-	}
-	return false, player
 }
 
 func (service *GameService) validateUserAndMatch(userID string, matchID string) (bool, Player) {
 	// TODO: Clean up here
 	var player Player
-	if _, ok := service.Matches[matchID]; ok {
-		match := service.Matches[matchID]
-		success, player := findUser(userID, match)
-		if !success {
-			service.Logger.Printf("The user is not a member of the match.")
-		}
-		return false, player
-	} else {
+	if _, ok := service.Matches[matchID]; !ok {
 		service.Logger.Printf("The match %v does not exist.", matchID)
+		return false, player
+	}
+	if _, ok := service.Matches[matchID].Players[userID]; !ok {
+		service.Logger.Printf("The user is not a member of the match.")
 		return false, player
 	}
 	return true, player
