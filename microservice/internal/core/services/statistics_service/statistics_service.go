@@ -17,39 +17,39 @@ type StatisticsService struct {
 }
 
 // TODO: Validate if user exists
-func (service StatisticsService) GetPlayerProfile(userID string) (types.PlayerProfile, error) {
+func (service *StatisticsService) GetPlayerProfile(userID string) (types.PlayerProfile, error) {
 	return service.StatisticsRepository.GetPlayerProfile(userID)
 }
 
-func (service StatisticsService) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
+func (service *StatisticsService) GetPlayerStatistics(userID string) (types.PlayerStatistics, error) {
 	return service.StatisticsRepository.GetPlayerStatistics(userID)
 }
 
-func (service StatisticsService) GetPlayerRating(userID string) (types.PlayerRating, error) {
+func (service *StatisticsService) GetPlayerRating(userID string) (types.PlayerRating, error) {
 	return service.StatisticsRepository.GetPlayerRating(userID)
 }
 
-func (service StatisticsService) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
+func (service *StatisticsService) GetMatchRecords(userID string) ([]types.MatchRecord, error) {
 	return service.StatisticsRepository.GetMatchRecords(userID)
 }
 
-func (service StatisticsService) GetMatchRecord(matchID string) (types.MatchRecord, error) {
+func (service *StatisticsService) GetMatchRecord(matchID string) (types.MatchRecord, error) {
 	return service.StatisticsRepository.GetMatchRecord(matchID)
 }
 
-func (service StatisticsService) UpdatePlayerProfile(newProfile types.PlayerProfile) error {
+func (service *StatisticsService) UpdatePlayerProfile(newProfile types.PlayerProfile) error {
 	return service.StatisticsRepository.UpdatePlayerProfile(newProfile)
 }
 
-func (service StatisticsService) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
+func (service *StatisticsService) UpdatePlayerStatistics(newStatistics types.PlayerStatistics) error {
 	return service.StatisticsRepository.UpdatePlayerStatistics(newStatistics)
 }
 
-func (service StatisticsService) UpdatePlayerRating(newRating types.PlayerRating) error {
+func (service *StatisticsService) UpdatePlayerRating(newRating types.PlayerRating) error {
 	return service.StatisticsRepository.UpdatePlayerRating(newRating)
 }
 
-func (service StatisticsService) AddMatchRecord(record types.MatchRecord) error {
+func (service *StatisticsService) AddMatchRecord(record types.MatchRecord) error {
 	playerProfile, err := service.GetPlayerProfile(record.UserID)
 	if err != nil {
 		service.Logger.Printf("Error: %v\n", err)

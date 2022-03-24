@@ -12,4 +12,5 @@ type GamePort interface {
 	SendBlockSpawnNotice(userID string, dequeuedBlock types.BlockType, enqueuedBlock types.BlockType) error
 	SendScoreGain(userID string, score int) error
 	SendEventNotice(userID string, event string) error
+	SendStartBlockPreview(userID string, newPreview []types.Block) error
 }

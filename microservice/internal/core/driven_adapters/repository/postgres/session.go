@@ -12,7 +12,7 @@ type PostgresDatabaseSessionRepository struct {
 	Logger *log.Logger
 }
 
-func (repo PostgresDatabaseSessionRepository) CreateSession(userID string) (string, error) {
+func (repo *PostgresDatabaseSessionRepository) CreateSession(userID string) (string, error) {
 	session := types.Session{ID: "", UserID: userID, CreationTime: time.Now()}
 
 	err := repo.DBConn.QueryRow("INSERT INTO sessions(id, user_ID, creation_time) VALUES(uuid_generate_v4(), $1, $2) RETURNING ID", session.UserID, session.CreationTime).Scan(&session.ID)
@@ -25,7 +25,7 @@ func (repo PostgresDatabaseSessionRepository) CreateSession(userID string) (stri
 	return session.ID, nil
 }
 
-func (repo PostgresDatabaseSessionRepository) GetSession(userID string) (types.Session, error) {
+func (repo *PostgresDatabaseSessionRepository) GetSession(userID string) (types.Session, error) {
 	session := types.Session{}
 
 	err := repo.DBConn.Get(&session, "SELECT * FROM sessions WHERE user_ID = $1", userID)
@@ -36,7 +36,7 @@ func (repo PostgresDatabaseSessionRepository) GetSession(userID string) (types.S
 	return session, nil
 }
 
-func (repo PostgresDatabaseSessionRepository) DeleteSession(sessionID string) error {
+func (repo *PostgresDatabaseSessionRepository) DeleteSession(sessionID string) error {
 	res, err := repo.DBConn.Exec("DELETE FROM sessions WHERE ID = $1", sessionID)
 	if err != nil {
 		repo.Logger.Printf("Error: %v\n", err)

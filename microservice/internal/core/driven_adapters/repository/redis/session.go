@@ -15,7 +15,7 @@ type RedisSessionRepository struct {
 	Logger *log.Logger
 }
 
-func (repo RedisSessionRepository) CreateSession(userID string) (string, error) {
+func (repo *RedisSessionRepository) CreateSession(userID string) (string, error) {
 	session := types.Session{UserID: userID, CreationTime: time.Now()}
 
 	uuid.EnableRandPool()
@@ -34,7 +34,7 @@ func (repo RedisSessionRepository) CreateSession(userID string) (string, error) 
 	return session.ID, nil
 }
 
-func (repo RedisSessionRepository) GetSession(userID string) (types.Session, error) {
+func (repo *RedisSessionRepository) GetSession(userID string) (types.Session, error) {
 	var session types.Session
 
 	sessionMarshalled, err := repo.Client.Get(context.Background(), userID).Bytes()
@@ -50,6 +50,6 @@ func (repo RedisSessionRepository) GetSession(userID string) (types.Session, err
 	return session, nil
 }
 
-func (repo RedisSessionRepository) DeleteSession(sessionID string) error {
+func (repo *RedisSessionRepository) DeleteSession(sessionID string) error {
 	return repo.Client.Del(context.Background(), sessionID).Err()
 }
