@@ -15,7 +15,7 @@ type StatisticsServiceRestAdapter struct {
 	Logger  *log.Logger
 }
 
-func (adapter StatisticsServiceRestAdapter) GetPlayerProfileHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter *StatisticsServiceRestAdapter) GetPlayerProfileHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	playerProfile, err := adapter.Service.GetPlayerProfile(vars["userID"])
@@ -37,7 +37,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerProfileHandler(w http.Respo
 	common.TryWriteResponse(w, `{"playerProfile": "`+string(marhshalledPlayerProfile)+`"}`)
 }
 
-func (adapter StatisticsServiceRestAdapter) GetPlayerStatisticsHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter *StatisticsServiceRestAdapter) GetPlayerStatisticsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	playerStatistics, err := adapter.Service.GetPlayerStatistics(vars["userID"])
@@ -59,7 +59,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerStatisticsHandler(w http.Re
 	common.TryWriteResponse(w, `{"playerStatistics": "`+string(marhshalledPlayerStatistics)+`"}`)
 }
 
-func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordsHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter *StatisticsServiceRestAdapter) GetPlayerMatchRecordsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	matchRecords, err := adapter.Service.GetMatchRecords(vars["userID"])
@@ -81,7 +81,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordsHandler(w http.
 	common.TryWriteResponse(w, `{"matchRecords": "`+string(marhshalledMatchRecords)+`"}`)
 }
 
-func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter *StatisticsServiceRestAdapter) GetPlayerMatchRecordHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	matchRecord, err := adapter.Service.GetMatchRecord(vars["matchID"])
@@ -103,7 +103,7 @@ func (adapter StatisticsServiceRestAdapter) GetPlayerMatchRecordHandler(w http.R
 	common.TryWriteResponse(w, `{"matchRecord": "`+string(marhshalledMatchRecords)+`"}`)
 }
 
-func (adapter StatisticsServiceRestAdapter) Run() {
+func (adapter *StatisticsServiceRestAdapter) Run() {
 	mux := mux.NewRouter()
 
 	mux.HandleFunc("/playerProfile/{userID:[a-zA-Z0-9]+}", adapter.GetPlayerProfileHandler).Methods("GET")

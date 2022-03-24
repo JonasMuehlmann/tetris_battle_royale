@@ -14,7 +14,7 @@ type MatchmakingServiceRestAdapter struct {
 	Logger  *log.Logger
 }
 
-func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter *MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := common.UnmarshalRequestBody(r)
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
@@ -39,7 +39,7 @@ func (adapter MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter, 
 	}
 }
 
-func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter *MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := common.UnmarshalRequestBody(r)
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
@@ -64,7 +64,7 @@ func (adapter MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter,
 	}
 }
 
-func (adapter MatchmakingServiceRestAdapter) Run() {
+func (adapter *MatchmakingServiceRestAdapter) Run() {
 	mux := mux.NewRouter()
 
 	mux.HandleFunc("/join", adapter.JoinHandler).Methods("POST")

@@ -17,7 +17,7 @@ func main() {
 	db := repository.MakeDefaultPostgresDB(logger)
 	statisticsRepository := postgresRepository.PostgresDatabaseStatisticsRepository{Logger: logger, PostgresDatabase: *db}
 
-	statisticsService := statisticsService.StatisticsService{Logger: logger, StatisticsRepository: statisticsRepository}
+	statisticsService := statisticsService.StatisticsService{Logger: logger, StatisticsRepository: &statisticsRepository}
 
 	listener, err := net.Listen("tcp", ":8081")
 	if err != nil {
@@ -32,7 +32,7 @@ func main() {
 	}
 
 	statisticsService.IPCServer = ipcServer
-	statisticsServiceAdapter := drivingAdapters.StatisticsServiceRestAdapter{Logger: logger, Service: statisticsService}
+	statisticsServiceAdapter := drivingAdapters.StatisticsServiceRestAdapter{Logger: logger, Service: &statisticsService}
 
 	grpcServerArgs := types.DrivenAdapterGRPCArgs{
 		Service:  &statisticsService,
