@@ -1,39 +1,67 @@
 import {useState} from 'react'
+import GlowingText from '../../components/glowing_text/glowing_text'
 
-const OPTIONS = Object.freeze([
+const DATA = [
   {
-    text: 'Profile',
-    description: 'In Development',
+    label: "Total Games",
+    points: 0,
   },
-])
+  {
+    label: "Total Wins",
+    points: 0,
+  },
+  {
+    label: "Winrate (Top 10)",
+    points: 0,
+  },
+  {
+    label: "Top 10",
+    points: 0,
+  },
+  {
+    label: "Top 5",
+    points: 0,
+  },
+  {
+    label: "Top 3",
+    points: 0,
+  },
+  {
+    label: "Top 1",
+    points: 0,
+  },
+  {
+    label: "MMR",
+    points: 0,
+  },
+  {
+    label: "Score",
+    points: 0,
+  },
+]
 
 const PlayerProfile = () => {
   return (
-    <ul className={`flex flex-col w-full h-full
-      justify-center items-center gap-8 
-      text-white bangers text-center`}>
+    <div className="grid grid-cols-3 grid-rows-3 w-full h-full text-white">
       {
-        OPTIONS.map((t, i) => (
-          <li
-            key={i}
-            onClick={t.onClick}
-            className={`
-              cursor-pointer transition-all w-[480px]
-              opacity-30 hover:opacity-100 hover:pl-10`}>
-            <p className="text-7xl tetris-text ">
-              {t.text}
-            </p>
-            <span className="text-2xl text-gray-200">
-              {t.description}
-            </span>
-          </li>
-        ))
+        DATA.map((data, index) => {
+          return (
+            <div
+              key={index} 
+              className="flex flex-col justify-center items-center">
+              <GlowingText
+                className="text-3xl">
+                {data.label}
+              </GlowingText>
+              <p
+                className="text-3xl">
+                {data.points}
+              </p>
+            </div>
+          )
+        })
       }
-      <button
-        className='text-white opacity-50 transition-all hover:opacity-100 hover:text-red'>
-        Open
-      </button>
-    </ul>
+    </div>
   )
 }
 
