@@ -113,7 +113,7 @@ const Tetris = ({
       onKeyDown={move}
       onKeyUp={softDrop}
       className="flex justify-center items-center gap-2 focus:outline-0 w-screen h-screen relative">
-      <ScoreBoard score={score} />
+      <ScoreBoard className="absolute inset-x-0 top-0 " score={score} />
       <AnimatePresence exitBeforeEnter>
         {
           gameStarted ?
