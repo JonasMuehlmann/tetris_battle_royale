@@ -1,8 +1,8 @@
 import Stage from "./stage";
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useTetris } from "../../contexts/tetris-context";
-
+import ScoreBoard from "./score_board"
 const Tetris = ({
   onGameOver = () => { }
 }) => {
@@ -31,11 +31,7 @@ const Tetris = ({
       onKeyDown={onKeyDown}
       onKeyUp={onKeyUp}
       className="flex justify-center items-center gap-2 focus:outline-0 w-screen h-screen relative">
-      <div className="absolute left-1/2 top-20 -translate-x-1/2">
-        <p className="text-white font-semibold text-2xl">
-          {score}
-        </p>
-      </div>
+      <ScoreBoard className="absolute inset-x-0 top-0 " score={score} />
       <AnimatePresence exitBeforeEnter>
         {
           gameStarted ?
