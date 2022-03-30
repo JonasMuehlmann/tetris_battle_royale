@@ -1,116 +1,35 @@
 import Stage from "./stage";
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
-import { useTimer } from '../../hooks/useTimer'
-import { usePlayer } from '../../hooks/usePlayer'
-import { useStage } from '../../hooks/useStage'
-import { useStatus } from '../../hooks/useStatus'
-import { checkCollision, createStage } from "./helpers";
-import { useKeybinds } from "../../contexts/keybinds-context";
-
+import { useTetris } from "../../contexts/tetris-context";
 
 const Tetris = ({
   onGameOver = () => { }
 }) => {
   const {
-    keybinds,
-  } = useKeybinds();
+    onKeyDown,
+    onKeyUp,
+    score,
+    gameStarted,
+    gameOver,
+    stage,
+    timerCount
+  } = useTetris();
 
   const wrapperRef = useRef(null)
 
-  const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
-  const [stage, setStage, rowsCleared] = useStage(player, resetPlayer)
-  const [score, setScore, rows, setRows, level, setLevel] = useStatus(rowsCleared)
-
-  const [actionTimer, setActionTimer] = useState(null)
-  const [timerCount, setTimerCount] = useState(3)
-  const [dropTime, setDropTime] = useState(1000)
-  const [gameStarted, setGameStarted] = useState(false)
-  const [gameOver, setGameOver] = useState(false)
-
-  const startGame = () => {
-    setGameStarted(true)
-    setStage(createStage())
-    setDropTime(1000)
-    resetPlayer()
-    setScore(0)
-    setLevel(0)
-    setRows(0)
-    setGameOver(false)
-  }
-
-  //#region MOVEMENTS
-
-  const drop = () => {
-    if (rows > (level + 1) * 10) {
-      setLevel(prev => prev + 1)
-      setDropTime(1000 / (level + 1) + 200)
-    }
-
-    if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-      updatePlayerPos({ x: 0, y: 1, collided: false })
-    } else {
-      if (player.pos.y < 1) {
-        console.log('GAME OVER!')
-        onGameOver()
-        setGameOver(true)
-        setDropTime(null)
-      }
-      updatePlayerPos({ x: 0, y: 0, collided: true })
-    }
-  }
-
-  const dropBlock = () => {
-    setDropTime(null)
-    drop()
-  }
-
-  const moveBlock = dir => {
-    if (!checkCollision(player, stage, { x: dir, y: 0 })) {
-      updatePlayerPos({ x: dir, y: 0 });
-    }
-  }
-
-  const softDrop = ({ keyCode }) => {
-    if (!gameOver) {
-      if (keyCode === 40) {
-        setDropTime(1000 / (level + 1));
-      }
-    }
-  }
-
-  const move = ({ keyCode }) => {
-    if (!gameOver) {
-      if (keyCode === keybinds.left.key) {
-        moveBlock(-1);
-      } else if (keyCode === keybinds.right.key) {
-        moveBlock(1);
-      } else if (keyCode === keybinds.drop.key) {
-        dropBlock();
-      } else if (keyCode === keybinds.rotate.key) {
-        playerRotate(stage, 1);
-      }
-    }
-  }
-
-  //#endregion
-
-  useTimer(() => {
-    drop()
-    if (timerCount > 1) setTimerCount(timerCount - 1)
-    else if (!gameStarted) startGame()
-  }, dropTime)
-
   useEffect(() => {
     wrapperRef?.current?.focus()
-  }, [wrapperRef, actionTimer, timerCount])
+
+    if (gameOver) onGameOver()
+  }, [wrapperRef, timerCount, gameOver])
 
   return (
     <div
       ref={wrapperRef}
       tabIndex='-1'
-      onKeyDown={move}
-      onKeyUp={softDrop}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
       className="flex justify-center items-center gap-2 focus:outline-0 w-screen h-screen relative">
       <div className="absolute left-1/2 top-20 -translate-x-1/2">
         <p className="text-white font-semibold text-2xl">

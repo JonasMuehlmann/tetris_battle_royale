@@ -38,8 +38,10 @@ const LogInScreen = () => {
 
   const onSignIn = async (model, bypass = false) => {
     showDialog(DialogType.Authenticate)
+
     if (bypass) {
       setTimeout(() => { hideDialog(); navigate(Screen.Menu) }, 2500)
+      return
     }
 
     try {
@@ -47,10 +49,9 @@ const LogInScreen = () => {
         username: model.username,
         password: model.password
       })
-      console.log(res.data.user)
-
+      console.log(res)
     } catch (error) {
-      console.info(error.message)
+      console.error(error.message)
     } finally {
       hideDialog()
     }

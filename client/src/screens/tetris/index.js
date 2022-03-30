@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import Tetris from "../../components/tetris/tetris"
 import { useScreens, Screen } from '../../contexts/screen-context'
+import { withTetris } from "../../contexts/tetris-context"
 
 const TetrisScreen = () => {
   const {
@@ -21,4 +22,4 @@ const TetrisScreen = () => {
   )
 }
 
-export default TetrisScreen
+export default withTetris(TetrisScreen)
