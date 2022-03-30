@@ -89,9 +89,6 @@ func (playfield *Playfield) findClearableRows() []int {
 func (playfield *Playfield) tryClearRows() {
 	clearableRows := playfield.findClearableRows()
 
-	scoreForRows := [4]int{100, 300, 500, 800}
-	playfield.Player.Score += scoreForRows[len(clearableRows)]
-
 	for clearableRow := range clearableRows {
 		// Iterate field upwards from the first (lowest) clearable row
 		// -1 to avoid pulling padding row when doing row+1 further down
@@ -99,6 +96,15 @@ func (playfield *Playfield) tryClearRows() {
 			// Overwrite current row with the one above
 			playfield.field[row] = playfield.field[row+1]
 		}
+	}
+
+	playfield.Player.Score += types.ScoreForRows[len(clearableRows)]
+	err := playfield.Player.Match.GameService.GameAdapter.SendScoreGain(playfield.Player.ID, playfield.Player.Score)
+
+	if err != nil {
+		playfield.Player.Match.GameService.Logger.Printf("Error: %v\n", err)
+
+		return
 	}
 }
 
