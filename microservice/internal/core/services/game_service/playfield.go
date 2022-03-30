@@ -26,6 +26,8 @@ type Playfield struct {
 	gravityStop                  chan bool
 	GameStop                     chan bool
 	isBlockSoftDropping          bool
+	softDropScoreMultiplication  int
+	hardDropScoreMultiplication  int
 
 	BlockPreview BlockPreview
 	// TODO: Having this much logic in the Playfield and referencing back to
@@ -43,6 +45,8 @@ func MakePlayField() Playfield {
 		gravityTicker:                *time.NewTicker(InitialGravityTickLength),
 		gravityStop:                  make(chan bool, 1),
 		GameStop:                     make(chan bool, 1),
+		softDropScoreMultiplication:  1,
+		hardDropScoreMultiplication:  1,
 	}
 
 	for row := 0; row < newField.height; row++ {
@@ -98,13 +102,21 @@ func (playfield *Playfield) tryClearRows() {
 		}
 	}
 
-	playfield.Player.Score += types.ScoreForRows[len(clearableRows)]
-	err := playfield.Player.Match.GameService.GameAdapter.SendScoreGain(playfield.Player.ID, playfield.Player.Score)
+	//add the score for cleared rows to player
+	if len(clearableRows) > 0 {
+		playfield.Player.Score += types.ScoreForRows[len(clearableRows)-1] * playfield.softDropScoreMultiplication * playfield.hardDropScoreMultiplication
 
-	if err != nil {
-		playfield.Player.Match.GameService.Logger.Printf("Error: %v\n", err)
+		//reset softDrop multiplication when min 1 row is cleared
+		if playfield.isBlockSoftDropping {
+			playfield.softDropScoreMultiplication = 1
+		}
 
-		return
+		err := playfield.Player.Match.GameService.GameAdapter.SendScoreGain(playfield.Player.ID, playfield.Player.Score)
+
+		if err != nil {
+			playfield.Player.Match.GameService.Logger.Printf("Error: %v\n", err)
+			return
+		}
 	}
 }
 
@@ -119,6 +131,9 @@ func (playfield *Playfield) LockInBlock() {
 	}
 
 	playfield.tryClearRows()
+
+	//reset hardDrop score
+	playfield.hardDropScoreMultiplication = 1
 
 	playfield.SpawnNewBlock(types.GenerateRandomBlock())
 }
@@ -151,6 +166,9 @@ func (playfield *Playfield) MoveBlockDown() {
 
 	if playfield.CanBlockOccupyPosition(newPosition) {
 		playfield.curBlockPosition = newPosition
+		if playfield.isBlockSoftDropping {
+			playfield.softDropScoreMultiplication++
+		}
 	} else {
 		playfield.LockInBlock()
 	}
@@ -164,6 +182,13 @@ func (playfield *Playfield) HardDropBlock() {
 
 	for playfield.CanBlockOccupyPosition(newPosition) {
 		newPosition.Y -= 1
+
+		//add hard drop score for each skipped row
+		if playfield.hardDropScoreMultiplication == 1 {
+			playfield.hardDropScoreMultiplication++
+		} else {
+			playfield.hardDropScoreMultiplication += 2
+		}
 	}
 
 	newPosition.Y += 1
@@ -190,6 +215,7 @@ func (playfield *Playfield) ToggleSoftDrop() {
 	}
 
 	playfield.isBlockSoftDropping = !playfield.isBlockSoftDropping
+	playfield.softDropScoreMultiplication = 1
 }
 
 func (playfield *Playfield) RotateBlockCounterClockwise() {
