@@ -24,7 +24,7 @@ type StatisticsServiceServer struct {
 	Logger            *log.Logger
 }
 
-func (service StatisticsServiceServer) AddMatchRecord(context context.Context, record *statisticsServiceProto.MatchRecord) (*statisticsServiceProto.EmptyRequest, error) {
+func (service *StatisticsServiceServer) AddMatchRecord(context context.Context, record *statisticsServiceProto.MatchRecord) (*statisticsServiceProto.EmptyRequest, error) {
 	startDateTime, err := time.Parse("2006-01-02 15:04:05", record.GetStart())
 	if err != nil {
 		return &statisticsServiceProto.EmptyRequest{}, err
@@ -52,7 +52,7 @@ type StatisticsServiceIPCServerAdapter struct {
 	Logger *log.Logger
 }
 
-func (adapter StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
+func (adapter *StatisticsServiceIPCServerAdapter) Start(args interface{}) error {
 	statisticsServiceArgs, ok := args.(types.DrivenAdapterGRPCArgs)
 	if !ok {
 		return fmt.Errorf("Invalid type %T for argument, expected %T", args, types.DrivenAdapterGRPCArgs{})

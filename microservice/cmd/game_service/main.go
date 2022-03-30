@@ -22,7 +22,7 @@ func main() {
 	userRepo := repository.PostgresDatabaseUserRepository{Logger: logger, PostgresDatabase: *db}
 	gameAdapter := drivenAdapters.MakeWebsocketGameAdapter(logger)
 
-	gameService := gameService.MakeGameService(userRepo, nil, gameAdapter, logger)
+	gameService := gameService.MakeGameService(&userRepo, nil, &gameAdapter, logger)
 
 	listener, err := net.Listen("tcp", ":8081")
 	if err != nil {
@@ -36,8 +36,12 @@ func main() {
 		Logger: logger,
 	}
 
-	gameService.IPCServer = ipcServer
-	gameServiceAdapter := drivingAdapters.GameServiceWebsocketAdapter{Logger: logger, Service: gameService}
+	statisticsIPCClient := ipc.StatisticsServiceIPCClientAdapter{Logger: logger}
+
+	gameService.IPCServer = &ipcServer
+	gameService.StatisticsIPCClient = &statisticsIPCClient
+
+	gameServiceAdapter := drivingAdapters.GameServiceWebsocketAdapter{Logger: logger, Service: &gameService}
 
 	grpcServerArgs := types.DrivenAdapterGRPCArgs{
 		Service:  &gameService,
@@ -46,6 +50,13 @@ func main() {
 
 	go func() {
 		err := gameService.IPCServer.Start(grpcServerArgs)
+		if err != nil {
+			logger.Fatalf("Error: %v", err)
+		}
+	}()
+	go func() {
+		err := statisticsIPCClient.Start(nil)
+
 		if err != nil {
 			logger.Fatalf("Error: %v", err)
 		}

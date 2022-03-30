@@ -22,7 +22,7 @@ type GameServiceServer struct {
 	Logger      *log.Logger
 }
 
-func (service GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.EmptyMessage, error) {
+func (service *GameServiceServer) StartGame(context context.Context, userIDList *gameServiceProto.UserIDList) (*gameServiceProto.EmptyMessage, error) {
 	err := service.GameService.StartGame(userIDList.GetId())
 
 	return &gameServiceProto.EmptyMessage{}, err
@@ -37,7 +37,7 @@ type GameServiceIPCServerAdapter struct {
 	Logger *log.Logger
 }
 
-func (adapter GameServiceIPCServerAdapter) Start(args interface{}) error {
+func (adapter *GameServiceIPCServerAdapter) Start(args interface{}) error {
 	gameServiceArgs, ok := args.(types.DrivenAdapterGRPCArgs)
 	if !ok {
 		return fmt.Errorf("Invalid type %T for argument, expected %T", args, types.DrivenAdapterGRPCArgs{})

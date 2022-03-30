@@ -13,7 +13,7 @@ import (
 )
 
 type GameServiceWebsocketAdapter struct {
-	Service           gameService.GameService
+	Service           *gameService.GameService
 	Logger            *log.Logger
 	clientConnections []ClientConnection
 	IncomingMesssages chan []byte
@@ -24,7 +24,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter, r *http.Request) {
+func (adapter *GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter, r *http.Request) {
 	incomingConn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
@@ -58,7 +58,7 @@ func (adapter GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter,
 	go connection.ReadPump(adapter.IncomingMesssages)
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]string) error {
+func (adapter *GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]string) error {
 
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
@@ -67,7 +67,7 @@ func (adapter GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]st
 	return adapter.Service.MoveBlock(userID, matchID, direction)
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleRotateBlock(message map[string]string) error {
+func (adapter *GameServiceWebsocketAdapter) HandleRotateBlock(message map[string]string) error {
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
 	var direction types.RotationDirection = types.RotationDirection(message["direction"])
@@ -75,21 +75,21 @@ func (adapter GameServiceWebsocketAdapter) HandleRotateBlock(message map[string]
 	return adapter.Service.RotateBlock(userID, matchID, direction)
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleHardDropBlock(message map[string]string) error {
+func (adapter *GameServiceWebsocketAdapter) HandleHardDropBlock(message map[string]string) error {
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
 
 	return adapter.Service.HardDropBlock(userID, matchID)
 }
 
-func (adapter GameServiceWebsocketAdapter) HandleToggleSoftDrop(message map[string]string) error {
+func (adapter *GameServiceWebsocketAdapter) HandleToggleSoftDrop(message map[string]string) error {
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
 
 	return adapter.Service.ToggleSoftDrop(userID, matchID)
 }
 
-func (adapter GameServiceWebsocketAdapter) Run() {
+func (adapter *GameServiceWebsocketAdapter) Run() {
 	mux := mux.NewRouter()
 
 	mux.HandleFunc("/ws", adapter.UpgradeHandler)
