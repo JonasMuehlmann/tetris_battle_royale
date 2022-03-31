@@ -1,3 +1,4 @@
 vendor/
 .lvimrc
 .code_runner.json
+.commit_template.txt
