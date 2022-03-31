@@ -79,6 +79,10 @@ func (service *GameService) StartGameInternal(matchID string) error {
 	return nil
 }
 
+func (service GameService) StopGame(matchID string) error {
+	return nil
+}
+
 // NOTE: This function has nothing to do with the matchmaking
 func (service *GameService) ConnectPlayer(userID string, connection interface{}) error {
 	return service.GameAdapter.ConnectPlayer(userID, connection)
