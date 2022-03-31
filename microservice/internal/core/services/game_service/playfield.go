@@ -104,14 +104,10 @@ func (playfield *Playfield) tryClearRows() {
 
 	//add the score for cleared rows to player
 	if len(clearableRows) > 0 {
-		playfield.Player.Score += types.ScoreForRows[len(clearableRows)-1] * playfield.softDropScoreMultiplication * playfield.hardDropScoreMultiplication
+		scoreToAdd := types.ScoreForRows[len(clearableRows)-1] * playfield.softDropScoreMultiplication * playfield.hardDropScoreMultiplication
+		playfield.Player.Score += scoreToAdd
 
-		//reset softDrop multiplication when min 1 row is cleared
-		if playfield.isBlockSoftDropping {
-			playfield.softDropScoreMultiplication = 1
-		}
-
-		err := playfield.Player.Match.GameService.GameAdapter.SendScoreGain(playfield.Player.ID, playfield.Player.Score)
+		err := playfield.Player.Match.GameService.GameAdapter.SendScoreGain(playfield.Player.ID, scoreToAdd)
 
 		if err != nil {
 			playfield.Player.Match.GameService.Logger.Printf("Error: %v\n", err)
@@ -134,6 +130,9 @@ func (playfield *Playfield) LockInBlock() {
 
 	//reset hardDrop score
 	playfield.hardDropScoreMultiplication = 1
+	if playfield.isBlockSoftDropping {
+		playfield.softDropScoreMultiplication = 1
+	}
 
 	playfield.SpawnNewBlock(types.GenerateRandomBlock())
 }
