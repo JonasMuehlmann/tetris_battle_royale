@@ -26,6 +26,8 @@ type Playfield struct {
 	gravityStop                  chan bool
 	GameStop                     chan bool
 	isTetrominoSoftDropping          bool
+	softDropScoreMultiplication  int
+	hardDropScoreMultiplication  int
 
 	TetrominoPreview TetrominoPreview
 	// TODO: Having this much logic in the Playfield and referencing back to
@@ -43,6 +45,8 @@ func MakePlayField() Playfield {
 		gravityTicker:                *time.NewTicker(InitialGravityTickLength),
 		gravityStop:                  make(chan bool, 1),
 		GameStop:                     make(chan bool, 1),
+		softDropScoreMultiplication:  1,
+		hardDropScoreMultiplication:  1,
 	}
 
 	for row := 0; row < newField.height; row++ {
@@ -97,6 +101,19 @@ func (playfield *Playfield) tryClearRows() {
 			playfield.field[row] = playfield.field[row+1]
 		}
 	}
+
+	//add the score for cleared rows to player
+	if len(clearableRows) > 0 {
+		scoreToAdd := types.ScoreForRows[len(clearableRows)-1] * playfield.softDropScoreMultiplication * playfield.hardDropScoreMultiplication
+		playfield.Player.Score += scoreToAdd
+
+		err := playfield.Player.Match.GameService.GameAdapter.SendScoreGain(playfield.Player.ID, scoreToAdd)
+
+		if err != nil {
+			playfield.Player.Match.GameService.Logger.Printf("Error: %v\n", err)
+			return
+		}
+	}
 }
 
 func (playfield *Playfield) LockInTetromino() {
@@ -110,6 +127,13 @@ func (playfield *Playfield) LockInTetromino() {
 	}
 
 	playfield.tryClearRows()
+
+	playfield.SpawnNewTetromino(types.GenerateRandomTetromino())
+	//reset hardDrop score
+	playfield.hardDropScoreMultiplication = 1
+	if playfield.isTetrominoSoftDropping {
+		playfield.softDropScoreMultiplication = 1
+	}
 
 	playfield.SpawnNewTetromino(types.GenerateRandomTetromino())
 }
@@ -142,6 +166,9 @@ func (playfield *Playfield) MoveTetrominoDown() {
 
 	if playfield.CanTetrominoOccupyPosition(newPosition) {
 		playfield.curTetrominoPosition = newPosition
+		if playfield.isTetrominoSoftDropping {
+			playfield.softDropScoreMultiplication++
+		}
 	} else {
 		playfield.LockInTetromino()
 	}
@@ -155,6 +182,13 @@ func (playfield *Playfield) HardDropTetromino() {
 
 	for playfield.CanTetrominoOccupyPosition(newPosition) {
 		newPosition.Y -= 1
+
+		//add hard drop score for each skipped row
+		if playfield.hardDropScoreMultiplication == 1 {
+			playfield.hardDropScoreMultiplication++
+		} else {
+			playfield.hardDropScoreMultiplication += 2
+		}
 	}
 
 	newPosition.Y += 1
@@ -181,6 +215,7 @@ func (playfield *Playfield) ToggleSoftDrop() {
 	}
 
 	playfield.isTetrominoSoftDropping = !playfield.isTetrominoSoftDropping
+	playfield.softDropScoreMultiplication = 1
 }
 
 func (playfield *Playfield) RotateTetrominoCounterClockwise() {
