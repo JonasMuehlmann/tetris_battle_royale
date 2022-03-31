@@ -58,28 +58,28 @@ func (adapter *GameServiceWebsocketAdapter) UpgradeHandler(w http.ResponseWriter
 	go connection.ReadPump(adapter.IncomingMesssages)
 }
 
-func (adapter *GameServiceWebsocketAdapter) HandleMoveBlock(message map[string]string) error {
+func (adapter *GameServiceWebsocketAdapter) HandleMoveTetromino(message map[string]string) error {
 
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
 	var direction types.MoveDirection = types.MoveDirection(message["direction"])
 
-	return adapter.Service.MoveBlock(userID, matchID, direction)
+	return adapter.Service.MoveTetromino(userID, matchID, direction)
 }
 
-func (adapter *GameServiceWebsocketAdapter) HandleRotateBlock(message map[string]string) error {
+func (adapter *GameServiceWebsocketAdapter) HandleRotateTetromino(message map[string]string) error {
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
 	var direction types.RotationDirection = types.RotationDirection(message["direction"])
 
-	return adapter.Service.RotateBlock(userID, matchID, direction)
+	return adapter.Service.RotateTetromino(userID, matchID, direction)
 }
 
-func (adapter *GameServiceWebsocketAdapter) HandleHardDropBlock(message map[string]string) error {
+func (adapter *GameServiceWebsocketAdapter) HandleHardDropTetromino(message map[string]string) error {
 	var userID string = message["userID"]
 	var matchID string = message["matchID"]
 
-	return adapter.Service.HardDropBlock(userID, matchID)
+	return adapter.Service.HardDropTetromino(userID, matchID)
 }
 
 func (adapter *GameServiceWebsocketAdapter) HandleToggleSoftDrop(message map[string]string) error {
@@ -105,12 +105,12 @@ func (adapter *GameServiceWebsocketAdapter) Run() {
 		var message map[string]string
 		json.Unmarshal(raw, &message)
 		switch message["type"] {
-		case "MoveBlock":
-			adapter.HandleMoveBlock(message)
-		case "RotateBlock":
-			adapter.HandleRotateBlock(message)
+		case "MoveTetromino":
+			adapter.HandleMoveTetromino(message)
+		case "RotateTetromino":
+			adapter.HandleRotateTetromino(message)
 		case "HardDrop":
-			adapter.HandleHardDropBlock(message)
+			adapter.HandleHardDropTetromino(message)
 		case "SoftDrop":
 			adapter.HandleToggleSoftDrop(message)
 		}

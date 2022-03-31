@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-const PlayFieldWidth = 2*types.BlockWidth + 10
-const PlayFieldHeight = 2*types.BlockWidth + 20
+const PlayFieldWidth = 2*types.TetrominoWidth + 10
+const PlayFieldHeight = 2*types.TetrominoWidth + 20
 
 const InitialGravityTickLength = 500 * time.Millisecond
 
@@ -17,17 +17,17 @@ type Playfield struct {
 	height   int
 	padding  int
 	field    [PlayFieldHeight][PlayFieldWidth]bool
-	curBlock types.Block
-	// This is the top left corner of the block
-	curBlockPosition             types.Position
+	curTetromino types.Tetromino
+	// This is the top left corner of the tetromino
+	curTetrominoPosition             types.Position
 	curRegularGravityTickLength  time.Duration
 	curSoftDropGravityTickLength time.Duration
 	gravityTicker                time.Ticker
 	gravityStop                  chan bool
 	GameStop                     chan bool
-	isBlockSoftDropping          bool
+	isTetrominoSoftDropping          bool
 
-	BlockPreview BlockPreview
+	TetrominoPreview TetrominoPreview
 	// TODO: Having this much logic in the Playfield and referencing back to
 	// the player looks like a code smell
 	Player *Player
@@ -37,7 +37,7 @@ func MakePlayField() Playfield {
 	var newField = Playfield{
 		width:                        PlayFieldWidth,
 		height:                       PlayFieldHeight,
-		padding:                      types.BlockWidth,
+		padding:                      types.TetrominoWidth,
 		curRegularGravityTickLength:  InitialGravityTickLength,
 		curSoftDropGravityTickLength: time.Duration(float64(InitialGravityTickLength) * SoftdropTickLengthMultiplier),
 		gravityTicker:                *time.NewTicker(InitialGravityTickLength),
@@ -57,7 +57,7 @@ func MakePlayField() Playfield {
 }
 
 func (playfield *Playfield) StartGame() {
-	playfield.SpawnNewBlock(types.GenerateRandomBlock())
+	playfield.SpawnNewTetromino(types.GenerateRandomTetromino())
 	playfield.EnableGravity()
 }
 
@@ -99,98 +99,98 @@ func (playfield *Playfield) tryClearRows() {
 	}
 }
 
-func (playfield *Playfield) LockInBlock() {
+func (playfield *Playfield) LockInTetromino() {
 	var curFieldPosition *bool
 
-	for row := 0; row < types.BlockWidth; row++ {
-		for col := 0; col < types.BlockWidth; col++ {
-			curFieldPosition = &playfield.field[playfield.curBlockPosition.Y-row][playfield.curBlockPosition.X+col]
-			*curFieldPosition = *curFieldPosition || playfield.curBlock[row][col]
+	for row := 0; row < types.TetrominoWidth; row++ {
+		for col := 0; col < types.TetrominoWidth; col++ {
+			curFieldPosition = &playfield.field[playfield.curTetrominoPosition.Y-row][playfield.curTetrominoPosition.X+col]
+			*curFieldPosition = *curFieldPosition || playfield.curTetromino[row][col]
 		}
 	}
 
 	playfield.tryClearRows()
 
-	playfield.SpawnNewBlock(types.GenerateRandomBlock())
+	playfield.SpawnNewTetromino(types.GenerateRandomTetromino())
 }
 
-func (playfield *Playfield) MoveBlockLeft() {
-	var newPosition = playfield.curBlockPosition
+func (playfield *Playfield) MoveTetrominoLeft() {
+	var newPosition = playfield.curTetrominoPosition
 	newPosition.X -= 1
 
-	if playfield.CanBlockOccupyPosition(newPosition) {
-		playfield.curBlockPosition = newPosition
+	if playfield.CanTetrominoOccupyPosition(newPosition) {
+		playfield.curTetrominoPosition = newPosition
 	}
 
-	playfield.UpdateGhostBlockPosition()
+	playfield.UpdateGhostTetrominoPosition()
 }
 
-func (playfield *Playfield) MoveBlockRight() {
-	var newPosition = playfield.curBlockPosition
+func (playfield *Playfield) MoveTetrominoRight() {
+	var newPosition = playfield.curTetrominoPosition
 	newPosition.X += 1
 
-	if playfield.CanBlockOccupyPosition(newPosition) {
-		playfield.curBlockPosition = newPosition
+	if playfield.CanTetrominoOccupyPosition(newPosition) {
+		playfield.curTetrominoPosition = newPosition
 	}
 
-	playfield.UpdateGhostBlockPosition()
+	playfield.UpdateGhostTetrominoPosition()
 }
 
-func (playfield *Playfield) MoveBlockDown() {
-	var newPosition = playfield.curBlockPosition
+func (playfield *Playfield) MoveTetrominoDown() {
+	var newPosition = playfield.curTetrominoPosition
 	newPosition.Y -= 1
 
-	if playfield.CanBlockOccupyPosition(newPosition) {
-		playfield.curBlockPosition = newPosition
+	if playfield.CanTetrominoOccupyPosition(newPosition) {
+		playfield.curTetrominoPosition = newPosition
 	} else {
-		playfield.LockInBlock()
+		playfield.LockInTetromino()
 	}
 
-	playfield.UpdateGhostBlockPosition()
+	playfield.UpdateGhostTetrominoPosition()
 }
 
-func (playfield *Playfield) HardDropBlock() {
+func (playfield *Playfield) HardDropTetromino() {
 
-	var newPosition = playfield.curBlockPosition
+	var newPosition = playfield.curTetrominoPosition
 
-	for playfield.CanBlockOccupyPosition(newPosition) {
+	for playfield.CanTetrominoOccupyPosition(newPosition) {
 		newPosition.Y -= 1
 	}
 
 	newPosition.Y += 1
-	playfield.curBlockPosition = newPosition
-	playfield.LockInBlock()
+	playfield.curTetrominoPosition = newPosition
+	playfield.LockInTetromino()
 }
-func (playfield *Playfield) UpdateGhostBlockPosition() {
+func (playfield *Playfield) UpdateGhostTetrominoPosition() {
 
-	var newPosition = playfield.curBlockPosition
+	var newPosition = playfield.curTetrominoPosition
 
-	for playfield.CanBlockOccupyPosition(newPosition) {
+	for playfield.CanTetrominoOccupyPosition(newPosition) {
 		newPosition.Y -= 1
 	}
 
 	newPosition.Y += 1
-	//playfield.curGhostBlockPosition = newPosition
+	//playfield.curGhostTetrominoPosition = newPosition
 }
 
 func (playfield *Playfield) ToggleSoftDrop() {
-	if playfield.isBlockSoftDropping {
+	if playfield.isTetrominoSoftDropping {
 		playfield.gravityTicker = *time.NewTicker(playfield.curRegularGravityTickLength)
 	} else {
 		playfield.gravityTicker = *time.NewTicker(playfield.curSoftDropGravityTickLength)
 	}
 
-	playfield.isBlockSoftDropping = !playfield.isBlockSoftDropping
+	playfield.isTetrominoSoftDropping = !playfield.isTetrominoSoftDropping
 }
 
-func (playfield *Playfield) RotateBlockCounterClockwise() {
-	transposed := types.Block{}
+func (playfield *Playfield) RotateTetrominoCounterClockwise() {
+	transposed := types.Tetromino{}
 
 	// TODO: This should be a separate function
 	// Transpose
-	for row := 0; row < types.BlockWidth; row += 1 {
-		for col := 0; col < types.BlockWidth; col += 1 {
-			transposed[col][row] = playfield.curBlock[row][col]
+	for row := 0; row < types.TetrominoWidth; row += 1 {
+		for col := 0; col < types.TetrominoWidth; col += 1 {
+			transposed[col][row] = playfield.curTetromino[row][col]
 		}
 	}
 
@@ -200,38 +200,38 @@ func (playfield *Playfield) RotateBlockCounterClockwise() {
 		transposed[i], transposed[j] = transposed[j], transposed[i]
 	}
 
-	playfield.curBlock = transposed
+	playfield.curTetromino = transposed
 
-	playfield.UpdateGhostBlockPosition()
+	playfield.UpdateGhostTetrominoPosition()
 }
 
-func (playfield *Playfield) RotateBlockClockwise() {
+func (playfield *Playfield) RotateTetrominoClockwise() {
 	// Reverse rows
-	for i, j := 0, len(playfield.curBlock)-1; i < j; i, j = i+1, j-1 {
-		playfield.curBlock[i], playfield.curBlock[j] = playfield.curBlock[j], playfield.curBlock[i]
+	for i, j := 0, len(playfield.curTetromino)-1; i < j; i, j = i+1, j-1 {
+		playfield.curTetromino[i], playfield.curTetromino[j] = playfield.curTetromino[j], playfield.curTetromino[i]
 	}
 
-	transposed := playfield.curBlock
+	transposed := playfield.curTetromino
 
 	// Transpose
-	for row := 0; row < types.BlockWidth; row += 1 {
-		for col := 0; col < types.BlockWidth; col += 1 {
-			transposed[col][row] = playfield.curBlock[row][col]
+	for row := 0; row < types.TetrominoWidth; row += 1 {
+		for col := 0; col < types.TetrominoWidth; col += 1 {
+			transposed[col][row] = playfield.curTetromino[row][col]
 		}
 	}
 
-	playfield.curBlock = transposed
+	playfield.curTetromino = transposed
 
-	playfield.UpdateGhostBlockPosition()
+	playfield.UpdateGhostTetrominoPosition()
 }
 
-// Easily implemented as a kernel (Block) on matrix (padded playfield) test
-func (playfield *Playfield) CanBlockOccupyPosition(newPosition types.Position) bool {
+// Easily implemented as a kernel (Tetromino) on matrix (padded playfield) test
+func (playfield *Playfield) CanTetrominoOccupyPosition(newPosition types.Position) bool {
 
-	for row := 0; row < types.BlockWidth; row += 1 {
-		for col := 0; col < types.BlockWidth; col += 1 {
-			// if playfield.curBlock[row][col] && playfield.field[playfield.curBlockPosition.y-row-1][playfield.curBlockPosition.x+col] {
-			if playfield.curBlock[row][col] && playfield.field[newPosition.Y-row][newPosition.X+col] {
+	for row := 0; row < types.TetrominoWidth; row += 1 {
+		for col := 0; col < types.TetrominoWidth; col += 1 {
+			// if playfield.curTetromino[row][col] && playfield.field[playfield.curTetrominoPosition.y-row-1][playfield.curTetrominoPosition.x+col] {
+			if playfield.curTetromino[row][col] && playfield.field[newPosition.Y-row][newPosition.X+col] {
 				return false
 			}
 		}
@@ -245,7 +245,7 @@ func (playfield *Playfield) EnableGravity() {
 		for {
 			select {
 			case <-playfield.gravityTicker.C:
-				playfield.MoveBlockDown()
+				playfield.MoveTetrominoDown()
 
 			case <-playfield.gravityStop:
 				return
@@ -258,15 +258,15 @@ func (playfield *Playfield) DisableGravity() {
 	playfield.gravityStop <- true
 }
 
-func (playfield *Playfield) SpawnNewBlock(newBlock types.Block) {
-	playfield.curBlock = newBlock
+func (playfield *Playfield) SpawnNewTetromino(newTetromino types.Tetromino) {
+	playfield.curTetromino = newTetromino
 
-	playfield.curBlockPosition = types.Position{
-		X: (playfield.width)/2 - types.BlockWidth/2,
+	playfield.curTetrominoPosition = types.Position{
+		X: (playfield.width)/2 - types.TetrominoWidth/2,
 		Y: playfield.height - playfield.padding - 1,
 	}
 
-	if !playfield.CanBlockOccupyPosition(playfield.curBlockPosition) {
+	if !playfield.CanTetrominoOccupyPosition(playfield.curTetrominoPosition) {
 		playfield.StopGame()
 	}
 }

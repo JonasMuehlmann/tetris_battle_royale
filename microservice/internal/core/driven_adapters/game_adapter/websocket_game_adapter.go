@@ -60,7 +60,7 @@ func (adapter *WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID
 	return nil
 }
 
-func (adapter *WebsocketGameAdapter) SendStartBlockPreview(userID string, newPreview []types.Block) error {
+func (adapter *WebsocketGameAdapter) SendStartTetrominoPreview(userID string, newPreview []types.Tetromino) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("player with the id %v is not connected", userID)
@@ -83,7 +83,7 @@ func (adapter *WebsocketGameAdapter) SendStartBlockPreview(userID string, newPre
 	return nil
 }
 
-func (adapter *WebsocketGameAdapter) SendUpdatedBlockState(userID string, newState types.BlockState) error {
+func (adapter *WebsocketGameAdapter) SendUpdatedTetrominoState(userID string, newState types.TetrominoState) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
@@ -106,7 +106,7 @@ func (adapter *WebsocketGameAdapter) SendUpdatedBlockState(userID string, newSta
 	return nil
 }
 
-func (adapter *WebsocketGameAdapter) SendBlockLockinNotice(userID string) error {
+func (adapter *WebsocketGameAdapter) SendTetrominoLockinNotice(userID string) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
@@ -138,13 +138,13 @@ func (adapter *WebsocketGameAdapter) SendRowClearNotice(userID string, rowNum in
 	return nil
 }
 
-func (adapter *WebsocketGameAdapter) SendBlockSpawnNotice(userID string, newBlock types.BlockType, enqueuedBlock types.BlockType) error {
+func (adapter *WebsocketGameAdapter) SendTetrominoSpawnNotice(userID string, newTetromino types.TetrominoName, enqueuedTetromino types.TetrominoName) error {
 	userConn, ok := adapter.PlayerConnections[userID]
 	if !ok {
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"newBlock": "%v", "enqueuedBlock": "%v"}`, newBlock, enqueuedBlock)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"newTetromino": "%v", "enqueuedTetromino": "%v"}`, newTetromino, enqueuedTetromino)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
