@@ -39,6 +39,7 @@ func (adapter *WebsocketGameAdapter) SendMatchStartNotice(userID string, matchID
 	}
 
 	data := map[string]interface{}{
+		"type":      "MatchStartNotice",
 		"matchID":   matchID,
 		"opponents": opponents,
 	}
@@ -66,7 +67,14 @@ func (adapter *WebsocketGameAdapter) SendStartTetrominoPreview(userID string, ne
 		return fmt.Errorf("player with the id %v is not connected", userID)
 	}
 
-	out, jsonErr := json.Marshal(newPreview)
+	out, jsonErr := json.Marshal(struct {
+		Tetromino []types.Tetromino
+		types.JsonMethodName
+	}{
+		newPreview,
+		types.JsonMethodName{Type: "StartTetrominoPreview"},
+	},
+	)
 	if jsonErr != nil {
 		adapter.Logger.Printf("Error: %v\n", jsonErr)
 
@@ -89,7 +97,14 @@ func (adapter *WebsocketGameAdapter) SendUpdatedTetrominoState(userID string, ne
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	out, jsonErr := json.Marshal(newState)
+	out, jsonErr := json.Marshal(struct {
+		types.TetrominoState
+		types.JsonMethodName
+	}{
+		newState,
+		types.JsonMethodName{Type: "UpdatedTetrominoState"},
+	},
+	)
 	if jsonErr != nil {
 		adapter.Logger.Printf("Error: %v\n", jsonErr)
 
@@ -112,7 +127,7 @@ func (adapter *WebsocketGameAdapter) SendTetrominoLockinNotice(userID string) er
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(`{"LockIn": "true"}`))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(`{"type": "TetrominoLockinNotice","LockIn": "true"}`))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -128,7 +143,7 @@ func (adapter *WebsocketGameAdapter) SendRowClearNotice(userID string, rowNum in
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"rowNum": "%v"}`, rowNum)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"type": "RowClearNotice", "rowNum": "%v"}`, rowNum)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -144,7 +159,7 @@ func (adapter *WebsocketGameAdapter) SendTetrominoSpawnNotice(userID string, new
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"newTetromino": "%v", "enqueuedTetromino": "%v"}`, newTetromino, enqueuedTetromino)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"type": "TetrominoSpawnNotice", "newTetromino": "%v", "enqueuedTetromino": "%v"}`, newTetromino, enqueuedTetromino)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -160,7 +175,7 @@ func (adapter *WebsocketGameAdapter) SendScoreGain(userID string, score int) err
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"score": "%v"}`, score)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"type": "ScoreGain", "score": "%v"}`, score)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -176,7 +191,7 @@ func (adapter *WebsocketGameAdapter) SendEventNotice(userID string, event string
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"event": "%v"}`, event)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"type": "EventNotice", "event": "%v"}`, event)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -192,7 +207,7 @@ func (adapter *WebsocketGameAdapter) SendEliminationNotice(userID string, elimin
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"eliminated_player": "%v"}`, userID)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"type": "EliminationNotice", "eliminated_player": "%v"}`, userID)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -207,7 +222,15 @@ func (adapter *WebsocketGameAdapter) SendEndOfMatchData(userID string, endOfMatc
 		return fmt.Errorf("player with the id %v is not connected", userID)
 	}
 
-	out, jsonErr := json.Marshal(endOfMatchData)
+	out, jsonErr := json.Marshal(struct {
+		types.EndOfMatchData
+		types.JsonMethodName
+	}{
+		endOfMatchData,
+		types.JsonMethodName{Type: "StartTetrominoPreview"},
+	},
+	)
+
 	if jsonErr != nil {
 		adapter.Logger.Printf("Error: %v\n", jsonErr)
 
