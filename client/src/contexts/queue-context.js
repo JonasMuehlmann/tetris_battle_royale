@@ -2,6 +2,10 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from 'axios'
 import { useWS } from "./websocket-context";
 
+const ENDPOINT_BASE = '/matchmaking'
+const ENDPOINT_SEGMENT_JOIN = ENDPOINT_BASE.concat('/join')
+const ENDPOINT_SEGMENT_LEAVE = ENDPOINT_BASE.concat('/leave')
+
 export const QueueContext = React.createContext()
 
 /**
@@ -26,9 +30,10 @@ export const QueueProvider = ({ children, user, lastJsonMessage }) => {
     setQueueType(request)
     setIsInQueue(true)
 
-    await axios.post('/join', {
-      userID: currentUser.id
-    }).catch(err => {
+    await axios.post(
+      ENDPOINT_SEGMENT_JOIN,
+      { userID: currentUser.id })
+      .catch(err => {
       console.error(err)
       setIsInQueue(false)
     })
@@ -39,9 +44,10 @@ export const QueueProvider = ({ children, user, lastJsonMessage }) => {
     if (!isInQueue
       || currentUser === undefined || currentUser === null) return
 
-    await axios.post('/leave', {
-      userID: currentUser.id
-    }).catch(err => {
+    await axios.post(
+      ENDPOINT_SEGMENT_LEAVE,
+      { userID: currentUser.id })
+      .catch(err => {
       console.error(err)
     })
 

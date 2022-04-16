@@ -3,9 +3,9 @@ import React, { useContext, useState } from 'react'
 import { useDialog, DialogType } from './dialog-context'
 import { useScreens } from './screen-context'
 
-const ENDPOINT_BASE = '/'
-const ENDPOINT_SEGMENT_LOGIN = ENDPOINT_BASE.concat('login')
-const ENDPOINT_SEGMENT_REGISTER = ENDPOINT_BASE.concat('register')
+const ENDPOINT_BASE = '/user'
+const ENDPOINT_SEGMENT_LOGIN = ENDPOINT_BASE.concat('/login')
+const ENDPOINT_SEGMENT_REGISTER = ENDPOINT_BASE.concat('/register')
 
 export const AuthContext = React.createContext()
 
