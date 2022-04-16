@@ -1,3 +1,6 @@
+vendor/
+.lvimrc
+.code_runner.json
 main
 .idea/
 .postgres_credentials.env

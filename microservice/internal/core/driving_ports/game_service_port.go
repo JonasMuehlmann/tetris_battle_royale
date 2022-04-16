@@ -10,8 +10,8 @@ type GameServicePort interface {
 	// TODO: Session IDs would be better for security reasons, but using userIDs is a bit simpler
 	ConnectPlayer(userID string, connection interface{}) error
 
-	MoveBlock(userID string, matchID string, direction types.MoveDirection) error
-	RotateBlock(userID string, matchID string, direction types.RotationDirection) error
-	HardDropBlock(userID string, matchID string) error
+	MoveTetromino(userID string, matchID string, direction types.MoveDirection) error
+	RotateTetromino(userID string, matchID string, direction types.RotationDirection) error
+	HardDropTetromino(userID string, matchID string) error
 	ToggleSoftDrop(userID string, matchID string) error
 }

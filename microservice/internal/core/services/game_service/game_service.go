@@ -63,19 +63,23 @@ func (service *GameService) StartGame(userIDList []string) error {
 func (service *GameService) StartGameInternal(matchID string) error {
 	time.Sleep(5)
 	for _, v := range service.Matches[matchID].Players {
-		v.Playfield.BlockPreview = MakeBlockPreview()
+		v.Playfield.TetrominoPreview = MakeTetrominoPreview()
 		v.Playfield.StartGame()
 
-		var blocks []types.Block
-		for e := v.Playfield.BlockPreview.blockQueue.Front(); e != nil; e = e.Next() {
-			blocks = append(blocks, types.Block(e.Value.(types.Block)))
+		var tetrominos []types.Tetromino
+		for e := v.Playfield.TetrominoPreview.tetrominoQueue.Front(); e != nil; e = e.Next() {
+			tetrominos = append(tetrominos, types.Tetromino(e.Value.(types.Tetromino)))
 		}
 
-		err := service.GameAdapter.SendStartBlockPreview(v.ID, blocks)
+		err := service.GameAdapter.SendStartTetrominoPreview(v.ID, tetrominos)
 		if err != nil {
 			return err
 		}
 	}
+	return nil
+}
+
+func (service GameService) StopGame(matchID string) error {
 	return nil
 }
 
@@ -84,7 +88,7 @@ func (service *GameService) ConnectPlayer(userID string, connection interface{})
 	return service.GameAdapter.ConnectPlayer(userID, connection)
 }
 
-func (service *GameService) MoveBlock(userID string, matchID string, direction types.MoveDirection) error {
+func (service *GameService) MoveTetromino(userID string, matchID string, direction types.MoveDirection) error {
 
 	err, player := service.validateUserAndMatch(userID, matchID)
 
@@ -96,20 +100,20 @@ func (service *GameService) MoveBlock(userID string, matchID string, direction t
 
 	switch direction {
 	case types.MoveLeft:
-		player.Playfield.MoveBlockLeft()
+		player.Playfield.MoveTetrominoLeft()
 	case types.MoveRight:
-		player.Playfield.MoveBlockRight()
+		player.Playfield.MoveTetrominoRight()
 	case types.MoveDown:
-		player.Playfield.MoveBlockDown()
+		player.Playfield.MoveTetrominoDown()
 	}
 
-	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotateNone,
+	return service.GameAdapter.SendUpdatedTetrominoState(userID, types.TetrominoState{
+		TetrominoPosition: player.Playfield.curTetrominoPosition,
+		RotationChange:    types.RotateNone,
 	})
 }
 
-func (service *GameService) RotateBlock(userID string, matchID string, direction types.RotationDirection) error {
+func (service *GameService) RotateTetromino(userID string, matchID string, direction types.RotationDirection) error {
 
 	err, player := service.validateUserAndMatch(userID, matchID)
 
@@ -121,20 +125,20 @@ func (service *GameService) RotateBlock(userID string, matchID string, direction
 
 	switch direction {
 	case types.RotateLeft:
-		player.Playfield.RotateBlockClockwise()
+		player.Playfield.RotateTetrominoClockwise()
 	case types.RotateRight:
-		player.Playfield.RotateBlockCounterClockwise()
+		player.Playfield.RotateTetrominoCounterClockwise()
 	default:
 		return fmt.Errorf(`Received invalid rotation direction "%v"`, direction)
 	}
 
-	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: direction,
+	return service.GameAdapter.SendUpdatedTetrominoState(userID, types.TetrominoState{
+		TetrominoPosition: player.Playfield.curTetrominoPosition,
+		RotationChange:    direction,
 	})
 }
 
-func (service GameService) HardDropBlock(userID string, matchID string) error {
+func (service GameService) HardDropTetromino(userID string, matchID string) error {
 	err, player := service.validateUserAndMatch(userID, matchID)
 
 	if err != nil {
@@ -143,11 +147,11 @@ func (service GameService) HardDropBlock(userID string, matchID string) error {
 		return err
 	}
 
-	player.Playfield.HardDropBlock()
+	player.Playfield.HardDropTetromino()
 
-	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotateNone,
+	return service.GameAdapter.SendUpdatedTetrominoState(userID, types.TetrominoState{
+		TetrominoPosition: player.Playfield.curTetrominoPosition,
+		RotationChange:    types.RotateNone,
 	})
 }
 
@@ -162,9 +166,9 @@ func (service *GameService) ToggleSoftDrop(userID string, matchID string) error 
 
 	player.Playfield.ToggleSoftDrop()
 
-	return service.GameAdapter.SendUpdatedBlockState(userID, types.BlockState{
-		BlockPosition:  player.Playfield.curBlockPosition,
-		RotationChange: types.RotateNone,
+	return service.GameAdapter.SendUpdatedTetrominoState(userID, types.TetrominoState{
+		TetrominoPosition: player.Playfield.curTetrominoPosition,
+		RotationChange:    types.RotateNone,
 	})
 }
 
