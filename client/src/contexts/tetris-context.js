@@ -5,10 +5,25 @@ import { useKeybinds } from './keybinds-context'
 import { usePlayer } from '../hooks/usePlayer'
 import { useStage } from '../hooks/useStage'
 import { useStatus } from '../hooks/useStatus'
+import { useWS } from './websocket-context'
+import { useAuth } from './auth-context'
+import { useQueue } from './queue-context'
 
 const TetrisContext = React.createContext()
 
 export const TetrisContextProvider = ({ children }) => {
+  const {
+    user
+  } = useAuth()
+
+  const {
+    currentMatch
+  } = useQueue()
+
+  const {
+    sendJsonMessage
+  } = useWS()
+
   const {
     keybinds
   } = useKeybinds()
@@ -30,19 +45,42 @@ export const TetrisContextProvider = ({ children }) => {
     }
   }
 
+  async function _sendRequest({ type, direction }) {
+    if (
+      user === undefined || user === null ||
+      currentMatch === null
+    ) return
+
+    let message = {
+      type,
+      userID: user.id,
+      matchID: currentMatch.id
+    }
+
+    if (type === 'MoveBlock' || type === 'RotateBlock') {
+      message = { ...message, direction }
+    }
+
+    sendJsonMessage(message)
+  }
+
   /*
    * Control function to be exposed
    */
   const onKeyDown = ({ keyCode }) => {
     if (!gameOver) {
       if (keyCode === keybinds.left.key) {
-        actions.moveBlock(-1);
+        // _sendRequest({ type: 'MoveBlock', direction: 'left' })
+        actions.moveBlock(-1)
       } else if (keyCode === keybinds.right.key) {
-        actions.moveBlock(1);
+        // _sendRequest({ type: 'MoveBlock', direction: 'right' })
+        actions.moveBlock(1)
       } else if (keyCode === keybinds.drop.key) {
-        actions.softDrop();
+        // _sendRequest({ type: 'MoveBlock', direction: 'down' })
+        actions.softDrop()
       } else if (keyCode === keybinds.rotate.key) {
-        playerRotate(stage, 1);
+        // _sendRequest({ type: 'RotateBlock', direction: 'right' })
+        playerRotate(stage, 1)
       }
     }
   }

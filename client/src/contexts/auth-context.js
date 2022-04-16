@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useDialog, DialogType } from './dialog-context'
 import { useScreens } from './screen-context'
 
@@ -78,3 +78,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   )
 }
+
+export const useAuth = () => useContext(AuthContext)
