@@ -43,6 +43,15 @@ export const QueueProvider = ({ children, user }) => {
   }
 
   function cancelQueue() {
+    if (!isInQueue
+      || currentUser === undefined || currentUser === null) return
+
+    await axios.post('/leave', {
+      userID: currentUser.id
+    }).catch(err => {
+      console.error(err)
+    })
+
     setQueueType(null)
     setElapsed(0)
     setIsInQueue(false)
