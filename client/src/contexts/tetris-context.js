@@ -22,15 +22,33 @@ export const TetrisProvider = ({ children }) => {
 
   const {
     sendJsonMessage,
-    lastJsonMessage,
+    eventNotice,
+    scoreboard,
+    tetrominoPreview,
+    tetrominoState,
+    tetrominoLockIn,
+    tetrominoSpawn,
+    clearRowIndex,
+    scoreGain,
+    eliminatedPlayerID,
   } = useWS()
 
   const {
     keybinds
   } = useKeybinds()
 
-  const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
-  const [stage, setStage, rowsCleared] = useStage(player, resetPlayer)
+  const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer({
+    tetrominoState,
+    tetrominoLockIn,
+    tetrominoSpawn,
+  })
+
+  const [stage, setStage, rowsCleared] = useStage({
+    player,
+    resetPlayer,
+    clearRowIndex
+  })
+  
   const [score, setScore, rows, setRows, level, setLevel] = useStatus(rowsCleared)
 
   const [timerCount, setTimerCount] = useState(3)
@@ -94,11 +112,13 @@ export const TetrisProvider = ({ children }) => {
     start: () => {
       setGameStarted(true)
       setStage(createStage())
+      /* #REMOVE DROP TIME => EVENT ON PLAYER POSITION/ROTATION UPDATE */
       setDropTime(1000)
       resetPlayer()
       setScore(0)
       setLevel(0)
       setRows(0)
+      /* #TODO EVENT ON END OF MATCH NOTICE */
       setGameOver(false)
     },
     /*
