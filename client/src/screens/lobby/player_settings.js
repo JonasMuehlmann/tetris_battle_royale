@@ -1,43 +1,12 @@
 import { Screen, useScreens } from "../../contexts/screen-context"
 import { AiFillSound } from "react-icons/ai"
 import { useKeybinds } from "../../contexts/keybinds-context"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 const OPTIONS = [
   {
     text: 'Log Out',
     description: 'Click to navigate to LogIn View',
-  },
-]
-
-const keybindsSample = [
-  {
-    control: 'Move Left',
-    keybind: '*',
-  },
-  {
-    control: 'Move Right',
-    keybind: '*',
-  },
-  {
-    control: 'Roatate Clockwise',
-    keybind: '*',
-  },
-  {
-    control: 'Roatate Counter-Clockwise',
-    keybind: '*',
-  },
-  {
-    control: 'Drop: Soft',
-    keybind: '*',
-  },
-  {
-    control: 'Drop: Hard',
-    keybind: '*',
-  },
-  {
-    control: 'Hold piece',
-    keybind: '*',
   },
 ]
 
@@ -54,25 +23,22 @@ const PlayerSettings = () => {
   const [iconBackground, setIconBackground] = useState("#107896")
   const [selectedKeybind, setSelectedKeybind] = useState(null)
 
-  const toggleSound = (e) => {
-    setIconBackground(prev => prev === "#107896" ? "#9a2617" : "#107896")
-  }
-
-  const onKeyDown = (e) => {
-    console.log(selectedKeybind)
-    if (!selectedKeybind) return;
-
+  document.addEventListener('keydown', function(e) {
+    if (selectedKeybind == null)
+      return;
 
     updateKeybind(selectedKeybind[0], {
       label: selectedKeybind[1].label,
       key: e.keyCode,
-      keyName: e.key,
-    })
-  }
+      keyName: e.code,
+    });
+    setSelectedKeybind(null);
 
-  useEffect(() => {
-    document.addEventListener('keydown', onKeyDown)
-  }, [])
+  });
+
+  const toggleSound = (e) => {
+    setIconBackground(prev => prev === "#107896" ? "#9a2617" : "#107896");
+  }
 
   const KeybindTable = () => (
     <table className="absolute top-0 left-0">
@@ -91,17 +57,19 @@ const PlayerSettings = () => {
               {entry[1].label}
             </td>
             <td
-              onClick={e => setSelectedKeybind(entry)}
+              onClick={e => {
+                setSelectedKeybind(entry);
+              }}
               className={`py-2 text-center transition-all focus:outline-0
                 ${entry[0] === selectedKeybind?.[0] ? 'opacity-80' : 'opacity-20'}`}>
-              <button className="h-8 rounded border-solid hover:border-2 hover:border-yellow-200">
+              <button className="h-8 rounded border-solid">
                 {entry[1].keyName}
               </button>
             </td>
           </tr>
         ))}
       </tbody>
-    </table >
+    </table>
   )
 
   return (
@@ -134,14 +102,14 @@ const PlayerSettings = () => {
       </ul>
 
       <KeybindTable />
+      <div className={`rounded-xl absolute left-2/4 top-1/4 translate-x-[-50%] translate-y-[-50%] text-white bg-zinc-800 opacity-80 w-max py-4 px-8 border-solid border-2 border-yellow-300 ${selectedKeybind === null ? 'hidden' : 'block'}`}> 
+        <p className="text-center">Press the desired key for</p>
+        <h4 className="text-2xl p-2 text-center">{selectedKeybind === null ? '' : selectedKeybind[1].keyName}</h4>
+        <button className="relative left-2/4 translate-x-[-50%] px-2 border-solid border-2 border-yellow-300 rounded-xl"
+            onClick={e => setSelectedKeybind(null)}>Cancel</button>
+      </div>
     </div>
   )
 }
-
-const KeybindMessage = () => (
-  <div>
-    <p>Press the desired key</p>
-  </div>
-)
 
 export default PlayerSettings
