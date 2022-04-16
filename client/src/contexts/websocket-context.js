@@ -22,7 +22,11 @@ export const WebSocketProvider = ({ children, user }) => {
     lastJsonMessage, // NEEDS TO BE TESTED
     readyState
   } = useWebSocket(URL, {
-    onOpen: () => console.log(`WS-con opened with ${user?.id}`),
+    onOpen: () => {
+      console.log(`WS-con opened with ${user?.id}`)
+      // SENDING USER ID BACK FOR REGISTER
+      sendJsonMessage({ userID: user?.id }, false)
+    },
     shouldReconnect: closeEvent => true,
     retryOnError: true,
   })

@@ -13,4 +13,5 @@ function App() {
   );
 }
 
+// Top level dialog context
 export default withDialogContext(App);
