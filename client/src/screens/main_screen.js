@@ -8,6 +8,7 @@ import TetrisScreen from "./tetris";
 import { KeybindsContextProvider } from "../contexts/keybinds-context";
 import { WebSocketProvider } from "../contexts/websocket-context";
 import { AuthContext, AuthProvider } from "../contexts/auth-context";
+import { QueueProvider } from "../contexts/queue-context";
 
 const MainScreen = () => {
   const {
@@ -63,21 +64,23 @@ const MainScreen = () => {
         {
           ({ user }) => (
             <WebSocketProvider user={user}>
-              <KeybindsContextProvider>
-                <div className="z-20">
-                  {
-                    currentScreen ?
-                      (
-                        renderCurrentScreen()
-                      ) :
-                      (
-                        <ErrorScreen
-                          onNavigate={() => navigate(Screen.LogIn)}
-                        />
-                      )
-                  }
-                </div>
-              </KeybindsContextProvider>
+              <QueueProvider user={user}>
+                <KeybindsContextProvider>
+                  <div className="z-20">
+                    {
+                      currentScreen ?
+                        (
+                          renderCurrentScreen()
+                        ) :
+                        (
+                          <ErrorScreen
+                            onNavigate={() => navigate(Screen.LogIn)}
+                          />
+                        )
+                    }
+                  </div>
+                </KeybindsContextProvider>
+              </QueueProvider>
             </WebSocketProvider>
           )
         }

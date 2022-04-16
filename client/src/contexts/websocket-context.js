@@ -4,12 +4,9 @@ import useWebSocket, { ReadyState } from 'react-use-websocket';
 const WebSocketContext = React.createContext();
 
 export const WebSocketProvider = ({ children, user }) => {
+  // INITIALIZE ONLY IF USER
   if (user === undefined || user === null) {
-    return (
-      <>
-        {children}
-      </>
-    )
+    return (<>{children}</>)
   }
 
   const [URL, setURL] = useState('ws://localhost:8080')

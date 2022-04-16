@@ -88,4 +88,4 @@ const LobbyScreen = () => {
   )
 }
 
-export default withQueue(withMenuContext(LobbyScreen))
+export default withMenuContext(LobbyScreen)
