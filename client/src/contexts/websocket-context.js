@@ -1,0 +1,1 @@
+const WebSocketContext = React.createContext();
