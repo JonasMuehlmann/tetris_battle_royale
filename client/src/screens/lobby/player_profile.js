@@ -1,4 +1,3 @@
-import {useState} from 'react'
 import GlowingText from '../../components/glowing_text/glowing_text'
 
 const DATA = [
@@ -47,7 +46,7 @@ const PlayerProfile = () => {
         DATA.map((data, index) => {
           return (
             <div
-              key={index} 
+              key={index}
               className="flex flex-col justify-center items-center">
               <GlowingText
                 className="text-3xl">

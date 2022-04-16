@@ -52,7 +52,7 @@ const SignInForm = ({ onSignUp }) => {
         e.preventDefault()
         if (isValid(model)) {
           // #REMOVE TRUE TO BYPASS (DEV)
-          signIn(model, true)
+          signIn(model, false)
         }
       }}
       className='flex flex-col gap-2'>

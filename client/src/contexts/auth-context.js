@@ -72,9 +72,13 @@ export const AuthProvider = ({ children }) => {
           password,
         })
 
-      if (response) {
-        console.log(response)
-        setUser(response)
+      if (response.status === 200) {
+        const { sessionID, userID, username } = response.data
+        setUser({
+          sessionId: sessionID,
+          id: userID,
+          username
+        })
       }
     } catch (error) {
       console.error(error.message)
@@ -88,16 +92,18 @@ export const AuthProvider = ({ children }) => {
 
     try {
       showDialog(DialogType.Authenticate)
-      const user = await axios.post(
+      const response = await axios.post(
         ENDPOINT_SEGMENT_REGISTER,
-        {
-          username,
-          password,
-        }
+        { username, password }
       )
-      console.log(user)
-      if (user) {
-        setUser(user)
+
+      if (response.status === 200) {
+        const { sessionID, userID, username } = response.data
+        setUser({
+          sessionId: sessionID,
+          id: userID,
+          username
+        })
       }
     } catch (error) {
       console.info(error)

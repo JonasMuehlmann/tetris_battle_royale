@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 /*
  * COMPONENTS 
@@ -6,7 +6,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import SignInForm from './sign_in_form'
 import SignUpForm from './sign_up_form'
 import GlowingText from '../../components/glowing_text/glowing_text'
-import { AuthContext } from '../../contexts/auth-context'
+import { useAuth } from '../../contexts/auth-context'
+import { Screen, useScreens } from '../../contexts/screen-context'
 /*
  * CONSTANTS
  */
@@ -16,13 +17,26 @@ const MODE = Object.freeze({
 })
 
 const LogInScreen = () => {
+  const {
+    user
+  } = useAuth()
+
+  const {
+    navigate
+  } = useScreens()
+
   /*
    * STATES
    */
   const [mode, setMode] = useState(MODE.SIGN_IN)
 
-  // #endregion
+  useEffect(() => {
+    if (user?.id) {
+      navigate(Screen.Menu)
+    }
+  }, [user])
 
+  // #endregion
   return (
     <div
       className={`flex flex-col items-center justify-center z-20 

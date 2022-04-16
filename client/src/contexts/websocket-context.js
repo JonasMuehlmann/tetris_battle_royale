@@ -7,11 +7,6 @@ const WS_URL = WS_BASE.concat('localhost:8080')
 const WebSocketContext = React.createContext();
 
 export const WebSocketProvider = ({ children, user }) => {
-  // INITIALIZE ONLY IF USER
-  if (user === undefined || user === null) {
-    return (<>{children}</>)
-  }
-
   const [URL, setURL] = useState(WS_URL)
   const [history, setHistory] = useState([])
 
@@ -29,7 +24,7 @@ export const WebSocketProvider = ({ children, user }) => {
     },
     shouldReconnect: closeEvent => true,
     retryOnError: true,
-  })
+  }, user !== null)
 
   useEffect(() => {
     if (user === undefined || user === null) return
@@ -47,6 +42,11 @@ export const WebSocketProvider = ({ children, user }) => {
     [ReadyState.CLOSED]: 'Closed',
     [ReadyState.UNINSTANTIATED]: 'Uninstantiated',
   }[readyState];
+
+  // INITIALIZE ONLY IF USER
+  if (user === undefined || user === null) {
+    return (<>{children}</>)
+  }
 
   return (
     <WebSocketContext.Provider

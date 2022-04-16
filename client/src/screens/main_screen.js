@@ -63,8 +63,10 @@ const MainScreen = () => {
       <AuthContext.Consumer>
         {
           ({ user }) => (
-            <WebSocketProvider user={user}>
-              <QueueProvider user={user}>
+            <WebSocketProvider
+              user={user}>
+              <QueueProvider
+                user={user}>
                 <KeybindsContextProvider>
                   <div className="z-20">
                     {
