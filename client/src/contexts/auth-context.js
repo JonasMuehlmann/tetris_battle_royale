@@ -1,10 +1,15 @@
 import axios from 'axios'
 import React, { useState } from 'react'
-import { useDialog } from './dialog-context'
+import { useDialog, DialogType } from './dialog-context'
+import { useScreens } from './screen-context'
 
 export const AuthContext = React.createContext()
 
 export const AuthProvider = ({ children }) => {
+  const {
+    navigate,
+  } = useScreens()
+
   const {
     showDialog,
     hideDialog,
