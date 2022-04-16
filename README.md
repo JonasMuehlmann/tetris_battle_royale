@@ -3,7 +3,12 @@
 ## Installation
 Note: Setup and tooling are developed with a linux system in mind, it was tested with minikube v1.25.1 and postgres 14.2 on Ubuntu 21.10.
 ```bash
-# Install go dependencies
+# Install javascript dependencies for the frontend
+cd client
+npm install
+cd ..
+
+# Install go dependencies for the backend
 cd microservice && go mod tidy
 
 # Install protobuf compiler and grpc plugin: https://grpc.io/docs/languages/go/quickstart/
@@ -82,6 +87,7 @@ The output will look something like the following:
     "username": "foo"
 }
 ```
+To launch the frontend, run `npm run start` in the `client/` directory and navigate to `localhost:3000` in your browser.
 
 ## Service architecture
 ![Service architecture diagram](docs/service_architecture.png)
