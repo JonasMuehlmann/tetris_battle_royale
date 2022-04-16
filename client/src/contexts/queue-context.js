@@ -27,11 +27,11 @@ export const QueueProvider = ({ children, user }) => {
   const [queueType, setQueueType] = useState(null)
   const [elapsed, setElapsed] = useState(0)
 
+  // SENDS REQUEST TO JOIN QUEUE
   async function requestQueue(request) {
     if (currentUser === undefined || currentUser === null) return
 
     setQueueType(request)
-
     setIsInQueue(true)
 
     await axios.post('/join', {
@@ -42,6 +42,7 @@ export const QueueProvider = ({ children, user }) => {
     })
   }
 
+  // SENDS REQUEST TO LEAVE QUEUE
   function cancelQueue() {
     if (!isInQueue
       || currentUser === undefined || currentUser === null) return

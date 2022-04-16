@@ -1,5 +1,8 @@
-import React, { useState, useCallback, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+
+const WS_BASE = 'ws://'
+const WS_URL = WS_BASE.concat('localhost:8080')
 
 const WebSocketContext = React.createContext();
 
@@ -9,7 +12,7 @@ export const WebSocketProvider = ({ children, user }) => {
     return (<>{children}</>)
   }
 
-  const [URL, setURL] = useState('ws://localhost:8080')
+  const [URL, setURL] = useState(WS_URL)
   const [history, setHistory] = useState([])
 
   const {

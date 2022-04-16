@@ -3,6 +3,10 @@ import React, { useContext, useState } from 'react'
 import { useDialog, DialogType } from './dialog-context'
 import { useScreens } from './screen-context'
 
+const ENDPOINT_BASE = '/'
+const ENDPOINT_SEGMENT_LOGIN = ENDPOINT_BASE.concat('login')
+const ENDPOINT_SEGMENT_REGISTER = ENDPOINT_BASE.concat('register')
+
 export const AuthContext = React.createContext()
 
 export const AuthProvider = ({ children }) => {
@@ -28,10 +32,12 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.post("/login", {
-        username,
-        password,
-      })
+      const response = await axios.post(
+        ENDPOINT_SEGMENT_LOGIN,
+        {
+          username,
+          password,
+        })
 
       if (response) {
         console.log(response)
@@ -50,7 +56,7 @@ export const AuthProvider = ({ children }) => {
     try {
       showDialog(DialogType.Authenticate)
       const user = await axios.post(
-        '/register',
+        ENDPOINT_SEGMENT_REGISTER,
         {
           username,
           password,

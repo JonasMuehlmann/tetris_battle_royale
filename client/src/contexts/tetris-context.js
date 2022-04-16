@@ -21,7 +21,8 @@ export const TetrisContextProvider = ({ children }) => {
   } = useQueue()
 
   const {
-    sendJsonMessage
+    sendJsonMessage,
+    lastJsonMessage,
   } = useWS()
 
   const {
