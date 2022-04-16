@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
 import { createStage } from '../components/tetris/helpers'
 
-export const useStage = (player, resetPlayer) => {
+export const useStage = ({
+  player,
+  resetPlayer,
+  clearRowIndex,
+}) => {
   const [stage, setStage] = useState(createStage())
   const [rowsCleared, setRowsCleared] = useState(0)
 
