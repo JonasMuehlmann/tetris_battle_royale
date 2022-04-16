@@ -20,6 +20,39 @@ export const AuthProvider = ({ children }) => {
   } = useDialog()
 
   const [user, setUser] = useState(null)
+  const [errors, setErrors] = useState({})
+
+  function isValid(model) {
+    const { username, password, passwordReenter } = model
+    const no_username = !username || username.trim().length <= 0
+    const no_password = !password || password.trim().length <= 0
+    const short_username = username.trim().length < 4
+    const short_password = password.trim().length < 6
+    let no_passwordReenter, not_matching_password
+
+    let valid = !no_username && !no_password && !short_username && !short_password
+
+    if (passwordReenter !== undefined) {
+      no_passwordReenter = !passwordReenter || passwordReenter.trim().length <= 0
+      not_matching_password = password !== passwordReenter
+      valid &= no_passwordReenter && not_matching_password
+    }
+
+    if (!valid) {
+      setErrors({
+        username: no_username ? 'You have not entered your username.' :
+          short_username && 'Username is too short (at least 4 characters).',
+        password: no_password ? 'No password was entered.' :
+          short_password && 'Password is too short (at least 6 characters).',
+        passwordReenter: no_passwordReenter ? 'Please enter your password one more time.' :
+          not_matching_password && 'Passwords do not match',
+      })
+    } else {
+      setErrors({})
+    }
+
+    return valid
+  }
 
   async function signIn(model, bypass = false) {
     const { username, password } = model
@@ -77,8 +110,10 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
+        errors,
         signIn,
-        signUp
+        signUp,
+        isValid,
       }}>
       {children}
     </AuthContext.Provider>

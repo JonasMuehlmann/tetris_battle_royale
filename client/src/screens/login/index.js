@@ -24,52 +24,44 @@ const LogInScreen = () => {
   // #endregion
 
   return (
-    <AuthContext.Consumer>
-      {
-        ({ signIn, signUp }) => (
-          <div
-            className={`flex flex-col items-center justify-center z-20 
+    <div
+      className={`flex flex-col items-center justify-center z-20 
           w-full h-full text-white relative transition-all`}>
-            <motion.div
-              initial={{ opacity: 0, y: -window.innerHeight / 2 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 3, type: 'spring' }}
-              className='flex flex-col items-center mb-16'>
-              <GlowingText
-                className={`text-9xl font-bold`}>
-                Tetris
-              </GlowingText>
-              <h2
-                className='text-5xl green-grad-text rounded pt-2 pb-5'>
-                Battle Royale
-              </h2>
-              <p
-                className='text-sm josefin'>
-                Massively Multiplayer Classic Tetris
-              </p>
-            </motion.div>
-            <AnimatePresence
-              exitBeforeEnter>
-              {
-                mode === MODE.SIGN_IN ? (
-                  <SignInForm
-                    key={mode}
-                    onSubmit={signIn}
-                    onSignUp={() => setMode(MODE.SIGN_UP)}
-                  />
-                ) : (
-                  <SignUpForm
-                    key={mode}
-                    onSubmit={signUp}
-                    onSignIn={() => setMode(MODE.SIGN_IN)}
-                  />
-                )
-              }
-            </AnimatePresence>
-          </div>
-        )
-      }
-    </AuthContext.Consumer>
+      <motion.div
+        initial={{ opacity: 0, y: -window.innerHeight / 2 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 3, type: 'spring' }}
+        className='flex flex-col items-center mb-16'>
+        <GlowingText
+          className={`text-9xl font-bold`}>
+          Tetris
+        </GlowingText>
+        <h2
+          className='text-5xl green-grad-text rounded pt-2 pb-5'>
+          Battle Royale
+        </h2>
+        <p
+          className='text-sm josefin'>
+          Massively Multiplayer Classic Tetris
+        </p>
+      </motion.div>
+      <AnimatePresence
+        exitBeforeEnter>
+        {
+          mode === MODE.SIGN_IN ? (
+            <SignInForm
+              key={mode}
+              onSignUp={() => setMode(MODE.SIGN_UP)}
+            />
+          ) : (
+            <SignUpForm
+              key={mode}
+              onSignIn={() => setMode(MODE.SIGN_IN)}
+            />
+          )
+        }
+      </AnimatePresence>
+    </div>
   )
 }
 

@@ -11,7 +11,7 @@ import { useQueue } from './queue-context'
 
 const TetrisContext = React.createContext()
 
-export const TetrisContextProvider = ({ children }) => {
+export const TetrisProvider = ({ children }) => {
   const {
     user
   } = useAuth()
@@ -161,9 +161,9 @@ export const TetrisContextProvider = ({ children }) => {
 }
 
 export const withTetris = Component => (props) => (
-  <TetrisContextProvider>
+  <TetrisProvider>
     <Component {...props} />
-  </TetrisContextProvider>
+  </TetrisProvider>
 )
 
 export const useTetris = () => useContext(TetrisContext)
