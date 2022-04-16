@@ -13,6 +13,10 @@ export const QueueContext = React.createContext()
  * PROVIDES METHODES AND STATES RELATED TO CURRENT QUEUE
  */
 export const QueueProvider = ({ children, user, lastJsonMessage }) => {
+  const {
+    matchStartNotice
+  } = useWS()
+
   const queueTimer = useRef()
 
   const [currentUser, setCurrentUser] = useState(user)
@@ -21,7 +25,6 @@ export const QueueProvider = ({ children, user, lastJsonMessage }) => {
   const [isInQueue, setIsInQueue] = useState(false)
   const [queueType, setQueueType] = useState(null)
   const [elapsed, setElapsed] = useState(0)
-
 
   // SENDS REQUEST TO JOIN QUEUE
   async function requestQueue(request) {
@@ -58,9 +61,9 @@ export const QueueProvider = ({ children, user, lastJsonMessage }) => {
 
   useEffect(() => {
     // MATCH FOUND
-    if (isInQueue && lastJsonMessage) {
-      if (lastJsonMessage.matchID !== undefined) {
-        setCurrentMatch()
+    if (isInQueue && matchStartNotice) {
+      if (matchStartNotice.matchID !== undefined) {
+        setCurrentMatch({...matchStartNotice})
         clearInterval(queueTimer.current)
       }
     }
@@ -76,7 +79,7 @@ export const QueueProvider = ({ children, user, lastJsonMessage }) => {
       if (queueTimer.current) clearInterval(queueTimer.current)
     }
   }, [
-    lastJsonMessage,
+    matchStartNotice,
     isInQueue,
     elapsed,
     currentMatch,
