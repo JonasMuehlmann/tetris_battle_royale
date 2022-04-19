@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect } from "react"
-import { BeatLoader, MoonLoader, PulseLoader, SyncLoader } from "react-spinners"
+import { MoonLoader, SyncLoader } from "react-spinners"
 import { useQueue } from "../contexts/queue-context"
 import { Screen, useScreens } from "../contexts/screen-context"
 
@@ -8,7 +8,8 @@ const QueueBox = () => {
   const {
     isInQueue,
     cancelQueue,
-    elapsed
+    elapsed,
+    currentMatch
   } = useQueue()
 
   const {
@@ -16,10 +17,11 @@ const QueueBox = () => {
   } = useScreens()
 
   useEffect(() => {
+    // #REMOVE BYPASS FOR DEVELOPMENT
     if (elapsed > 5) {
       navigate(Screen.Tetris)
     }
-  }, [elapsed])
+  }, [elapsed, currentMatch])
 
   return (
     <AnimatePresence>
@@ -33,7 +35,7 @@ const QueueBox = () => {
             className={`absolute bottom-16 left-1/2
             flex flex-col justify-center items-center py-4`}>
             {
-              elapsed > 3 ? (
+              currentMatch !== null ? (
                 <SyncLoader
                   size={10}
                   color='#19a18688'
@@ -47,7 +49,7 @@ const QueueBox = () => {
             }
             <p className="green-grad-text text-xl py-2">
               {
-                elapsed > 3 ?
+                currentMatch !== null ?
                   'Match Found! Navigating..' :
                   `Waiting for other players... ${elapsed}s`
               }

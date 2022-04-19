@@ -9,7 +9,7 @@ const Menu = () => {
 
   return (
     <div
-      className="flex w-full h-[220px] 2xl:px-40 px-24 items-center justify-between relative">
+      className="flex w-full h-[220px] 2xl:px-40 px-16 items-center justify-between relative">
       <ul className="flex items-center text-white gap-4 bangers">
         {
           [MenuItem.Matchfinder, MenuItem.Statistics]

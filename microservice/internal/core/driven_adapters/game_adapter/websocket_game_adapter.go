@@ -127,7 +127,7 @@ func (adapter *WebsocketGameAdapter) SendTetrominoLockinNotice(userID string) er
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(`{"type": "TetrominoLockinNotice","LockIn": "true"}`))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(`{"type": "TetrominoLockinNotice", "lockIn": "true"}`))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 
@@ -207,7 +207,7 @@ func (adapter *WebsocketGameAdapter) SendEliminationNotice(userID string, elimin
 		return fmt.Errorf("Player with the id %v is not connected", userID)
 	}
 
-	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"type": "EliminationNotice", "eliminated_player": "%v"}`, userID)))
+	err := userConn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf(`{"type": "EliminationNotice", "eliminatedPlayer": "%v"}`, userID)))
 	if err != nil {
 		adapter.Logger.Printf("Error: %v\n", err)
 

@@ -24,7 +24,7 @@ func (adapter *MatchmakingServiceRestAdapter) JoinHandler(w http.ResponseWriter,
 
 	// TODO: Validate if user exists
 
-	userId, ok := body["userId"].(string)
+	userId, ok := body["userID"].(string)
 	if !ok {
 		adapter.Logger.Printf("Error: Could not unmarshal request body")
 		w.WriteHeader(http.StatusBadRequest)
@@ -49,7 +49,7 @@ func (adapter *MatchmakingServiceRestAdapter) LeaveHandler(w http.ResponseWriter
 
 	// TODO: Validate if user exists
 
-	userID, ok := body["userId"].(string)
+	userID, ok := body["userID"].(string)
 	if !ok {
 		adapter.Logger.Printf("Error: Could not unmarshal request body")
 		w.WriteHeader(http.StatusBadRequest)

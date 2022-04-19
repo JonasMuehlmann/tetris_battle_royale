@@ -1,14 +1,13 @@
-import axios from 'axios'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { DialogType, useDialog } from '../../contexts/dialog-context'
-import { Screen, useScreens } from '../../contexts/screen-context'
 /*
  * COMPONENTS 
  */
 import SignInForm from './sign_in_form'
 import SignUpForm from './sign_up_form'
 import GlowingText from '../../components/glowing_text/glowing_text'
+import { useAuth } from '../../contexts/auth-context'
+import { Screen, useScreens } from '../../contexts/screen-context'
 /*
  * CONSTANTS
  */
@@ -18,80 +17,30 @@ const MODE = Object.freeze({
 })
 
 const LogInScreen = () => {
-  /*
-   * DEPENDENCIES
-   */
   const {
-    navigate,
+    user
+  } = useAuth()
+
+  const {
+    navigate
   } = useScreens()
-  const {
-    showDialog,
-    hideDialog,
-  } = useDialog()
+
   /*
    * STATES
    */
   const [mode, setMode] = useState(MODE.SIGN_IN)
 
-  // #region EVENTS
-
-  const onSignIn = async model => {
-    try {
-      showDialog(DialogType.Authenticate)
-      /**
-       * IN ORDER TO TEST THIS API
-       * YOU MUST START THE GATEWAY FIRST (SERVER)
-       * OTHERWISE IT WILL AUTOMATICALLY NAVIGATE TO LOBBY
-       * 
-       * const response = await axios.post(`/user/login`, {
-       *    username: model.username,
-       *    password: model.password,
-       * })
-       * hideDialog()
-       * 
-       */
-
-      /**
-       * FOR UI TEST PURPOSE
-       * COMMENT OUT IF SERVER IS ON
-       */
-      setTimeout(() => { hideDialog(); navigate(Screen.Menu) }, 2500)
-    } catch (error) {
-      console.info(error)
+  useEffect(() => {
+    if (user?.id) {
+      navigate(Screen.Menu)
     }
-  }
-
-  const onSignUp = async model => {
-    try {
-      showDialog(DialogType.Authenticate)
-      /**
-       * IN ORDER TO TEST THIS API
-       * YOU MUST START THE GATEWAY FIRST (SERVER)
-       * OTHERWISE IT WILL AUTOMATICALLY NAVIGATE TO LOBBY
-       * 
-       * const result = await axios.post(`/user`, {
-       *    username: model.username,
-       *    password: model.password,
-       * })
-       * hideDialog()
-       */
-
-      /**
-       * FOR UI TEST PURPOSE
-       * COMMENT OUT IF SERVER IS ON
-       */
-      setTimeout(() => { hideDialog() }, 2500)
-    } catch (error) {
-      console.info(error)
-    }
-  }
+  }, [user])
 
   // #endregion
-
   return (
     <div
       className={`flex flex-col items-center justify-center z-20 
-        w-full h-full text-white relative transition-all`}>
+          w-full h-full text-white relative transition-all`}>
       <motion.div
         initial={{ opacity: 0, y: -window.innerHeight / 2 }}
         animate={{ opacity: 1, y: 0 }}
@@ -116,13 +65,11 @@ const LogInScreen = () => {
           mode === MODE.SIGN_IN ? (
             <SignInForm
               key={mode}
-              onSubmit={onSignIn}
               onSignUp={() => setMode(MODE.SIGN_UP)}
             />
           ) : (
             <SignUpForm
               key={mode}
-              onSubmit={onSignUp}
               onSignIn={() => setMode(MODE.SIGN_IN)}
             />
           )

@@ -1,5 +1,5 @@
 package types
 
 type EndOfMatchData struct {
-	Scorboard Scoreboard `json:"scorboard"`
+	Scorboard Scoreboard `json:"scoreboard"`
 }

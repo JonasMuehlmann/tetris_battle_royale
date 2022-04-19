@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { MenuItem, useMenu, withMenuContext } from "../../contexts/menu-context";
-import { withQueue } from "../../contexts/queue-context";
 import Matchfinder from "./matchfinder";
 import Statistics from "./statistics";
 import PlayerProfile from "./player_profile";
@@ -34,58 +33,60 @@ const LobbyScreen = () => {
     },
   }
 
-  const renderCurrentMenu = () => (
-    <AnimatePresence exitBeforeEnter>
-      {
-        currentMenu === MenuItem.Matchfinder ?
-          (
-            <motion.div
-              {...Motions.SlideLeft}
-              className='w-full'
-              key={currentMenu.text}>
-              <Matchfinder />
-            </motion.div>  
-          ) :
-          currentMenu === MenuItem.Statistics ?
-            (
-              <motion.div
-                {...Motions.FromCenter}
-                className='w-full'
-                key={currentMenu.text}>
-                <Statistics />
-              </motion.div>
-            ) :
-            currentMenu === MenuItem.PlayerProfile ?
-              (
-                <motion.div
-                  {...Motions.SlideDown}
-                  className='w-full'
-                  key={currentMenu.text}>
-                  <PlayerProfile />
-                </motion.div>
-              ) :
-              currentMenu === MenuItem.PlayerSettings &&
-              (
-                <motion.div
-                  {...Motions.SlideDown}
-                  className='w-full'
-                  key={currentMenu.text}>
-                  <PlayerSettings />
-                </motion.div>
-              )
-      }
-    </AnimatePresence>
-  )
+  const renderCurrentMenu = () => {
+    switch (currentMenu) {
+      case MenuItem.Matchfinder:
+        return (
+          <motion.div
+            {...Motions.SlideLeft}
+            className='w-full'
+            key={currentMenu.text}>
+            <Matchfinder />
+          </motion.div>
+        )
+      case MenuItem.Statistics:
+        return (
+          <motion.div
+            {...Motions.FromCenter}
+            className='w-full'
+            key={currentMenu.text}>
+            <Statistics />
+          </motion.div>
+        )
+      case MenuItem.PlayerProfile:
+        return (
+          <motion.div
+            {...Motions.SlideDown}
+            className='w-full'
+            key={currentMenu.text}>
+            <PlayerProfile />
+          </motion.div>
+        )
+      case MenuItem.PlayerSettings:
+        return (
+          <motion.div
+            {...Motions.SlideDown}
+            className='w-full h-full'
+            key={currentMenu.text}>
+            <PlayerSettings />
+          </motion.div>
+        )
+      default:
+        return <></>
+    }
+  }
 
   return (
     <div className="w-full h-full flex flex-col z-20 relative">
       <Menu />
-      <div className="flex justify-between w-full lg:px-52 px-36 py-16">
-        {renderCurrentMenu()}
+      <div className="flex justify-between w-full h-full 2xl:px-52 px-28 py-28">
+        <AnimatePresence exitBeforeEnter>
+          {renderCurrentMenu()}
+        </AnimatePresence>
       </div>
       <QueueBox />
     </div >
   )
 }
 
-export default withQueue(withMenuContext(LobbyScreen))
+export default withMenuContext(LobbyScreen)

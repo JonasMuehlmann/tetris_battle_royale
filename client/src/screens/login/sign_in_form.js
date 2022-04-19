@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { motion } from 'framer-motion'
+import { useAuth } from "../../contexts/auth-context"
 
 /*
  * DEFAULT
@@ -9,43 +10,17 @@ const MODEL = Object.freeze({
   password: '',
 })
 
-const SignInForm = (
-  {
-    onSubmit = model => { },
-    onSignUp = () => { },
-  }) => {
+const SignInForm = ({ onSignUp }) => {
+  const {
+    errors,
+    signIn,
+    isValid,
+  } = useAuth()
+
   /*
    * STATES
    */
-  const [model, setModel] = useState(MODEL)
-  const [errors, setErrors] = useState({})
-
-  // #region METHODS
-
-  const isValid = () => {
-    const { username, password } = model
-    const no_username = !username || username.trim().length <= 0
-    const no_password = !password || password.trim().length <= 0
-    const short_username = username.trim().length < 4
-    const short_password = password.trim().length < 6
-
-    const valid = !no_username && !no_password && !short_username && !short_password
-
-    if (!valid) {
-      setErrors({
-        username: no_username ? 'You have not entered your username.' :
-          short_username && 'Username is too short (at least 4 characters).',
-        password: no_password ? 'No password was entered.' :
-          short_password && 'Password is too short (at least 6 characters).'
-      })
-    } else {
-      setErrors({})
-    }
-
-    return valid
-  }
-
-  // #endregion
+  const [model, setModel] = useState({ ...MODEL })
 
   const Actions = () => (
     <>
@@ -57,7 +32,7 @@ const SignInForm = (
       </button>
       <button
         type="button"
-        onClick={() => onSignUp()}
+        onClick={() => onSignUp?.()}
         className='opacity-60 hover:opacity-100 josefin text-md mt-2'>
         Don't have an account?
         <span className='text-[#19a186] px-1'>
@@ -75,8 +50,9 @@ const SignInForm = (
       transition={{ type: 'spring', duration: 1.5 }}
       onSubmit={e => {
         e.preventDefault()
-        if (isValid()) {
-          onSubmit(model)
+        if (isValid(model)) {
+          // #REMOVE TRUE TO BYPASS (DEV)
+          signIn(model, false)
         }
       }}
       className='flex flex-col gap-2'>
